@@ -235,8 +235,8 @@ class Api
             $code = 200;
         }
 
-        if (!Env::get('app.debug')) {
-            $result = $this->confuse($result);
+        if (Env::get('api.api_confuse_switch')) $result = $this->confuse($result);
+        if (Env::get('api.api_encode_switch')) {
             $result = $this->encode($result);
             $type = '';
         }
@@ -497,8 +497,8 @@ class Api
 
     protected function encode(array $result)
     {
-        $key = Env::get('app.api_encode_key');
-        $vi = Env::get('app.api_encode_vi');
+        $key = Env::get('api.api_encode_key');
+        $vi = Env::get('api.api_encode_vi');
         $des = new OpenSSL3DES($key, $vi);
         return $des->encrypt(json_encode($result));
     }
