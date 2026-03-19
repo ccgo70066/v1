@@ -1,0 +1,145 @@
+<style type="text/css">
+    .smallstat {
+        border-radius: 8px;
+        box-shadow: 2px 2px 4px #ccc;
+        position: relative;
+        margin-bottom: 30px;
+        height: 120px;
+        padding: 15px;
+    }
+
+    .teal-bg {
+        color: #fff;
+        background: #97d3c5;
+        background-color: #97d3c5;
+    }
+
+    .smallstat .value {
+        text-align: center;
+        font-size: 26px;
+        padding-top: 5px;
+    }
+
+    .smallstat .title,
+    .smallstat .value {
+        display: block;
+        width: 100%;
+    }
+
+    .smallstat h4 {
+        text-align: center;
+        font-size: 16px;
+        margin-top: 20px;
+        letter-spacing: 0.05rem;
+    }
+</style>
+<div class="panel" style="background-color: transparent;">
+    <div class="panel-body">
+        <div aria-label="..." class="btn-group datefilter" role="group" style="padding-bottom: 10px;">
+            <button class="btn btn-default" data-type="1" type="button">15分钟</button>
+            <button class="btn btn-default" data-type="2" type="button">30分钟</button>
+            <button class="btn btn-default" data-type="3" type="button">1小时</button>
+            <button class="btn btn-default" data-type="4" type="button">4小时</button>
+            <button class="btn btn-default" data-type="5" type="button">12小时</button>
+            <button class="btn btn-default btn-24hours" data-type="6" type="button">24小时</button>
+
+            <div class="input-group " style="padding-left: 10px; width: 340px;">
+                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                <input class="form-control input-inline datetimerange" id="createtime" placeholder="指定日期" type="text">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel" style="background-color: transparent;">
+    <div class="panel-body">
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade active in" id="one">
+
+                <div class="row">
+                    <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
+                        <div class="smallstat teal-bg" style="background-color:#dd6b66">
+                            <b><span class="value" id="bs_request">0</span></b>
+                            <h4>请求次数</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
+                        <div class="smallstat teal-bg" style="background-color:#759aa0">
+                            <b><span class="value" id="bs_time">0</span></b>
+                            <h4>平均处理时间(ms)</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
+                        <div class="smallstat teal-bg" style="background-color:#e69d87">
+                            <b><span class="value" id="bs_404">0</span></b>
+                            <h4>404</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
+                        <div class="smallstat teal-bg" style="background-color:#eedd78">
+                            <b><span class="value" id="bs_500">0</span></b>
+                            <h4>500</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
+                        <div class="smallstat teal-bg" style="background-color:#73a373">
+                            <b><span class="value" id="bs_error">0%</span></b>
+                            <h4>错误率占比</h4>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-sm-6 col-xs-6 col-xxs-12">
+                        <div class="smallstat teal-bg" style="background-color:#7289ab">
+                            <b><span class="value" id="bs_api">0</span></b>
+                            <h4>接口总数(已请求)</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel">
+    <div class="panel-body">
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade active in">
+                <div class="row">
+                    <div class="col-md-6 nav-tabs-custom charts-custom">
+                        <div class="chart tab-pane" id="code-chart" style="position: relative; height: 300px;">
+                        </div>
+                    </div>
+                    <div class="col-md-6 nav-tabs-custom charts-custom">
+                        <div class="chart tab-pane" id="time-chart" style="position: relative; height: 300px;">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 nav-tabs-custom charts-custom">
+                        <div class="chart tab-pane" id="request-chart" style="position: relative; height: 350px;">
+                        </div>
+                    </div>
+                    <div class="col-md-6 nav-tabs-custom charts-custom">
+                        <div class="chart tab-pane" id="error-chart" style="position: relative; height: 350px;">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 nav-tabs-custom charts-custom">
+                        <div class="chart tab-pane" id="fast-chart" style="position: relative; height: 350px;">
+                        </div>
+                    </div>
+                    <div class="col-md-6 nav-tabs-custom charts-custom">
+                        <div class="chart tab-pane" id="slow-chart" style="position: relative; height: 350px;">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>

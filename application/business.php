@@ -1,0 +1,192 @@
+<?php
+
+use app\admin\model\User;
+use app\common\exception\ApiException;
+use app\common\model\MoneyLog;
+use think\Db;
+use think\Env;
+use think\Log;
+
+function getLastSql()
+{
+    return \think\Db::getLastSql();
+}
+
+function traceInDB($content)
+{
+    db('test')->insert(['content' => json_encode($content)]);
+}
+
+function traceWithLine($log, $level = 'log')
+{
+    $back = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+    Log::record($back[0]['file'] . ':' . $back[0]['line'], $level);
+    Log::record($log, $level);
+}
+
+function redis()
+{
+    /** @var Redis $handler */
+    $handler = \think\Cache::$handler;
+    return $handler;
+}
+
+/**
+ * 获取配置
+ */
+function get_site_config($name)
+{
+    $value = db('config')->cache(cacheFlag(), 86400)->where('name', $name)->value('value');
+    if (!$value && $value != 0) {
+        trace('找不到配置值:' . $name, 'error');
+    }
+    return $value;
+}
+
+/**
+ * 用户余额变更
+ * @param int    $user_id 用户
+ * @param float  $money   金额
+ * @param string $memo    备注
+ * @return array [$before, $after]
+ * @throws
+ */
+function user_money_change($user_id, $money, string $memo = '')
+{
+    $user = User::where('id', $user_id)->field('id,money')->lock(true)->find();
+    if (!$user) throw new ApiException(__('User does not exist'));
+    $before = $user['money'];
+    $after = $before + $money;
+    if ($after < 0) throw new ApiException(__('Insufficient balance'));
+    $row = User::where(['id' => $user_id])->inc('money', $money)->update();
+    $row > 0 && MoneyLog::create(compact('user_id', 'money', 'before', 'after', 'memo'));
+
+    return [$before, $after];
+}
+
+
+/**
+ * 用户数值变更
+ * @param int    $user_id
+ * @param string $type   数值类型:integral,amount,reward_amount,lock_amount,charm,shred
+ * @param double $amount 数值大小
+ * @param string $flow   流水:increase=增长,decrease=减少
+ * @param null   $note   备注
+ * @param int    $from   分类:0=其它,1=商城兑换,2=活动奖励,3=充值金幣,4=打赏礼物,5=赠送盲盒,6=IM红包,7=红包雨,8=兑换金幣,9=兑换游戏券,10=守护分成,11=家族流水奖励兑换,12=家族周流水扶持,13=收益提现
+ * @throws
+ */
+function user_business_change($user_id, $type, $amount, $flow = 'increase', $note = '', $from = 0, $room_id = 0)
+{
+    if ($amount < 0) throw new ApiException(__('Invalid operation'));
+    $business = db('user_business')->where('id', $user_id)->lock(true)->find();
+    if (!$business) throw new ApiException(__('User does not exist'));
+    $origin_amount = $business[$type];
+    $diff_amount = $flow == 'decrease' ? -$amount : $amount;
+    $later_amount = $origin_amount + $diff_amount;
+    if ($later_amount < 0) throw new ApiException(__('Insufficient balance'));
+    $row = db('user_business')->where(['id' => $user_id, 'version' => $business['version']])->inc('version')->inc($type, $diff_amount)->update();
+    if ($row > 0) {
+        business_log_add($user_id, $type, $flow, $origin_amount, $later_amount, $amount, $note, $from);
+    }
+}
+
+/**
+ * @param int    $user_id       用户名
+ * @param int    $type          类型:1=积分,2=金幣,3=金幣,4=可提现收益(币),5=锁定金额,6=魅力值，7=能量, 8=VIP成长值,9=VIP积分
+ * @param string $cate          变化类型:increase=增加,decrease=减少
+ * @param double $origin_amount 原始数值
+ * @param double $later_amount  结果数值
+ * @param string $comment       备注
+ * @param int    $from          来源:1=面板礼物,2=背包礼物,3=房间流水分成,5=红包,6=提現,0=其他
+ */
+function business_log_add(
+    $user_id,
+    $type,
+    $cate,
+    $origin_amount,
+    $later_amount,
+    $amount,
+    $comment,
+    $from = 0,
+    $room_id = 0
+) {
+    $typeArr = [
+        'integral'      => 1,
+        'amount'        => 2,
+        'reward_amount' => 4,
+    ];
+    if (!is_numeric($type) && isset($typeArr[$type])) {
+        $type = $typeArr[$type];
+    }
+
+    db($type == 1 ? 'user_integral_log' : 'user_business_log')->insert([
+        'user_id'       => $user_id,
+        'type'          => $type,
+        'cate'          => $cate == 'increase' ? 1 : 0,
+        'origin_amount' => $origin_amount,
+        'amount'        => $later_amount,
+        'change_amount' => $amount,
+        'comment'       => $comment,
+        'from'          => $from,
+        'room_id'       => $room_id
+    ]);
+}
+
+/**
+ * 数组下标过滤
+ * @param array        $array
+ * @param array|string $filter  ['id','name'] |'id,name'
+ * @param bool         $exclude true=排除,false=保留
+ * @return array
+ */
+function array_index_filter($array, $filter, $exclude = false)
+{
+    if (!is_array($filter) && is_string($filter)) {
+        $filter = explode(',', $filter);
+    }
+    if ($exclude) {
+        return array_diff_key($array, array_flip($filter));
+    } else {
+        return array_intersect_key($array, array_flip($filter));
+    }
+}
+
+/**
+ * 报错信息输出到mongodb
+ * @param Throwable $e
+ * @param array     $data
+ * @return void
+ */
+function error_log_out(Throwable $e, $data = [])
+{
+    if (
+        $e instanceof ApiException ||
+        $e instanceof \think\exception\HttpResponseException ||
+        $e instanceof \think\exception\HttpException
+    ) {
+        return;
+    }
+    try {
+        $ext = [];
+        if (!request()->isCli()) {
+            $ext['param'] = request()->param();
+            $ext['module'] = request()->module();
+            $ext['controller'] = request()->controller();
+            $ext['action'] = request()->action();
+        }
+    } catch (Throwable $exception) {
+        $ext = [];
+    }
+    try {
+        $errorData['dir'] = basename(dirname(__DIR__));
+        $errorData['error_message'] = $e->getMessage();
+        $errorData['error_trace'] = explode("\n", $e->getTraceAsString());
+        $errorData['file'] = str_replace(dirname(__DIR__), '', $e->getFile());
+        $errorData['line'] = $e->getLine();
+        $errorData['create_time'] = datetime();
+        $LogData = array_merge($errorData, $data, $ext);
+        Db::connect('mongodb')->table('aa_error_log')->insert($LogData);
+    } catch (Throwable $e) {
+        Log::error('mongodb写错误日志报错' . $e->getMessage());
+    }
+}

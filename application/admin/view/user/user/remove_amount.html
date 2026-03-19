@@ -1,0 +1,62 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">用戶ID:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control" type="text" value="{$row.id}" disabled>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">用戶:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control" type="text" value="{$row.nickname}" disabled>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">當前餘額:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control" type="text" value="{$row.money}" disabled>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">匯總:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control" type="text" value="{$info}" disabled>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">種類:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:Form::radios('row[type]', ['amount'=>'減少餘額',], null, ['data-rule'=>'required'])}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">數量:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:Form::input('number', 'row[number]', '', ['data-rule'=>'required', 'onmousewheel'=>"return false;"])}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('原因')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:Form::textarea('row[comment]', '', ['data-rule'=>'required', 'id'=>'comment', 'placeholder'=>'請輸入操作原因', 'rows'=>2])}
+            <p></p>
+            <button class="btn btn-info" onclick="$('#comment').val($(this).html());return false;">充錯值</button>
+            <button class="btn btn-info" onclick="$('#comment').val($(this).html());return false;">封禁用戶</button>
+            <button class="btn btn-info" onclick="$('#comment').val($(this).html());return false;">罰款</button>
+            <button class="btn btn-info" onclick="$('#comment').val($(this).html());return false;">運營需要</button>
+            <button class="btn btn-info" onclick="$('#comment').val($(this).html());return false;">非法用戶</button>
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-4">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
