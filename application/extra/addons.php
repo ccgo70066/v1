@@ -19,10 +19,6 @@ return [
         'admin_login_init' => [
             'loginbg',
         ],
-        'app_init' => [
-            'reset',
-            'socket',
-        ],
         'sms_send' => [
             'smsbao',
         ],
@@ -31,6 +27,9 @@ return [
         ],
         'sms_check' => [
             'smsbao',
+        ],
+        'app_init' => [
+            'socket',
         ],
     ],
     'route' => [],
