@@ -63,12 +63,25 @@ class FieldConfuse extends Backend
         foreach ($fields as $field) {
             if (!in_array($field['name'], $exist)) {
                 $field['package_name'] = $params['package_name'];
-                $field['encrypt_field'] = strtolower(Random::alpha());
+                $field['encrypt'] = $this->getEncrypt();
                 $rs[] = $field;
             }
         }
         $this->model->insertAll($rs, true);
         $this->success();
     }
+
+    /**
+     * @return string
+     */
+    private function getEncrypt(): string
+    {
+        do {
+            $string = strtolower(Random::alpha());
+        } while ($this->model->where('encrypt', $string)->count());
+
+        return $string;
+    }
+
 
 }

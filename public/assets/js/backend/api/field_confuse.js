@@ -28,7 +28,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},
                         {field: 'package_name', title: __('Package_name'), operate: 'LIKE'},
                         {field: 'name', title: __('Name'), operate: 'LIKE'},
-                        {field: 'encrypt_field', title: __('Encrypt_field'), operate: 'LIKE'},
+                        {field: 'encrypt', title: __('Encrypt'), operate: 'LIKE'},
                         {field: 'memo', title: __('Memo'), operate: 'LIKE'},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         // {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
