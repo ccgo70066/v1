@@ -16,6 +16,7 @@ return [
     'Welcome'                                               => '%s，你好！',
     'View'                                                  => '查看',
     'Add'                                                   => '添加',
+    'Add_batch'                                             => '批量添加',
     'Edit'                                                  => '编辑',
     'Del'                                                   => '删除',
     'Delete'                                                => '删除',
