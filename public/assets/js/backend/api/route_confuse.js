@@ -5,13 +5,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格参数配置
             Table.api.init({
                 extend: {
-                    index_url: 'api/field_confuse/index' + location.search,
-                    add_url: 'api/field_confuse/add',
-                    edit_url: 'api/field_confuse/edit',
-                    del_url: 'api/field_confuse/del',
-                    multi_url: 'api/field_confuse/multi',
-                    import_url: 'api/field_confuse/import',
-                    table: 'api_field_confuse',
+                    index_url: 'api/route_confuse/index' + location.search,
+                    add_url: 'api/route_confuse/add',
+                    edit_url: 'api/route_confuse/edit',
+                    del_url: 'api/route_confuse/del',
+                    multi_url: 'api/route_confuse/multi',
+                    import_url: 'api/route_confuse/import',
+                    table: 'api_route_confuse',
                 }
             });
 
@@ -42,7 +42,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             $(document).on('click', '.btn-batch-add', function () {
                 var ids = Table.api.selectedids(table);
-                var url = 'api/field_confuse/add_batch';
+                var url = 'api/route_confuse/add_batch';
                 if (url.indexOf("{ids}") !== -1) {
                     url = Table.api.replaceurl(url, {ids: ids.length > 0 ? ids.join(",") : 0}, table);
                 }
