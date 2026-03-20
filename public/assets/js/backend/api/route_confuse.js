@@ -42,6 +42,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             $(document).on('click', '.btn-batch-add', function () {
                 var ids = Table.api.selectedids(table);
+                console.log(ids);
                 var url = 'api/route_confuse/add_batch';
                 if (url.indexOf("{ids}") !== -1) {
                     url = Table.api.replaceurl(url, {ids: ids.length > 0 ? ids.join(",") : 0}, table);
@@ -64,6 +65,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Controller.api.bindevent();
         },
         add_batch: function () {
+            var selectRow = parent.$('#table').bootstrapTable('getSelections');
+            if (selectRow.length > 0) {
+                selectRow = selectRow[0]
+                var rowArr = $("form").serializeArray();
+                rowArr.forEach(function (item, index) {
+                    var key = item.name.slice(item.name.indexOf("[") + 1, item.name.indexOf("]"));
+                    if (!['delete_time'].includes(key)) {
+                        $('[name="' + item.name + '"]').val(selectRow[key]);
+                    }
+                })
+            }
             Controller.api.bindevent();
         },
         edit: function () {
