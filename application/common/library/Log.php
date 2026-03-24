@@ -14,13 +14,15 @@ class Log extends AbstractLogger
     /**
      * Logs with an arbitrary level.
      *
-     * @param mixed  $level
-     * @param string $message
-     * @param array  $context
+     * @param mixed   $level
+     * @param string  $message
+     * @param mixed[] $context
      *
      * @return void
+     *
+     * @throws \Psr\Log\InvalidArgumentException
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = array())
     {
         \think\Log::write($message);
     }

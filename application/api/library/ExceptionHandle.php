@@ -2,8 +2,11 @@
 
 namespace app\api\library;
 
+use app\common\exception\ApiException;
 use Exception;
+use think\Env;
 use think\exception\Handle;
+use app\common\library;
 
 /**
  * 自定义API模块的错误显示
@@ -13,6 +16,13 @@ class ExceptionHandle extends Handle
 
     public function render(Exception $e)
     {
+        if ($e instanceof ApiException) {
+            return json([
+                'code' => $e->getCode() ?: 0,
+                'msg'  => $e->getMessage() ?: '',
+                'data' => Env::get('app_debug', false) ? $e->getFile() . ':' . $e->getLine() : [],
+            ]);
+        }
         // 在生产环境下返回code信息
         if (!\think\Config::get('app_debug')) {
             $statuscode = $code = 500;
@@ -32,6 +42,12 @@ class ExceptionHandle extends Handle
 
         //其它此交由系统处理
         return parent::render($e);
+    }
+
+    public function report(Exception $exception)
+    {
+        error_log_out($exception);
+        parent::report($exception);
     }
 
 }

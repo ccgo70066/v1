@@ -2,6 +2,7 @@
 
 namespace app\common\controller;
 
+use app\api\library\ApiCode;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
 use ReflectionClass;
@@ -14,9 +15,10 @@ use think\exception\ValidateException;
 use think\Hook;
 use think\Lang;
 use think\Loader;
+use think\Log;
 use think\Request;
 use think\Response;
-use util\OpenSSL3DES;
+use think\Route;
 
 /**
  * API控制器基类
@@ -57,6 +59,10 @@ class Api
      */
     protected $noNeedRight = [];
 
+    /**
+     * 无需要签名的方法
+     * @var array
+     */
     protected $noNeedSign = [];
 
     /**
@@ -136,13 +142,13 @@ class Api
             $this->auth->init($token);
             //检测是否登录
             if (!$this->auth->isLogin()) {
-                $this->error(__('Please login first'), null, 401);
+                $this->error(__('Please login first'), null, ApiCode::PLEASE_LOGIN);
             }
             // 判断是否需要验证权限
             if (!$this->auth->match($this->noNeedRight)) {
                 // 判断控制器和方法判断是否有对应权限
                 if (!$this->auth->check($path)) {
-                    $this->error(__('You have no permission'), null, 403);
+                    $this->error(__('You have no permission'), null, ApiCode::PLEASE_LOGIN);
                 }
             }
         } else {
@@ -161,7 +167,8 @@ class Api
 
         // 加载当前控制器语言包
         $this->loadlang($controllername);
-        //$this->sign_check();
+
+        $this->sign_check();
     }
 
     /**

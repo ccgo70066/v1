@@ -54,8 +54,7 @@ class Mysql extends Driver
     public function set($token, $user_id, $expire = null)
     {
         $expiretime = !is_null($expire) && $expire !== 0 ? time() + $expire : 0;
-        $token = $this->getEncryptedToken($token);
-        $this->handler->insert(['token' => $token, 'user_id' => $user_id, 'createtime' => time(), 'expiretime' => $expiretime]);
+        $this->handler->insert(['token' => $this->getEncryptedToken($token), 'user_id' => $user_id, 'token_str' => $token, 'createtime' => time(), 'expiretime' => $expiretime]);
         return true;
     }
 
