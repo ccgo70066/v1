@@ -2,15 +2,28 @@
 
 namespace app\common\library;
 
+use app\api\library\UserBaseStatisticsService;
+use app\common\library\ChinaName;
+use app\api\library\ImService;
+use app\api\library\RedisService;
+use app\api\library\UserService;
+use app\common\model\UserGuest;
+use app\common\model\Blacklist;
 use app\common\model\User;
+use app\common\model\UserBusiness;
 use app\common\model\UserRule;
 use fast\Random;
+use think\Cache;
 use think\Config;
 use think\Db;
+use think\Env;
 use think\Exception;
 use think\Hook;
+use think\Log;
 use think\Request;
 use think\Validate;
+
+use function db;
 
 class Auth
 {
@@ -26,7 +39,31 @@ class Auth
     //默认配置
     protected $config = [];
     protected $options = [];
-    protected $allowFields = ['id', 'username', 'nickname', 'mobile', 'avatar', 'score'];
+    protected $allowFields = [
+        'id',
+        'nickname',
+        'mobile',
+        'avatar',
+        'image',
+        'gender',
+        'age',
+        'birthday',
+        'country',
+        'bio',
+        'constellation',
+        'interest_ids',
+        'first_login',
+        'im_token',
+        'is_follow',
+        'area',
+        'voice',
+        'voice_size',
+        'hidden_level',
+        'hidden_noble',
+        'edit_gender_num',
+        'is_online',
+        'beautiful_id'
+    ];
 
     public function __construct($options = [])
     {
@@ -107,6 +144,11 @@ class Auth
                 $this->setError('Account is locked');
                 return false;
             }
+            $package_appid = Request::instance()->server('HTTP_APPID', Request::instance()->request('appid'));
+            if ($user['package_appid'] != $package_appid) {
+                db('user')->where('id', $user_id)->update(['package_appid' => $package_appid]);
+                $user['package_appid'] = $package_appid;
+            }
             $this->_user = $user;
             $this->_logined = true;
             $this->_token = $token;
@@ -164,7 +206,8 @@ class Auth
             'avatar'   => '',
         ];
         $params = array_merge($data, [
-            'nickname'  => preg_match("/^1[3-9]{1}\d{9}$/", $username) ? substr_replace($username, '****', 3, 4) : $username,
+            //'nickname'  => preg_match("/^1[3-9]{1}\d{9}$/", $username) ? substr_replace($username, '****', 3, 4) : $username,
+            'nickname'  => (new ChinaName)->getNickname(),
             'salt'      => Random::alnum(),
             'jointime'  => $time,
             'joinip'    => $ip,
@@ -173,29 +216,59 @@ class Auth
             'prevtime'  => $time,
             'status'    => 'normal'
         ]);
-        $params['password'] = $this->getEncryptPassword($password, $params['salt']);
+        $params['package_appid'] = Request::instance()->server('HTTP_APPID', Request::instance()->request('appid'));
+        if ($password) {
+            $params['password'] = $this->getEncryptPassword($password, $params['salt']);
+        }
         $params = array_merge($params, $extend);
-
+        $params['id'] = $this->get_user_skip_id();
+        $params['beautiful_id'] = $params['id'];
         //账号注册时需要开启事务,避免出现垃圾数据
         Db::startTrans();
         try {
-            $user = User::create($params, true);
+            $user = User::create($params);
+            //生成用户业务数据
+            UserBusiness::create(['id' => $user->id, 'lang' => request()->langset(),]);
+
+            $imService = new ImService();
+            $res = $imService->createUser($user->id, $extend['nickname'], $extend['avatar']);
+            if (!$res) {
+                throw new ApiException(__('IM registration failed'));
+//                $token = $imService->refresh_token($user->id);
+//                User::where('id', $user->id)->setField('im_token', $token['info']['token']);
+            } else {
+                //更新im_token
+                User::where('id', $user->id)->setField('im_token', $res['info']['token']);
+            }
 
             $this->_user = User::get($user->id);
-
             //设置Token
             $this->_token = Random::uuid();
+            Token::clear($user->id);
             Token::set($this->_token, $user->id, $this->keeptime);
-
             //设置登录状态
             $this->_logined = true;
+
+            //用户信息存入哈希
+            $hashData = [
+                'id'       => $user->id,
+                'nickname' => $extend['nickname'],
+                'avatar'   => $extend['avatar'],
+                'appid'    => $extend['appid'],
+            ];
+            redis()->hMSet(RedisService::USER_BASE_LISTS_KEY . $user->id, $hashData);
 
             //注册成功的事件
             Hook::listen("user_register_successed", $this->_user, $data);
             Db::commit();
-        } catch (Exception $e) {
-            $this->setError($e->getMessage());
+        } catch (ApiException $e) {
+            $this->setError(__($e->getMessage(), [], request()->langset()));
             Db::rollback();
+            return false;
+        } catch (\Exception $e) {
+            Db::rollback();
+            error_log_out($e);
+            $this->setError('网络开小差');
             return false;
         }
         return true;
@@ -210,7 +283,10 @@ class Auth
      */
     public function login($account, $password)
     {
-        $field = Validate::is($account, 'email') ? 'email' : (Validate::regex($account, '/^1\d{10}$/') ? 'mobile' : 'username');
+        $field = Validate::is($account, 'email') ? 'email' : (Validate::regex(
+            $account,
+            '/^1\d{10}$/'
+        ) ? 'mobile' : 'username');
         $user = User::get([$field => $account]);
         if (!$user) {
             $this->setError('Account is incorrect');
@@ -221,14 +297,7 @@ class Auth
             $this->setError('Account is locked');
             return false;
         }
-
-        if ($user->loginfailure >= 10 && time() - $user->loginfailuretime < 86400) {
-            $this->setError('Please try again after 1 day');
-            return false;
-        }
-
         if ($user->password != $this->getEncryptPassword($password, $user->salt)) {
-            $user->save(['loginfailure' => $user->loginfailure + 1, 'loginfailuretime' => time()]);
             $this->setError('Password is incorrect');
             return false;
         }
@@ -271,7 +340,10 @@ class Auth
             return false;
         }
         //判断旧密码是否正确
-        if ($this->_user->password == $this->getEncryptPassword($oldpassword, $this->_user->salt) || $ignoreoldpassword) {
+        if ($this->_user->password == $this->getEncryptPassword(
+                $oldpassword,
+                $this->_user->salt
+            ) || $ignoreoldpassword) {
             Db::startTrans();
             try {
                 $salt = Random::alnum();
@@ -299,7 +371,7 @@ class Auth
      * @param int $user_id
      * @return boolean
      */
-    public function direct($user_id)
+    public function direct($user_id, $refresh = true)
     {
         $user = User::get($user_id);
         if ($user) {
@@ -320,22 +392,35 @@ class Auth
                 $user->logintime = $time;
                 //重置登录失败次数
                 $user->loginfailure = 0;
-
+                $user->package_appid = Request::instance()->server('HTTP_APPID', Request::instance()->request('appid'));
                 $user->save();
+                $refresh && db('user_business')->where('id', $user->id)->setField(['lang' => request()->langset()]);
 
                 $this->_user = $user;
 
-                $this->_token = Random::uuid();
-                Token::set($this->_token, $user->id, $this->keeptime);
+                if ($refresh) {
+                    $this->_token = Random::uuid();
+                    Token::clear($user->id);
+                    Token::set($this->_token, $user->id, $this->keeptime);
+                } else {
+                    $tokenStr = db('user_token')->where('user_id', $user->id)->where('expiretime', '>', time())->value('token_str');
+                    if (!$tokenStr) {
+                        $tokenStr = Random::uuid();
+                        Token::clear($user->id);
+                        Token::set($tokenStr, $user->id, $this->keeptime);
+                    }
+                    $this->_token = $tokenStr;
+                }
 
                 $this->_logined = true;
 
                 //登录成功的事件
                 Hook::listen("user_login_successed", $this->_user);
                 Db::commit();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Db::rollback();
-                $this->setError($e->getMessage());
+                error_log_out($e);
+                $this->setError('网络开小差~');
                 return false;
             }
             return true;
@@ -363,7 +448,7 @@ class Auth
         }
         $url = ($module ? $module : request()->module()) . '/' . (is_null($path) ? $this->getRequestUri() : $path);
         $url = strtolower(str_replace('.', '/', $url));
-        return in_array($url, $rules);
+        return in_array($url, $rules) ? true : false;
     }
 
     /**
@@ -390,18 +475,101 @@ class Auth
     /**
      * 获取会员基本信息
      */
-    public function getUserinfo()
+    public function getUserinfo($userId = 0)
     {
-        $data = $this->_user->toArray();
+        //查自己
+        if (empty($userId) || $userId == $this->_user->id) {
+            $data = User::find($this->_user->id)->toArray();
+            $data['is_follow'] = 0;
+        } else {
+            $data = User::find($userId);
+            if (!$data) {
+                return null;
+            }
+            $data = $data->toArray();
+            $data['is_follow'] = (int)db('user_follow')->where(['user_id' => $this->_user->id, 'to_user_id' => $userId])->find();
+            UserGuest::addGuestLog($this->_user->id, $userId);
+        }
+
         $allowFields = $this->getAllowFields();
         $userinfo = array_intersect_key($data, array_flip($allowFields));
-        $userinfo = array_merge($userinfo, Token::get($this->_token));
+        $userinfo['constellation'] = __($userinfo['constellation']);
+        $userinfo['interest_text'] = implode(',', array_map(function ($value) {
+            return RedisService::loadLang($value);
+        }, db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name')));
+
+        $userinfo['token'] = $this->_token;
+        list(
+            $userinfo['level_info'],
+            $userinfo['user_adornment'],
+            $userinfo['user_car'],
+            $userinfo['user_bubble'],
+            $userinfo['user_tail']
+            ) = [
+            UserBusiness::getUserLevelInfoById($userinfo['id']),
+            UserBusiness::getWearAdornmentImage($userinfo['id']),
+            UserBusiness::getWearCarImage($userinfo['id']),
+            UserBusiness::getWearBubbleImage($userinfo['id']),
+            UserBusiness::getWearTailImage($userinfo['id']),
+        ];
+//            Cache::remember('user:icon_info:' . $userinfo['id'], function () use ($userinfo) {
+//                Cache::tag('small_data_user', 'user:icon_info:' . $userinfo['id']);
+//                return [
+//                    UserBusiness::getUserLevelInfoById($userinfo['id']),
+//                    UserBusiness::getUserNobleBadgeById($userinfo['id']),
+//                    UserBusiness::getWearAdornmentImage($userinfo['id']),
+//                    UserBusiness::getWearCarImage($userinfo['id']),
+//                    UserBusiness::getWearBubbleImage($userinfo['id']),
+//                    UserBusiness::getWearTailImage($userinfo['id']),
+//                ];
+//            }, 7200);
+        $userBusiness = UserBusiness::field('union_id,safe_code,role')->find($userinfo['id']);
+        $userinfo['name_color'] = user_vip_switch($userinfo['id'], 6);
+
+        $userinfo['role'] = $userBusiness['role'];
+        $userinfo['union_id'] = $userBusiness['union_id'];
+        $currentRoomId = redis()->hGet(RedisService::USER_NOW_ROOM_KEY, $userinfo['id']);
+        $userinfo['is_on_room'] = $currentRoomId ?: 0;
+        if ($currentRoomId) {
+            $currentRoom = Db::name('room')->alias('r')->join('room_theme_cate c', 'r.theme_id = c.id')
+                ->where('r.id', $currentRoomId)->field('c.name as theme_name,r.name,r.cover')->find();
+            $userinfo['current_room'] = [
+                'id'    => $currentRoomId,
+                'name'  => $currentRoom['name'],
+                'cover' => $currentRoom['cover'],
+                'cate'  => $currentRoom['theme_name'],
+            ];
+        } else {
+            $userinfo['current_room'] = null;
+        }
+        $userinfo['proom'] = db('room')->where('owner_id', $userinfo['id'])->where('type', 2)->value('id');
+
+        $statistics = UserBaseStatisticsService::getUserStatistics($userinfo['id']);
+        $userinfo['fan_num'] = $statistics['fan_num'];
+        $userinfo['follow_num'] = $statistics['follow_num'];
+        $userinfo['guest_num'] = $statistics['guest_num'];
+        $userinfo['blacklist_num'] = $statistics['blacklist_num'];
+        $userinfo['red_packet_auth'] = UserBusiness::getRedPacketAuth($userinfo['id']);
+        $userinfo['shutup'] = db('user_shutup')->where('user_id', $userinfo['id'])->find() ? 1 : 0;
+        $userinfo['voice_size_limit'] = 60;
+        if (empty($userId) || $userId == $this->_user->id) {
+            $userinfo['is_blacklist'] = null;
+            $userinfo['can_edit_gender'] = get_site_config('edit_gender_num') > $userinfo['edit_gender_num'];
+        } else {
+            $userinfo['can_edit_gender'] = null;
+            $userinfo['is_blacklist'] = (bool)(db('user_blacklist')
+                ->where(['user_id' => $this->_user->id, 'to_user_id' => $userId])->value('to_user_id'));
+        }
+        $userinfo['is_official'] = (int)Db::name('sys_user_role')->where('user_id', $userinfo['id'])->where('role', 1)->find();
+        $userinfo['is_union_master'] = (int)Db::name('union')->where('owner_id', $userinfo['id'])->where('status', 1)->find();
+        $userinfo['safe_code_flag'] = $userBusiness['safe_code'] ? 1 : 0;
+
         return $userinfo;
     }
 
     /**
      * 获取会员组别规则列表
-     * @return array|bool|\PDOStatement|string|\think\Collection
+     * @return array
      */
     public function getRuleList()
     {
@@ -413,7 +581,8 @@ class Auth
             return [];
         }
         $rules = explode(',', $group->rules);
-        $this->rules = UserRule::where('status', 'normal')->where('id', 'in', $rules)->field('id,pid,name,title,ismenu')->select();
+        $this->rules = UserRule::where('status', 'normal')->where('id', 'in', $rules)
+            ->field('id,pid,name,title,ismenu')->select();
         return $this->rules;
     }
 
@@ -473,7 +642,7 @@ class Auth
 
             Hook::listen("user_delete_successed", $user);
             Db::commit();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Db::rollback();
             $this->setError($e->getMessage());
             return false;
@@ -534,7 +703,10 @@ class Auth
      */
     public function render(&$datalist, $fields = [], $fieldkey = 'user_id', $renderkey = 'userinfo')
     {
-        $fields = !$fields ? ['id', 'nickname', 'level', 'avatar'] : (is_array($fields) ? $fields : explode(',', $fields));
+        $fields = !$fields ? ['id', 'nickname', 'level', 'avatar'] : (is_array($fields) ? $fields : explode(
+            ',',
+            $fields
+        ));
         $ids = [];
         foreach ($datalist as $k => $v) {
             if (!isset($v[$fieldkey])) {
@@ -579,5 +751,58 @@ class Auth
     public function getError()
     {
         return $this->_error ? __($this->_error) : '';
+    }
+
+    /**
+     * 随机获取跳跃式用户id
+     */
+    public function get_user_skip_id()
+    {
+        $key = 'user_skip_id:ids';
+        $max_key = 'user_skip_id:max_id';
+        $redis = redis();
+        $ids_len = $redis->sCard($key);
+        $max_len = 100;
+        if ($ids_len <= $max_len) {
+            $last_user_id = $redis->get($max_key) ?: db('user')->max('id');
+            !$last_user_id && $last_user_id = 100001;
+            $ids = [];
+            for ($i = 0; $i < ($max_len - $ids_len) + 50; $i++) {
+                $last_user_id += random_int(2, 10);
+                $ids[] = $last_user_id;
+            }
+            $redis->set($max_key, $last_user_id);
+            $redis->sAdd($key, ...$ids);
+        }
+
+        return $redis->sPop($key);
+    }
+
+    public function reg($username, $password, $email = '', $mobile = '', $extend = []): bool
+    {
+        $extend += [];
+        !isset($extend['gender']) && $extend['gender'] = 1;
+        !isset($extend['province']) && $extend['province'] = '未知';
+        !isset($extend['city']) && $extend['city'] = '未知';
+        !isset($extend['birthday']) && $extend['birthday'] = '2002-01-01';
+        !isset($extend['age']) && $extend['age'] = 22;
+        !isset($extend['constellation']) && $extend['constellation'] = '摩羯座';
+        !isset($extend['bio']) && $extend['bio'] = 'Hello VooPea！';
+        if (!$extend['avatar']) {
+            $gender_avatars = config('app.default_avatar_gender');
+            $avatars = array_values(array_filter(array_map(function ($value) use ($extend) {
+                if ($value['gender'] == $extend['gender']) {
+                    return $value['avatar'];
+                }
+            }, $gender_avatars)));
+            $extend['avatar'] = $avatars[array_rand($avatars)];
+        }
+        $extend['ls_flag'] = substr($extend['ls_flag'], 0, 6);
+        $info = db('user')->where('nickname', $username)->find();
+        if ($info) {
+            $username = $username . Random::alnum(1);
+        }
+
+        return $this->register($username, $password, $email, $mobile, $extend);
     }
 }
