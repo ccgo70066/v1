@@ -1,13 +1,14 @@
 <?php
 
-namespace app\api\library;
+namespace app\common\service;
 
-use app\common\model\UserBlacklist;
+use app\api\library\ImService;
+use app\api\library\RedisService;
 use app\common\model\AnchorRecommend as AnchorRecommendModel;
 use app\common\model\Gift as GiftModel;
 use app\common\model\User;
+use app\common\model\UserBlacklist;
 use app\common\model\UserBusiness;
-use addons\socket\library\GatewayWorker\Applications\App\Message;
 use think\Db;
 use think\Exception;
 
