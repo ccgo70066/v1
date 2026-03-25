@@ -4,22 +4,18 @@ namespace app\api\controller;
 
 use app\api\library\ImService;
 use app\api\library\RedisService;
-use app\common\library\ApiException;
-use app\common\library\ChinaName;
 use app\api\library\UserService;
+use app\common\exception\ApiException;
 use app\common\library\Auth;
+use app\common\library\ChinaName;
 use app\common\library\Sms;
+use app\common\model\Shield;
 use app\common\model\User as UserModel;
 use app\common\model\UserGuest;
-use app\common\model\Shield;
 use fast\Random;
-use think\Cache;
 use think\Db;
 use think\Exception;
 use think\Log;
-use util\Date;
-use util\Debug;
-use util\Enigma;
 use util\Minio;
 
 /**
@@ -40,9 +36,7 @@ class User extends Base
         'reset_password'
     ];
     protected $noNeedRight = ['*'];
-    // https://blog.csdn.net/itbrand/article/details/109239620   去除虚拟号段
-    protected $rule = "^\d{3,20}$";
-    protected $obj_name = 'dd';
+    protected $rule = "^1\d{10}$";
 
     public function _initialize()
     {
@@ -57,27 +51,17 @@ class User extends Base
      */
     public function get_info()
     {
-        $userId = input('user_id') ?? 0;
-        if (in_array((string)$userId, ImService::$KF_IDS)) {
-            $this->success();
-        }
-        if (!empty($userId) && $userId != $this->auth->id) {
-            //添加访问记录
-            UserGuest::addGuestLog($this->auth->id, $userId);
-        }
+        $userId = input('user_id', 0);
+        in_array((string)$userId, ImService::$KF_IDS) && $this->success();
+        $userId && $userId != $this->auth->id && UserGuest::addGuestLog($this->auth->id, $userId);
         $user_info = $this->auth->getUserinfo($userId);
-        if (!empty($userId) && $userId != $this->auth->id) {
-            if ($user_info['hidden_noble'] == 1) {
-                $user_info['noble_info'] = '';
-            }
-            if ($user_info['hidden_level'] == 1) {
-                $user_info['level_info'] = '';
-            }
+        !$user_info && $this->error(__('User does not exist'));
+        if ($userId && $userId != $this->auth->id) {
+            $user_info['hidden_noble'] == 1 && $user_info['noble_info'] = '';
+            $user_info['hidden_level'] == 1 && $user_info['level_info'] = '';
         }
-        //个人礼物墙
         $user_info['wall'] = UserService::getWallInfo($userId ?: $this->auth->id);
-        $user_info && $this->success('', $user_info);
-        $this->error(__('User does not exist'));
+        $this->success('', $user_info);
     }
 
     /**
@@ -86,8 +70,7 @@ class User extends Base
     public function get_audit_image()
     {
         $user_id = $this->auth->id;
-        $list = db('user_audit_image')->field('img_type,url')
-            ->where(['user_id' => $user_id, 'status' => 0])->select();
+        $list = db('user_audit_image')->field('img_type,url')->where(['user_id' => $user_id, 'status' => 0])->select();
         $this->success('', $list);
     }
 
@@ -117,9 +100,9 @@ class User extends Base
         $captcha = $this->request->request('captcha');
         $this->operate_check('flag:mobile_login:' . $mobile);
 
-        //if (!$mobile || !\think\Validate::regex($mobile, $this->rule)) {
-        //    $this->error(__('请输入正确的手机号'));
-        //}
+        if (!$mobile || !\think\Validate::regex($mobile, $this->rule)) {
+            $this->error(__('Mobile is incorrect'));
+        }
         if (redis()->get('login_fail' . $mobile) >= 5) {
             $this->error(__('The account has been locked for 30 minutes, please try again later'));
         }
@@ -431,7 +414,7 @@ class User extends Base
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
 
         $this->success(__('Password set successfully'));
