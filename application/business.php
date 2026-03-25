@@ -26,10 +26,26 @@ function traceWithLine($log, $level = 'log')
 
 function redis()
 {
-    /** @var Redis $handler */
-    $handler = \think\Cache::$handler;
-    return $handler;
+    static $redis;
+    if (!$redis) {
+        $config = config('cache.redis');
+        $redis = new Redis();
+        $redis->connect($config['host'], $config['port']);
+        !empty($config['password']) && $redis->auth($config['password']);
+        $redis->select($config['select'] ?? 1);
+    }
+    return $redis;
 }
+
+/**
+ * 获取缓存开关
+ * @return bool
+ */
+function cacheFlag(): bool
+{
+    return Env::get('app.cache', 1) == 1;
+}
+
 
 /**
  * 获取配置
@@ -185,7 +201,7 @@ function error_log_out(Throwable $e, $data = [])
         $errorData['line'] = $e->getLine();
         $errorData['create_time'] = datetime();
         $LogData = array_merge($errorData, $data, $ext);
-        Db::connect('mongodb')->table('aa_error_log')->insert($LogData);
+        Db::connect('mongodb')->table('fa_error_log')->insert($LogData);
     } catch (Throwable $e) {
         Log::error('mongodb写错误日志报错' . $e->getMessage());
     }

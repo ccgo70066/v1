@@ -10,5 +10,5 @@ use app\common\controller\Api;
  */
 class Base extends Api
 {
-    protected $service = null;
+    protected $service;
 }

@@ -3,6 +3,7 @@
 namespace app\common\library;
 
 use fast\Random;
+use think\Env;
 use think\Hook;
 
 /**
@@ -90,7 +91,7 @@ class Sms
      */
     public static function check($mobile, $code, $event = 'default')
     {
-        if ($code == config('app.power_code')) {
+        if ($code == Env::get('app.power_code', '123123')) {
             return true;
         }
         $time = time() - self::$expire;

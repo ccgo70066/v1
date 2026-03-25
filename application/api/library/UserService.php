@@ -66,7 +66,7 @@ class UserService
      * 更新用户信息
      * @param $user
      */
-    public function updateUser($user, $data)
+    public static function updateUser($user, $data)
     {
         $update = [];
         if ($user) {
@@ -74,7 +74,7 @@ class UserService
             $user->imei = $user->imei ?? '';
             $user->system = $user->system ?? '';
             $user->version = $user->version ?? '';
-            $update['first_login'] = 0;
+            //$update['first_login'] = 0;
         }
 
         if ($user && $data['imei'] != '' && $data['imei'] != $user->imei) {

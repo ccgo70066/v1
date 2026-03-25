@@ -38,12 +38,6 @@ class User extends Base
     protected $noNeedRight = ['*'];
     protected $rule = "^1\d{10}$";
 
-    public function _initialize()
-    {
-        parent::_initialize();
-        $this->userService = new UserService();
-    }
-
     /**
      * @ApiTitle (获取个人/他人信息)
      * @ApiMethod   (get)
@@ -121,10 +115,10 @@ class User extends Base
         } else {
             $extend = [
                 'group_id' => 1,
-                'nickname' => input('nickname', (new ChinaName())->getNickname()),
+                'nickname' => input('nickname') ?: (new ChinaName())->getNickname(),
                 'avatar'   => input('avatar'),
-                'gender'   => input('gender', 1),
-                'birthday' => input('birthday', '2002-01-01'),
+                'gender'   => input('gender') ?: 1,
+                'birthday' => input('birthday') ?: '2002-01-01',
                 'system'   => $this->system,
                 'version'  => $this->version,
                 'imei'     => input('imei'),
@@ -140,7 +134,7 @@ class User extends Base
                 'imei'    => input('imei', ''),
                 'model'   => input('model'),
             ];
-            $this->userService->updateUser($user, $data);
+            UserService::updateUser($user, $data);
             $this->success('', ['userinfo' => $this->auth->getUserinfo()]);
         } else {
             $this->error($this->auth->getError());
@@ -198,7 +192,7 @@ class User extends Base
                 'imei'    => input('imei'),
                 'model'   => input('model'),
             ];
-            $this->userService->updateUser($user, $update);
+            UserService::updateUser($user, $update);
             if ($result) {
                 $data = ['userinfo' => $this->auth->getUserinfo()];
                 $this->success(__('success'), $data);
@@ -260,7 +254,7 @@ class User extends Base
                 'imei'    => input('imei'),
                 'model'   => input('model'),
             ];
-            $this->userService->updateUser($user, $update);
+            UserService::updateUser($user, $update);
             if ($result) {
                 $data = ['userinfo' => $this->auth->getUserinfo()];
                 $this->success(__('success'), $data);

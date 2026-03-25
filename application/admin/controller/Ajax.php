@@ -324,4 +324,106 @@ class Ajax extends Backend
         $response = Response::create($data, '', 200, $header);
         return $response;
     }
+
+
+    /**
+     * 上传文件到minio[后台用]
+     * @ApiMethod (POST)
+     * @ApiParams   (name="file", type="file", required=false, rule="", description="文件")
+     */
+    public function upload_to_minio()
+    {
+        $file = $this->request->file('file');
+        if (empty($file)) {
+            $this->error(__('No file upload or server upload limit exceeded'));
+        }
+
+        $upload = Config::get('upload');
+        preg_match('/(\d+)(\w+)/', $upload['maxsize'], $matches);
+        $fileInfo = $file->getInfo();
+
+
+        $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
+
+        $suffix = $suffix && preg_match("/^[a-zA-Z0-9]+$/", $suffix) ? $suffix : 'file';
+
+        $mimetypeArr = explode(',', strtolower($upload['mimetype']));
+        $typeArr = explode('/', $fileInfo['type']);
+
+        //禁止上传PHP和HTML文件
+        if (in_array($fileInfo['type'], ['text/x-php', 'text/html']) || in_array($suffix, ['php', 'html', 'htm'])) {
+            $this->error(__('Uploaded file format is limited'));
+        }
+        //验证文件后缀
+        if ($upload['mimetype'] !== '*' &&
+            (
+                !in_array($suffix, $mimetypeArr)
+                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array(
+                            $fileInfo['type'],
+                            $mimetypeArr
+                        ) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
+            )
+        ) {
+            $this->error(__('Uploaded file format is limited'));
+        }
+        //验证是否为图片文件
+        if (in_array(
+                $fileInfo['type'],
+                ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']
+            ) || in_array(
+                $suffix,
+                ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']
+            )) {
+            $imgInfo = getimagesize($fileInfo['tmp_name']);
+            if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
+                $this->error(__('Uploaded file is not a valid image'));
+            }
+        }
+
+        $fileName = date('YmdH') . rand(1, 99999) . '.' . $suffix;
+        // =====================start==============================
+        if (input('category')) {
+            switch (input('category')) {
+                case 'app':
+                    $fileName = $fileInfo['name'];
+                    $uploadDir = $suffix == 'apk' ? "app/android/" : "app/ios/";
+                    break;
+                case 'plist':
+                    $fileName = $fileInfo['name'];
+                    $uploadDir = "apk/ios/";
+                    break;
+                case 'gift':
+                    $fileName = md5_file($fileInfo['tmp_name']) . '.' . $suffix;
+                    $uploadDir = input('category') . '/';
+                    break;
+                default:
+                    $uploadDir = input('category') . '/';
+            }
+        } else {
+            $uploadDir = 'other/';
+        }
+        switch ($suffix) {
+            case 'apk':
+                $contentType = 'application/vnd.android.package-archive';
+                break;
+            case 'ipa':
+                $contentType = 'application/iphone';
+                break;
+            default:
+                $contentType = '';
+        }
+        $minio = new Minio();
+        $url = '/' . trim(trim($uploadDir), '/') . '/' . $fileName;
+        $res_url = $minio->putObject($fileInfo['tmp_name'], $url, $contentType);
+        echo json_encode([
+            'code' => 1,
+            'msg'  => __('Operation completed'),
+            'data' => ['url' => $url],
+        ]);
+        //$this->success('', ['url' => $uploadDir . $fileName]);
+    }
+
 }
+
+
+

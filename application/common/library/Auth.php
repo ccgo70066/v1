@@ -2,24 +2,19 @@
 
 namespace app\common\library;
 
-use app\api\library\UserBaseStatisticsService;
-use app\common\library\ChinaName;
 use app\api\library\ImService;
 use app\api\library\RedisService;
-use app\api\library\UserService;
-use app\common\model\UserGuest;
-use app\common\model\Blacklist;
+use app\api\library\UserBaseStatisticsService;
+use app\common\exception\ApiException;
 use app\common\model\User;
 use app\common\model\UserBusiness;
+use app\common\model\UserGuest;
 use app\common\model\UserRule;
 use fast\Random;
-use think\Cache;
 use think\Config;
 use think\Db;
-use think\Env;
 use think\Exception;
 use think\Hook;
-use think\Log;
 use think\Request;
 use think\Validate;
 
@@ -46,23 +41,22 @@ class Auth
         'avatar',
         'image',
         'gender',
-        'age',
+        //'age',
         'birthday',
         'country',
         'bio',
-        'constellation',
+        //'constellation',
         'interest_ids',
-        'first_login',
-        'im_token',
-        'is_follow',
-        'area',
-        'voice',
-        'voice_size',
-        'hidden_level',
-        'hidden_noble',
-        'edit_gender_num',
+        //'first_login',
+        //'im_token',
+        //'is_follow',
+        //'area',
+        //'voice',
+        //'voice_size',
+        //'hidden_level',
+        //'hidden_noble',
+        //'edit_gender_num',
         'is_online',
-        'beautiful_id'
     ];
 
     public function __construct($options = [])
@@ -144,11 +138,6 @@ class Auth
                 $this->setError('Account is locked');
                 return false;
             }
-            $package_appid = Request::instance()->server('HTTP_APPID', Request::instance()->request('appid'));
-            if ($user['package_appid'] != $package_appid) {
-                db('user')->where('id', $user_id)->update(['package_appid' => $package_appid]);
-                $user['package_appid'] = $package_appid;
-            }
             $this->_user = $user;
             $this->_logined = true;
             $this->_token = $token;
@@ -192,10 +181,8 @@ class Auth
             $this->setError('Mobile already exist');
             return false;
         }
-
         $ip = request()->ip();
         $time = time();
-
         $data = [
             'username' => $username,
             'password' => $password,
@@ -206,7 +193,6 @@ class Auth
             'avatar'   => '',
         ];
         $params = array_merge($data, [
-            //'nickname'  => preg_match("/^1[3-9]{1}\d{9}$/", $username) ? substr_replace($username, '****', 3, 4) : $username,
             'nickname'  => (new ChinaName)->getNickname(),
             'salt'      => Random::alnum(),
             'jointime'  => $time,
@@ -216,30 +202,21 @@ class Auth
             'prevtime'  => $time,
             'status'    => 'normal'
         ]);
-        $params['package_appid'] = Request::instance()->server('HTTP_APPID', Request::instance()->request('appid'));
-        if ($password) {
-            $params['password'] = $this->getEncryptPassword($password, $params['salt']);
-        }
+        $password && $params['password'] = $this->getEncryptPassword($password, $params['salt']);
         $params = array_merge($params, $extend);
         $params['id'] = $this->get_user_skip_id();
-        $params['beautiful_id'] = $params['id'];
-        //账号注册时需要开启事务,避免出现垃圾数据
         Db::startTrans();
         try {
             $user = User::create($params);
-            //生成用户业务数据
             UserBusiness::create(['id' => $user->id, 'lang' => request()->langset(),]);
 
-            $imService = new ImService();
-            $res = $imService->createUser($user->id, $extend['nickname'], $extend['avatar']);
-            if (!$res) {
-                throw new ApiException(__('IM registration failed'));
-//                $token = $imService->refresh_token($user->id);
-//                User::where('id', $user->id)->setField('im_token', $token['info']['token']);
-            } else {
-                //更新im_token
-                User::where('id', $user->id)->setField('im_token', $res['info']['token']);
-            }
+            //$imService = new ImService();
+            //$res = $imService->createUser($user->id, $extend['nickname'], $extend['avatar']);
+            //if (!$res) {
+            //    throw new ApiException(__('IM registration failed'));
+            //} else {
+            //    User::where('id', $user->id)->setField('im_token', $res['info']['token']);
+            //}
 
             $this->_user = User::get($user->id);
             //设置Token
@@ -254,7 +231,6 @@ class Auth
                 'id'       => $user->id,
                 'nickname' => $extend['nickname'],
                 'avatar'   => $extend['avatar'],
-                'appid'    => $extend['appid'],
             ];
             redis()->hMSet(RedisService::USER_BASE_LISTS_KEY . $user->id, $hashData);
 
@@ -267,6 +243,7 @@ class Auth
             return false;
         } catch (\Exception $e) {
             Db::rollback();
+            throw $e;
             error_log_out($e);
             $this->setError('网络开小差');
             return false;
@@ -392,7 +369,6 @@ class Auth
                 $user->logintime = $time;
                 //重置登录失败次数
                 $user->loginfailure = 0;
-                $user->package_appid = Request::instance()->server('HTTP_APPID', Request::instance()->request('appid'));
                 $user->save();
                 $refresh && db('user_business')->where('id', $user->id)->setField(['lang' => request()->langset()]);
 
@@ -493,76 +469,34 @@ class Auth
 
         $allowFields = $this->getAllowFields();
         $userinfo = array_intersect_key($data, array_flip($allowFields));
-        $userinfo['constellation'] = __($userinfo['constellation']);
-        $userinfo['interest_text'] = implode(',', array_map(function ($value) {
-            return RedisService::loadLang($value);
-        }, db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name')));
+        //$userinfo['constellation'] = __($userinfo['constellation']);
+        //$userinfo['interest_text'] = implode(',', array_map(function ($value) {
+        //    return RedisService::loadLang($value);
+        //}, db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name')));
 
         $userinfo['token'] = $this->_token;
-        list(
-            $userinfo['level_info'],
-            $userinfo['user_adornment'],
-            $userinfo['user_car'],
-            $userinfo['user_bubble'],
-            $userinfo['user_tail']
-            ) = [
-            UserBusiness::getUserLevelInfoById($userinfo['id']),
-            UserBusiness::getWearAdornmentImage($userinfo['id']),
-            UserBusiness::getWearCarImage($userinfo['id']),
-            UserBusiness::getWearBubbleImage($userinfo['id']),
-            UserBusiness::getWearTailImage($userinfo['id']),
-        ];
-//            Cache::remember('user:icon_info:' . $userinfo['id'], function () use ($userinfo) {
-//                Cache::tag('small_data_user', 'user:icon_info:' . $userinfo['id']);
-//                return [
-//                    UserBusiness::getUserLevelInfoById($userinfo['id']),
-//                    UserBusiness::getUserNobleBadgeById($userinfo['id']),
-//                    UserBusiness::getWearAdornmentImage($userinfo['id']),
-//                    UserBusiness::getWearCarImage($userinfo['id']),
-//                    UserBusiness::getWearBubbleImage($userinfo['id']),
-//                    UserBusiness::getWearTailImage($userinfo['id']),
-//                ];
-//            }, 7200);
-        $userBusiness = UserBusiness::field('union_id,safe_code,role')->find($userinfo['id']);
-        $userinfo['name_color'] = user_vip_switch($userinfo['id'], 6);
+        //list(
+        //    $userinfo['level_info'],
+        //    $userinfo['user_adornment'],
+        //    $userinfo['user_car'],
+        //    $userinfo['user_bubble'],
+        //    $userinfo['user_tail']
+        //    ) = [
+        //    UserBusiness::getUserLevelInfoById($userinfo['id']),
+        //    UserBusiness::getWearAdornmentImage($userinfo['id']),
+        //    UserBusiness::getWearCarImage($userinfo['id']),
+        //    UserBusiness::getWearBubbleImage($userinfo['id']),
+        //    UserBusiness::getWearTailImage($userinfo['id']),
+        //];
 
-        $userinfo['role'] = $userBusiness['role'];
-        $userinfo['union_id'] = $userBusiness['union_id'];
         $currentRoomId = redis()->hGet(RedisService::USER_NOW_ROOM_KEY, $userinfo['id']);
-        $userinfo['is_on_room'] = $currentRoomId ?: 0;
-        if ($currentRoomId) {
-            $currentRoom = Db::name('room')->alias('r')->join('room_theme_cate c', 'r.theme_id = c.id')
-                ->where('r.id', $currentRoomId)->field('c.name as theme_name,r.name,r.cover')->find();
-            $userinfo['current_room'] = [
-                'id'    => $currentRoomId,
-                'name'  => $currentRoom['name'],
-                'cover' => $currentRoom['cover'],
-                'cate'  => $currentRoom['theme_name'],
-            ];
-        } else {
-            $userinfo['current_room'] = null;
-        }
-        $userinfo['proom'] = db('room')->where('owner_id', $userinfo['id'])->where('type', 2)->value('id');
-
-        $statistics = UserBaseStatisticsService::getUserStatistics($userinfo['id']);
-        $userinfo['fan_num'] = $statistics['fan_num'];
-        $userinfo['follow_num'] = $statistics['follow_num'];
-        $userinfo['guest_num'] = $statistics['guest_num'];
-        $userinfo['blacklist_num'] = $statistics['blacklist_num'];
-        $userinfo['red_packet_auth'] = UserBusiness::getRedPacketAuth($userinfo['id']);
+        //$statistics = UserBaseStatisticsService::getUserStatistics($userinfo['id']);
+        //$userinfo['fan_num'] = $statistics['fan_num'];
+        //$userinfo['follow_num'] = $statistics['follow_num'];
+        //$userinfo['guest_num'] = $statistics['guest_num'];
+        //$userinfo['blacklist_num'] = $statistics['blacklist_num'];
+        //$userinfo['red_packet_auth'] = UserBusiness::getRedPacketAuth($userinfo['id']);
         $userinfo['shutup'] = db('user_shutup')->where('user_id', $userinfo['id'])->find() ? 1 : 0;
-        $userinfo['voice_size_limit'] = 60;
-        if (empty($userId) || $userId == $this->_user->id) {
-            $userinfo['is_blacklist'] = null;
-            $userinfo['can_edit_gender'] = get_site_config('edit_gender_num') > $userinfo['edit_gender_num'];
-        } else {
-            $userinfo['can_edit_gender'] = null;
-            $userinfo['is_blacklist'] = (bool)(db('user_blacklist')
-                ->where(['user_id' => $this->_user->id, 'to_user_id' => $userId])->value('to_user_id'));
-        }
-        $userinfo['is_official'] = (int)Db::name('sys_user_role')->where('user_id', $userinfo['id'])->where('role', 1)->find();
-        $userinfo['is_union_master'] = (int)Db::name('union')->where('owner_id', $userinfo['id'])->where('status', 1)->find();
-        $userinfo['safe_code_flag'] = $userBusiness['safe_code'] ? 1 : 0;
 
         return $userinfo;
     }
@@ -782,12 +716,8 @@ class Auth
     {
         $extend += [];
         !isset($extend['gender']) && $extend['gender'] = 1;
-        !isset($extend['province']) && $extend['province'] = '未知';
-        !isset($extend['city']) && $extend['city'] = '未知';
         !isset($extend['birthday']) && $extend['birthday'] = '2002-01-01';
-        !isset($extend['age']) && $extend['age'] = 22;
-        !isset($extend['constellation']) && $extend['constellation'] = '摩羯座';
-        !isset($extend['bio']) && $extend['bio'] = 'Hello VooPea！';
+        !isset($extend['bio']) && $extend['bio'] = 'Hello';
         if (!$extend['avatar']) {
             $gender_avatars = config('app.default_avatar_gender');
             $avatars = array_values(array_filter(array_map(function ($value) use ($extend) {
@@ -797,7 +727,6 @@ class Auth
             }, $gender_avatars)));
             $extend['avatar'] = $avatars[array_rand($avatars)];
         }
-        $extend['ls_flag'] = substr($extend['ls_flag'], 0, 6);
         $info = db('user')->where('nickname', $username)->find();
         if ($info) {
             $username = $username . Random::alnum(1);
