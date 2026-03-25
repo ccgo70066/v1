@@ -62,6 +62,7 @@ class ComposerStaticInitf3106b6ef3260b6914241eab0bed11c1
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'Symfony\\Component\\Cache\\' => 24,
             'Symfony\\Bridge\\PsrHttpMessage\\' => 30,
+            'Spatie\\Emoji\\' => 13,
         ),
         'P' => 
         array (
@@ -194,6 +195,10 @@ class ComposerStaticInitf3106b6ef3260b6914241eab0bed11c1
         'Symfony\\Bridge\\PsrHttpMessage\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/psr-http-message-bridge',
+        ),
+        'Spatie\\Emoji\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/spatie/emoji/src',
         ),
         'Psr\\SimpleCache\\' => 
         array (

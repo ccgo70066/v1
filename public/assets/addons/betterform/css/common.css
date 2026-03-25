@@ -1,0 +1,153 @@
+@-webkit-keyframes fadeIn {
+    0% {
+        opacity: 0
+    }
+
+    100% {
+        opacity: 1
+    }
+}
+
+@keyframes layer-slide-down {
+    from {
+        transform: translate3d(0, -100%, 0)
+    }
+
+    to {
+        transform: translate3d(0, 0, 0)
+    }
+}
+
+@keyframes layer-slide-down-out {
+    from {
+        transform: translate3d(0, 0, 0)
+    }
+
+    to {
+        transform: translate3d(0, -100%, 0)
+    }
+}
+
+.layer-anim-slide-down {
+    animation-name: layer-slide-down
+}
+
+.layer-anim-slide-down-out {
+    animation-name: layer-slide-down-out
+}
+
+@keyframes layer-slide-left {
+    from {
+        transform: translate3d(100%, 0, 0)
+    }
+
+    to {
+        transform: translate3d(0, 0, 0)
+    }
+}
+
+@keyframes layer-slide-left-out {
+    from {
+        transform: translate3d(0, 0, 0)
+    }
+
+    to {
+        transform: translate3d(100%, 0, 0)
+    }
+}
+
+.layer-anim-slide-left {
+    animation-name: layer-slide-left
+}
+
+.layer-anim-slide-left-out {
+    animation-name: layer-slide-left-out
+}
+
+@keyframes layer-slide-up {
+    from {
+        transform: translate3d(0, 100%, 0)
+    }
+
+    to {
+        transform: translate3d(0, 0, 0)
+    }
+}
+
+@keyframes layer-slide-up-out {
+    from {
+        transform: translate3d(0, 0, 0)
+    }
+
+    to {
+        transform: translate3d(0, 100%, 0)
+    }
+}
+
+.layer-anim-slide-up {
+    animation-name: layer-slide-up
+}
+
+.layer-anim-slide-up-out {
+    animation-name: layer-slide-up-out
+}
+
+@keyframes layer-slide-right {
+    from {
+        transform: translate3d(-100%, 0, 0)
+    }
+
+    to {
+        transform: translate3d(0, 0, 0)
+    }
+}
+
+@keyframes layer-slide-right-out {
+    from {
+        transform: translate3d(0, 0, 0)
+    }
+
+    to {
+        transform: translate3d(-100%, 0, 0)
+    }
+}
+
+.layer-anim-slide-right {
+    animation-name: layer-slide-right
+}
+
+.layer-anim-slide-right-out {
+    animation-name: layer-slide-right-out
+}
+
+.layer-anim-slide-down-custom.layer-anim-close {
+    animation-name: layer-slide-down-out;
+}
+
+.layer-anim-slide-up-custom.layer-anim-close {
+    animation-name: layer-slide-up-out;
+}
+
+.layer-anim-slide-left-custom.layer-anim-close {
+    animation-name: layer-slide-left-out;
+}
+
+.layer-anim-slide-right-custom.layer-anim-close {
+    animation-name: layer-slide-right-out;
+}
+
+.form-group.required-before > .control-label::before,table tr.required-before > td:first-child::before  {
+    color: red;
+    content: '*';
+    margin-right: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+.form-group.required-after > .control-label::after,table tr.required-after > td:first-child::after  {
+    color: red;
+    content: '*';
+    margin-right: 4px;
+    margin-left: 4px;
+    vertical-align: middle;
+}
