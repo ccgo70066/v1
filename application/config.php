@@ -327,6 +327,6 @@ return [
         //允许跨域的域名,多个以,分隔
         'cors_request_domain'        => 'localhost,127.0.0.1',
         //版本号
-        'version'                    => '1.6.1.20250430',
+        'version'                    => '1.6.2.20260323',
     ],
 ];

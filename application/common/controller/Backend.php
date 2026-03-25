@@ -58,7 +58,6 @@ class Backend extends Controller
      * 是否是关联查询
      */
     protected $relationSearch = false;
-    protected $relationTable = [];
 
     /**
      * 是否开启数据限制
@@ -369,8 +368,8 @@ class Backend extends Controller
                 case 'NOT BETWEEN':
                     $arr = array_slice(explode(',', $v), 0, 2);
                     if (stripos($v, ',') === false || !array_filter($arr, function ($v) {
-                            return $v != '' && $v !== false && $v !== null;
-                        })) {
+                        return $v != '' && $v !== false && $v !== null;
+                    })) {
                         continue 2;
                     }
                     //当出现一边为空时改变操作符
@@ -553,7 +552,7 @@ class Backend extends Controller
                 $primaryvalue = array_unique(is_array($primaryvalue) ? $primaryvalue : explode(',', $primaryvalue));
                 //修复自定义data-primary-key为字符串内容时，给排序字段添加上引号
                 $primaryvalue = array_map(function ($value) {
-                    return '\'' . $value . '\'';
+                    return \think\Db::quote($value);
                 }, $primaryvalue);
 
                 $primaryvalue = implode(',', $primaryvalue);
