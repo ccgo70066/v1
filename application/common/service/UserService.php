@@ -258,7 +258,7 @@ class UserService
      * @param string $imei
      * @param string $mobile
      * @return bool
-     * @throws Exception
+     * @throws null
      */
     public static function inBlacklist(int $user_id, string $imei, string $mobile): bool
     {

@@ -41,12 +41,13 @@ class Auth
         'avatar',
         'image',
         'gender',
-        //'age',
         'birthday',
         'country',
         'bio',
-        //'constellation',
         'interest_ids',
+        'is_online',
+        //'age',
+        //'constellation',
         //'first_login',
         //'im_token',
         //'is_follow',
@@ -56,7 +57,6 @@ class Auth
         //'hidden_level',
         //'hidden_noble',
         //'edit_gender_num',
-        'is_online',
     ];
 
     public function __construct($options = [])
