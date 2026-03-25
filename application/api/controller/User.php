@@ -33,7 +33,6 @@ class User extends Base
         'mobile_login',
         'third_login',
         'check',
-        'ddd',
         'id_login',
         'password_login',
         'pswd_login',
