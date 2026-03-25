@@ -19,6 +19,7 @@ use think\Log;
 use think\Request;
 use think\Response;
 use think\Route;
+use util\OpenSSL3DES;
 
 /**
  * API控制器基类
