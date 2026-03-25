@@ -190,3 +190,8 @@ function error_log_out(Throwable $e, $data = [])
         Log::error('mongodb写错误日志报错' . $e->getMessage());
     }
 }
+
+function show_error_notify($e)
+{
+    return $e->getMessage();
+}

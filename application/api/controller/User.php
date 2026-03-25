@@ -85,12 +85,10 @@ class User extends Base
      * @ApiParams   (name="gender", type="int", required=false, rule="in:0,1", description="性别:0=女,1=男")
      * @ApiParams   (name="birthday", type="date", required=false, rule="", description="生日")
      *
-     * @ApiParams   (name="appid", type="string", required=false, rule="", description="渠道号")
      * @ApiParams   (name="version", type="string", required=false, rule="", description="版本号")
      * @ApiParams   (name="system", type="string", required=false, rule="in:1,2,3", description="平台:1=IOS,2=ANDROID,3=H5")
      * @ApiParams   (name="imei", type="string", required=false, rule="", description="设备编号")
      * @ApiParams   (name="model", type="string", required=false, rule="", description="设备型号")
-     * @ApiParams   (name="ls_flag", type="string", required=false, rule="", description="拉手标识")
      * @throws
      * @ApiWeigh    (9899)
      */
@@ -123,16 +121,14 @@ class User extends Base
         } else {
             $extend = [
                 'group_id' => 1,
-                'nickname' => input('nickname') ?: (new ChinaName())->getNickname(),
+                'nickname' => input('nickname', (new ChinaName())->getNickname()),
                 'avatar'   => input('avatar'),
-                'gender'   => input('gender') ?: 1,
-                'birthday' => input('birthday') ?: '2002-01-01',
-                'appid'    => $this->appid,
+                'gender'   => input('gender', 1),
+                'birthday' => input('birthday', '2002-01-01'),
                 'system'   => $this->system,
                 'version'  => $this->version,
                 'imei'     => input('imei'),
                 'model'    => input('model'),
-                'ls_flag'  => trim(input('ls_flag')) ?: '',
             ];
             $result = $this->auth->reg($mobile . Random::alnum(), '', '', $mobile, $extend);
         }
@@ -151,74 +147,6 @@ class User extends Base
         }
     }
 
-    /**
-     * @ApiTitle    (第三方登录)
-     * @ApiMethod   (post)
-     * @ApiParams   (name="platform", type="string", required=true, rule="", description="第三方平台类型: wechat,facebook,google,apple,line")
-     * @ApiParams   (name="code", type="string", required=true, rule="", description="平台code")
-     *
-     * @ApiParams   (name="nickname", type="string", required=false, rule="", description="昵称")
-     * @ApiParams   (name="avatar", type="string", required=false, rule="", description="头像")
-     * @ApiParams   (name="gender", type="int", required=false, rule="in:0,1", description="性别:0=女,1=男")
-     * @ApiParams   (name="birthday", type="date", required=false, rule="", description="生日")
-     *
-     * @ApiParams   (name="appid", type="string", required=false, rule="", description="渠道号")
-     * @ApiParams   (name="version", type="string", required=false, rule="", description="版本号")
-     * @ApiParams   (name="system", type="string", required=false, rule="in:1,2,3", description="平台:1=IOS,2=ANDROID,3=H5")
-     * @ApiParams   (name="imei", type="string", required=false, rule="", description="设备编号")
-     * @ApiParams   (name="model", type="string", required=false, rule="", description="设备型号")
-     * @ApiParams   (name="ls_flag", type="string", required=false, rule="", description="拉手标识")
-     * @throws
-     * @ApiWeigh    (9899)
-     */
-    public function third_login()
-    {
-        $platform = $this->request->request('platform');
-        $code = $this->request->request('code');
-
-        $this->system == 1 && $platform == 'google' && $platform = 'apple';
-
-        $this->check_blacklist('', input('imei'));
-        $third = Db::name('user_third')
-            //->where('platform', $platform)
-            ->where('code', $code)->find();
-        if ($third) {
-            $user = UserService::getById($third['user_id']);
-            ($user->status == 'death') && $this->error(__('User does not exist'));
-            $this->check_blacklist($user->id);
-            ($user->status == 'hidden') && $this->error(__('Account has been banned'));
-            $result = $this->auth->direct($user->id);
-        } else {
-            $extend = [
-                'group_id' => 1,
-                'nickname' => input('nickname') ?: (new ChinaName())->getNickname(),
-                'avatar'   => str_replace(['amp;'], '', htmlspecialchars_decode(input('avatar'))),
-                'gender'   => input('gender') ?: 1,
-                'birthday' => input('birthday') ?: '2002-01-01',
-                'appid'    => $this->appid,
-                'system'   => $this->system,
-                'version'  => $this->version,
-                'imei'     => input('imei'),
-                'model'    => input('model'),
-                'ls_flag'  => trim(input('ls_flag')) ?: '',
-            ];
-            $result = $this->auth->reg($platform . '_user_' . Random::alnum(), '', '', '', $extend);
-            Db::name('user_third')->insert(['user_id' => $this->auth->id, 'platform' => $platform, 'code' => $code, 'nickname' => $extend['nickname'],]);
-        }
-        if ($result) {
-            $data = [
-                'system'  => $this->system == 1 ? 'IOS' : 'ANDROID',
-                'version' => $this->version,
-                'imei'    => input('imei') ?: '',
-                'model'   => input('model'),
-            ];
-            $third && $this->userService->updateUser($user, $data);
-            $this->success('', ['userinfo' => $this->auth->getUserinfo()]);
-        } else {
-            $this->error($this->auth->getError());
-        }
-    }
-
 
     /**
      * 密码登录
@@ -231,7 +159,6 @@ class User extends Base
      * @ApiParams   (name="gender", type="int", required=false, rule="in:0,1", description="性别:0=女,1=男")
      * @ApiParams   (name="birthday", type="date", required=false, rule="", description="生日")
      *
-     * @ApiParams   (name="appid", type="string", required=false, rule="", description="渠道号")
      * @ApiParams   (name="version", type="string", required=false, rule="", description="版本号")
      * @ApiParams   (name="system", type="string", required=false, rule="in:1,2,3", description="平台:1=IOS,2=ANDROID,3=H5")
      * @ApiParams   (name="imei", type="string", required=false, rule="", description="设备编号")
@@ -293,7 +220,6 @@ class User extends Base
      * @ApiParams   (name="gender", type="int", required=false, rule="in:0,1", description="性别:0=女,1=男")
      * @ApiParams   (name="birthday", type="date", required=false, rule="", description="生日")
      *
-     * @ApiParams   (name="appid", type="string", required=false, rule="", description="渠道号")
      * @ApiParams   (name="version", type="string", required=false, rule="", description="版本号")
      * @ApiParams   (name="system", type="string", required=false, rule="in:1,2,3", description="平台:1=IOS,2=ANDROID,3=H5")
      * @ApiParams   (name="imei", type="string", required=false, rule="", description="设备编号")
@@ -341,46 +267,6 @@ class User extends Base
             }
         } else {
             $this->error(__('User does not exist'));
-        }
-    }
-
-    /**
-     * 简易密码登录
-     * @ApiMethod   (post)
-     * @ApiParams   (name="mobile", type="string", required=true, rule="", description="手机号")
-     * @ApiParams   (name="password", type="string", required=true, rule="length:6,30", description="密码")
-     * @ApiWeigh    (9896)
-     */
-    public function pswd_login()
-    {
-        $mobile = $this->request->request('mobile');
-        $password = $this->request->request('password');
-
-        //(!$mobile || !\think\Validate::regex($mobile, $this->rule)) && $this->error(__('请输入正确的手机号'));
-        $this->check_blacklist('', '', $mobile);
-        $user = UserService::getByMobile($mobile);
-        if ($user) {
-            if ($user->status != 'normal') {
-                $this->error(__('Account locked'));
-            }
-            if (redis()->get('login_fail' . $mobile) >= 5) {
-                $this->error(__('The account has been locked for 30 minutes, please try again later'));
-            }
-            !$user->password && $this->error('No password set');
-            if ($user->password != (new Auth())->getEncryptPassword($password, $user->salt)) {
-                redis()->incr('login_fail' . $mobile);
-                redis()->expire('login_fail' . $mobile, 30 * 60);
-                $this->error(__('Password or verification code entered incorrectly %s times', redis()->get('login_fail' . $mobile)));
-            }
-            redis()->del('login_fail' . $mobile);
-            $result = $this->auth->direct($user->id);
-            $this->check_blacklist($user->id, input('imei') ?: '');
-            if ($result) {
-                $data = ['userinfo' => $this->auth->getUserinfo()];
-                $this->success(__('success'), $data);
-            }
-        } else {
-            $this->error(__('This number is not registered'));
         }
     }
 
@@ -463,25 +349,6 @@ class User extends Base
 
 
     /**
-     * @ApiTitle    (使用access_token 登录)
-     * @ApiMethod   (post)
-     * @ApiParams   (name="access_token", type="string", required=true, rule="", description="第三方access_token")
-     * @throws Exception
-     * @ApiWeigh    (9895)
-     */
-    public function login_by_token()
-    {
-        $accessToken = input('access_token');
-        $userMod = new UserModel();
-        if ($user = $userMod->where('access_token', $accessToken)->find()) {
-            $this->auth->direct($user['id']);
-            $this->success(__('success'), ['userinfo' => $this->auth->getUserinfo()]);
-        } else {
-            $this->error(__('Token is invalid'));
-        }
-    }
-
-    /**
      * 退出登录
      * @ApiWeigh    (9890)
      */
@@ -511,18 +378,9 @@ class User extends Base
 
         $this->check_blacklist($user_id, $user['imei'], $user['mobile']);
 
-        $union_user_id = db('union_user')->where(['user_id' => $user_id, 'status' => 2])->value('id');
-        if ($union_user_id) {
-            $this->error(__('You are in the union'));
-        }
+        db('union_user')->where(['user_id' => $user_id, 'status' => 2])->value('id') && $this->error(__('You are in the union'));
 
-        db('user')
-            ->where(['id' => ['=', $user_id]])
-            ->update([
-                'nickname' => '用户已注销',
-                'status'   => 'death'
-            ]);
-
+        db('user')->where(['id' => ['=', $user_id]])->update(['nickname' => '用户已注销', 'status' => 'death']);
 
         $this->auth->logout();
         $this->success(__('Account cancelled'));
@@ -738,55 +596,6 @@ class User extends Base
         $this->success(__('Operation completed'));
     }
 
-    /**
-     * @ApiTitle    (绑定手机号码)
-     * @ApiMethod   (post)
-     * @ApiParams   (name="mobile", type="string", required=true, rule="regex:^1\d{10}$", description="新手机号")
-     * @ApiParams   (name="captcha", type="string", required=true, rule="", description="验证码")
-     * @throws Exception
-     * @ApiWeigh    (9803)
-     */
-    public function mobile_bind()
-    {
-        try {
-            $user = $this->auth->getUser();
-            $mobile = $this->request->request('mobile');
-            $captcha = $this->request->request('captcha');
-            if (db('user')->where('mobile', $mobile)->find()) {
-                throw new ApiException(__('This phone number is already bound'));
-            }
-            if (!(Sms::check($mobile, $captcha, 'bind'))) {
-                throw new ApiException(__('The verification code is incorrect'));
-            }
-            db('user')->where('id', $user['id'])->setField(['mobile' => $mobile]);
-            Sms::flush($mobile, 'mobile_bind');
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            error_log_out($e);
-            $this->error(show_error_notify($e));
-        }
-        $this->success();
-    }
-
-
-    /**
-     * @ApiTitle    (检验用户是否存在)
-     * @ApiMethod   (get)
-     * @ApiParams   (name="user_id", type="string", required=true, rule="", description="用户id")
-     * @throws Exception
-     */
-    public function check()
-    {
-        $user_id = input('user_id');
-        $r = db('user')
-            ->where(strlen($user_id) >= 9 ? ['id' => $user_id] : ['beautiful_id' => $user_id])
-            ->field('id,nickname')->find();
-        if ($r) {
-            $this->success('', $r);
-        }
-        $this->success();
-    }
-
 
     /**
      * 是否在黑名单中
@@ -839,24 +648,12 @@ class User extends Base
     {
         $userId = input('user_id');
         $user = db('user')->field('imei,mobile')->find($userId);
-        if ($this->in_blacklist($userId, $user['imei'], $user['mobile'])) {
+        if (UserService::inBlacklist($userId, $user['imei'], $user['mobile'])) {
             $this->error(__('Account has been banned'));
         }
         $this->success();
     }
 
-    /**
-     * 用户注册渠道号健全方法
-     * @param $appid
-     * @return string
-     */
-    private function get_right_appid($appid): string
-    {
-//        strlen($appid) > 6 && $appid = substr($appid, 0, 6);
-        $flag = db('channel')->where(['appid' => $appid, 'status' => 1])->count();
-        !$flag && $appid = config('app.default_appid');
-        return $appid;
-    }
 
     /**
      * @ApiTitle (获取个人/简单信息)
@@ -886,12 +683,7 @@ class User extends Base
      */
     public function get_interest_list()
     {
-        $list = db('interest')->field('id,type,name')
-//            ->cache('config:interest', 0, 'small_data_config')
-            ->order('id asc')->select();
-        foreach ($list as &$item) {
-            $item['name'] = RedisService::loadLang($item['name']);
-        }
+        $list = db('interest')->field('id,type,name')->cache('config:interest', 0, 'config')->order('id asc')->select();
         $this->success('', $list);
     }
 
@@ -903,16 +695,6 @@ class User extends Base
         $this->success('', config('app.default_avatar_gender'));
     }
 
-    /**
-     * 获取扩展信息
-     */
-    public function get_extend_info()
-    {
-        $user_id = $this->auth->id;
-
-        $user = db('user')->where('id', $user_id)->field('joinip')->find();
-        $this->success('', $user);
-    }
 
     /**
      * 获取随机昵称
@@ -921,8 +703,7 @@ class User extends Base
      */
     public function get_nickname()
     {
-        $nickname = (new ChinaName())->getNickname();
-        $this->success('', ['nickname' => $nickname]);
+        $this->success('', ['nickname' => (new ChinaName())->getNickname()]);
     }
 
     /**
@@ -953,10 +734,11 @@ class User extends Base
     /**
      * @ApiTitle    (更新需要审核的形象照)
      * @ApiMethod   (post)
-     * @ApiParams   (name="url", type="string", required=true, rule="", description="图片URL")
+     * @ApiParams   (name="url", type="string", required=true, rule="", description="图片 URL")
      */
     public function updateImage()
     {
+        // todo optimize
         $user_id = $this->auth->id;
         $imageStr = input('url');
 

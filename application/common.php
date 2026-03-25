@@ -52,8 +52,9 @@ if (!function_exists('datetime')) {
      * @param string $format 日期时间格式
      * @return string
      */
-    function datetime($time, $format = 'Y-m-d H:i:s')
+    function datetime($time = 0, $format = 'Y-m-d H:i:s')
     {
+        $time == 0 && $time = time();
         $time = is_numeric($time) ? $time : strtotime($time);
         return date($format, $time);
     }
