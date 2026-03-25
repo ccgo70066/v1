@@ -93,25 +93,7 @@ class ChinaName
 
     public function getOneEmoji()
     {
-        $emojis = [
-            'grinningFace','beamingFaceWithSmilingEyes','faceWithTearsOfJoy','rollingOnTheFloorLaughing','grinningFaceWithBigEyes',
-            'grinningFaceWithSmilingEyes','grinningFaceWithSweat','grinningSquintingFace','winkingFace','smilingFaceWithSmilingEyes',
-            'faceSavoringFood','smilingFaceWithSunglasses','smilingFaceWithHeartEyes','faceBlowingAKiss','kissingFace',
-            'kissingFaceWithSmilingEyes','kissingFaceWithClosedEyes','slightlySmilingFace','huggingFace','starStruck',
-            'thinkingFace','faceWithRaisedEyebrow','neutralFace','expressionlessFace','faceWithoutMouth',
-            'faceWithRollingEyes','smirkingFace','perseveringFace','sadButRelievedFace','faceWithOpenMouth',
-            'zipperMouthFace','hushedFace','sleepyFace','tiredFace','sleepingFace',
-            'relievedFace','faceWithTongue','winkingFaceWithTongue','squintingFaceWithTongue','droolingFace',
-            'unamusedFace','downcastFaceWithSweat','pensiveFace','confusedFace','upsideDownFace',
-            'moneyMouthFace','astonishedFace',//47
-
-            'frowningFace','slightlyFrowningFace','confoundedFace','disappointedFace','worriedFace',
-            'faceWithSteamFromNose','cryingFace','loudlyCryingFace','frowningFaceWithOpenMouth','anguishedFace',
-            'fearfulFace','wearyFace','explodingHead','grimacingFace','anxiousFaceWithSweat',
-            'faceScreamingInFear','hotFace','coldFace','flushedFace','zanyFace',
-            'dizzyFace','poutingFace','angryFace','faceWithSymbolsOnMouth','faceWithMedicalMask',
-            'faceWithThermometer','nauseatedFace','faceVomiting','sneezingFace'
-        ];
+        $emojis = ['grinningFace','beamingFaceWithSmilingEyes','faceWithTearsOfJoy','rollingOnTheFloorLaughing','grinningFaceWithBigEyes', 'grinningFaceWithSmilingEyes','grinningFaceWithSweat','grinningSquintingFace','winkingFace','smilingFaceWithSmilingEyes', 'faceSavoringFood','smilingFaceWithSunglasses','smilingFaceWithHeartEyes','faceBlowingAKiss','kissingFace', 'kissingFaceWithSmilingEyes','kissingFaceWithClosedEyes','slightlySmilingFace','starStruck', 'thinkingFace','faceWithRaisedEyebrow','neutralFace','expressionlessFace','faceWithoutMouth', 'faceWithRollingEyes','smirkingFace','perseveringFace','sadButRelievedFace','faceWithOpenMouth', 'zipperMouthFace','hushedFace','sleepyFace','tiredFace','sleepingFace', 'relievedFace','faceWithTongue','winkingFaceWithTongue','squintingFaceWithTongue','droolingFace', 'unamusedFace','downcastFaceWithSweat','pensiveFace','confusedFace','upsideDownFace', 'moneyMouthFace','astonishedFace', 'frowningFace','slightlyFrowningFace','confoundedFace','disappointedFace','worriedFace', 'faceWithSteamFromNose','cryingFace','loudlyCryingFace','frowningFaceWithOpenMouth','anguishedFace', 'fearfulFace','wearyFace','explodingHead','grimacingFace','anxiousFaceWithSweat', 'faceScreamingInFear','hotFace','coldFace','flushedFace','zanyFace', 'angryFace','faceWithSymbolsOnMouth','faceWithMedicalMask', 'faceWithThermometer','nauseatedFace','faceVomiting','sneezingFace'];
         $emojiFace = $emojis[array_rand($emojis)];
         return Emoji::$emojiFace();
     }
