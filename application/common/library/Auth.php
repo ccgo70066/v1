@@ -699,7 +699,7 @@ class Auth
         $max_len = 100;
         if ($ids_len <= $max_len) {
             $last_user_id = $redis->get($max_key) ?: db('user')->max('id');
-            !$last_user_id && $last_user_id = 100001;
+            (!$last_user_id || $last_user_id < 100001) && $last_user_id = 100001;
             $ids = [];
             for ($i = 0; $i < ($max_len - $ids_len) + 50; $i++) {
                 $last_user_id += random_int(2, 10);
