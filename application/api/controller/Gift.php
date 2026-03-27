@@ -142,11 +142,9 @@ class Gift extends Base
                 if ($bag_gift_count < count($to_user_ids_arr) * $count) {
                     throw new ApiException(__('Insufficient gifts in backpack'));
                 }
-                //$this->service->giveGiftByBag($user_id, $gift_id, $count, $to_user_ids_arr, $room_id);
             } else { //面板送礼
                 $note = '打赏礼物:' . $gift['name'] . '×' . (count($to_user_ids_arr) * $count);
                 user_business_change($user_id, 'amount', $total_amount, 'decrease', $note, 4);
-                //$this->service->giveGiftByRoom($user_id, $to_user_ids_arr, $gift['id'], $count, $room_id ?: 0, input('source'));
             }
             Db::commit();
         } catch (ApiException $e) {
