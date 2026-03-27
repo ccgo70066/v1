@@ -60,6 +60,12 @@ class Backend extends Controller
     protected $relationSearch = false;
 
     /**
+     * 关联查询表
+     * @var string
+     */
+    protected $relationTable = '';
+
+    /**
      * 是否开启数据限制
      * 支持auth/personal
      * 表示按权限判断/仅限个人
