@@ -178,9 +178,7 @@ class UserService
         $userinfo['fans_count'] = db('user_follow')->where(['to_user_id' => $userId])->count();
 
         //个性标签
-        $userinfo['interest_text'] = implode(',', array_map(function ($value) {
-            return RedisService::loadLang($value);
-        }, db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name')));
+        $userinfo['interest_text'] = db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name');
         unset($userinfo['interest_ids']);
 
         $userBusiness = UserBusiness::field('union_id,safe_code,level')->find($userinfo['id']);
@@ -219,7 +217,7 @@ class UserService
     /**
      * 获取会员礼物墙信息
      */
-    public static function getWallInfo($userId)
+    public static function get_wall_info($userId)
     {
         $giftIds = db('gift_wall')->where('user_id', $userId)->column('gift_id');
         $where = [];
@@ -243,9 +241,6 @@ class UserService
         $data['totalNum'] = $query->count();
         if ($giftIds) {
             $data['list'] = $query->where($where)->field('id,name,image,price_type,price')->order('price desc')->limit(5)->select();
-            foreach ($data['list'] as &$item) {
-                $item['name'] = RedisService::loadLang($item['name']);
-            }
             $data['hasNum'] = count($giftIds);
         }
         return $data;

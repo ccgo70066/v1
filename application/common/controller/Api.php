@@ -428,11 +428,10 @@ class Api
      */
     protected function operate_check(string $operate, int $second = 5)
     {
-        return;
+        if (Env::get('app.debug')) return;
         $redis = redis();
-        if (!$redis->set('operate_check:' . $operate, 1, ['nx', 'ex' => $second])) {
+        if (!$redis->set('operate_check:' . $operate, 1, ['nx', 'ex' => $second]))
             throw new ApiException(__('Operation too fast'));
-        }
     }
 
     /**

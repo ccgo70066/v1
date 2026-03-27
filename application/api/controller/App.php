@@ -260,9 +260,6 @@ class App extends Base
                     }
                 }
                 $lastData['download'] = cdnurl($lastData['download']);
-                $lastData['comment'] = implode("\r\n", array_map(function ($value) {
-                    return RedisService::loadLang($value);
-                }, explode("\r\n", $lastData['comment'])));
                 $this->success('', $lastData);
             }
         }

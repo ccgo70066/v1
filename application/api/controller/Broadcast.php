@@ -34,10 +34,6 @@ class Broadcast extends Base
             ->field("id,title,image,action_url,action,type")
             ->order('weigh desc')
             ->select();
-        foreach ($sel as &$item) {
-            $item['title'] = RedisService::loadLang($item['title']);
-        }
-
         $this->success('', $sel);
     }
 
