@@ -8,8 +8,6 @@ use ReflectionClass;
 use ReflectionException;
 use think\Env;
 use think\exception\HttpResponseException;
-use think\Loader;
-use think\Request;
 use think\Response;
 use util\OpenSSL3DES;
 
