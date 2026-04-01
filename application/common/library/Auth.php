@@ -2,14 +2,12 @@
 
 namespace app\common\library;
 
-use app\api\library\ImService;
-use app\api\library\RedisService;
-use app\api\library\UserBaseStatisticsService;
 use app\common\exception\ApiException;
 use app\common\model\User;
 use app\common\model\UserBusiness;
 use app\common\model\UserGuest;
 use app\common\model\UserRule;
+use app\common\service\RedisService;
 use fast\Random;
 use think\Config;
 use think\Db;

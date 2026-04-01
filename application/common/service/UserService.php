@@ -3,14 +3,12 @@
 namespace app\common\service;
 
 use app\api\library\ImService;
-use app\api\library\RedisService;
 use app\common\model\AnchorRecommend as AnchorRecommendModel;
 use app\common\model\Gift as GiftModel;
 use app\common\model\User;
 use app\common\model\UserBlacklist;
 use app\common\model\UserBusiness;
 use think\Db;
-use think\Exception;
 
 /**
  * 用户业务类

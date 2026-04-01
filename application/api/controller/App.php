@@ -2,13 +2,8 @@
 
 namespace app\api\controller;
 
-use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\api\library\RedisService;
 use app\common\model\ChannelBlacklist;
 use app\common\model\Shield;
-use GatewayWorker\Gateway;
-use think\Cache;
-use think\Db;
 use think\Env;
 use think\Log;
 use util\Ffmpeeg;

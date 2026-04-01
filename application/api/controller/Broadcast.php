@@ -2,8 +2,6 @@
 
 namespace app\api\controller;
 
-use app\api\library\RedisService;
-
 /**
  * 广播交友
  */
