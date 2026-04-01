@@ -22,16 +22,16 @@ class Base extends Api
     protected $service;
     protected $noNeedSign = '';
 
-    protected $appid;
-    protected $system;
-    protected $version;
+    protected $appid = 'a1';
+    protected $system = 1;
+    protected $version = 1;
 
 
     protected function _initialize()
     {
         parent::_initialize();
 
-        $this->sign_check();
+        $this->sign_decode();
         $this->request->post($this->decodeRequest(input('raw')));
 
         try {
@@ -143,9 +143,10 @@ class Base extends Api
             throw new ApiException(__('Operation too fast'));
     }
 
-    protected function sign_check()
+    protected function sign_decode()
     {
         //if (Env::get('app.debug')) return;
+        if (!Env::get('api.api_request_sign_switch')) return;
         if ($this->auth->match($this->noNeedSign)) return;
 
         $des = new OpenSSL3DES('7iLs8KF08pVL222PHegRxLny', 'xK4M5ph1');
@@ -155,9 +156,9 @@ class Base extends Api
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
         if (isset($rs['version'])) $this->version = $rs['version'];
-        if (isset($rs['time'])) {
+        if (isset($rs['time']) && !Env::get('api.api_request_sign_switch')) {
             $time = $rs['time'];
-            $i = 30;
+            $i = 15;
             if ((time() - $i) > $time || (time() + $i) < $time) throw new ApiException(__('Request timeout'));
         }
     }
