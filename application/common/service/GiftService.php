@@ -10,13 +10,6 @@ use app\common\model\GiftSendStatistic;
 use think\Db;
 use think\Exception;
 
-use function app\api\library\board_notice;
-use function app\api\library\union_profit_statistics;
-use function db;
-
-use const false;
-use const true;
-
 /**
  * 礼物服务类
  */
@@ -59,26 +52,6 @@ class GiftService extends BaseService
     }
 
     /**
-     * 背包送礼业务
-     * @param $user_id
-     * @param $gift_id
-     * @param $count
-     * @param $to_user_ids_arr
-     * @param $room_id
-     * @throws
-     */
-    public function giveGiftByBag($user_id, $gift_id, $count, $to_user_ids_arr, $room_id = 0): void
-    {
-        $result = db('user_bag')->where([
-            'user_id' => $user_id,
-            'gift_id' => $gift_id,
-            'count'   => ['>=', count($to_user_ids_arr) * $count]
-        ])->setDec('count', count($to_user_ids_arr) * $count);
-        if (!$result) throw new ApiException(__('Insufficient gifts in backpack'));
-        $room_id && $this->giveGiftByRoom($user_id, $to_user_ids_arr, $gift_id, $count, $room_id, 1);
-    }
-
-    /**
      * 房间送礼业务
      * @param $giver_id
      * @param $to_user_ids_arr
@@ -97,7 +70,6 @@ class GiftService extends BaseService
             throw new ApiException(__('Failed to retrieve room'));
         }
         $gift_log = [];
-        $ls_flag = db('user')->where('id', $giver_id)->value('ls_flag');
 
         foreach ($to_user_ids_arr as $receiver_id) {
             //根据收礼人是否是本房间所属家族成员获取个人提成比例和家族提成比例
@@ -112,10 +84,8 @@ class GiftService extends BaseService
                 'room_id'           => $room_id,
                 'union_id'          => $room['union_id'],
                 'union_reward_rate' => $union_rate,
-                'ls_flag'           => $ls_flag ?? '',
                 'create_time'       => datetime()
             ];
-            //增加收礼人个人收益
             user_business_change($receiver_id, 'reward_amount', $gift['price'] * $count * $user_rate, 'increase', '收获礼物:' . $gift['name'] . '×' . $count, 4);
             //如果收礼人是本房间所属家族成员,家族会获得家族收益
             $union_reward_val = $union_rate * $gift['price'] * $count;
@@ -123,10 +93,7 @@ class GiftService extends BaseService
             //根据送礼人、收礼人、房间做送礼统计
             GiftSendStatistic::count_up($giver_id, $receiver_id, $room_id, $gift['price'] * $count);
         }
-        $ins = db('gift_log')->insertAll($gift_log);
-        //if (!$ins) {
-        //    throw new ApiException(__('Gift delivery failed'));
-        //}
+        db('gift_log')->insertAll($gift_log);
     }
 
     /**

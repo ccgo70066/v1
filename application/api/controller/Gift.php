@@ -4,20 +4,18 @@ namespace app\api\controller;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\api\library\ImService;
-use app\api\library\rabbitmq\GiveGiftMQ;
-use app\api\library\RedisService;
 use app\api\library\RoomService;
 use app\common\exception\ApiException;
+use app\common\library\rabbitmq\GiveGiftMQ;
 use app\common\model\Gift as GiftModel;
 use app\common\model\GiftSendStatistic;
 use app\common\model\Room as RoomModel;
 use app\common\service\GiftService;
+use app\common\service\RedisService;
 use think\Db;
 use think\Log;
 use think\Request;
 use Throwable;
-
-use function db;
 
 /**
  * 礼物
@@ -79,11 +77,7 @@ class Gift extends Base
                         $noble = Db::name('noble')->where('id', $value['noble_limit'])->field('name,badge')->find();
                         $value['noble_name'] = $noble['name'];
                         $value['noble_badge'] = $noble['badge'];
-                        if ($noble_id < $value['noble_limit']) {
-                            $value['noble_limit'] = 1;
-                        } else {
-                            $value['noble_limit'] = 0;
-                        }
+                        $value['noble_available'] = ($noble_id >= $value['noble_limit']) ? 1 : 0;
                     }
                 }
             }
@@ -122,28 +116,25 @@ class Gift extends Base
      */
     public function room_give_gift()
     {
+        traceWithLine(input());
         $user_id = $this->auth->id;
         $this->operate_check('give_gift:' . $user_id, 1);
         $gift_id = input('gift_id');
         $count = abs((int)input('gift_count'));
 
-        //参数效验
         list($gift, $to_user_ids_arr, $room_id) = $this->service->checkRoomGiveParam($gift_id, $user_id, input('to_user_ids'), input('im_roomid'));
         $total_amount = $gift['price'] * $count * count($to_user_ids_arr);
-
+        Db::startTrans();
         try {
-            Db::startTrans();
-            //背包送礼,判断参数和背包礼物数
+            $gift_count = count($to_user_ids_arr) * $count;
             if ((input('source') == GiftModel::GIVE_TYPE_BAG || input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL)) {
-                if (input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL && count($to_user_ids_arr) > 1) {
+                if (input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL && count($to_user_ids_arr) > 1)
                     throw new ApiException(__('Only one recipient can be selected for full gift delivery'));
-                }
-                $bag_gift_count = db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift['id']])->value('count');
-                if ($bag_gift_count < count($to_user_ids_arr) * $count) {
-                    throw new ApiException(__('Insufficient gifts in backpack'));
-                }
-            } else { //面板送礼
-                $note = '打赏礼物:' . $gift['name'] . '×' . (count($to_user_ids_arr) * $count);
+                $result = db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>=', $gift_count]])
+                    ->setDec('count', $gift_count);
+                if (!$result) throw new ApiException(__('Insufficient gifts in backpack'));
+            } else {
+                $note = '打赏礼物:' . $gift['name'] . '×' . ($gift_count);
                 user_business_change($user_id, 'amount', $total_amount, 'decrease', $note, 4);
             }
             Db::commit();
@@ -156,13 +147,7 @@ class Gift extends Base
             error_log_out($e);
             $this->error(__('Network busy'));
         }
-
-        if ((input('source') == GiftModel::GIVE_TYPE_BAG || input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL)) {
-            $this->service->giveGiftByBag($user_id, $gift_id, $count, $to_user_ids_arr, $room_id);
-        } else {
-            $this->service->giveGiftByRoom($user_id, $to_user_ids_arr, $gift['id'], $count, $room_id ?: 0, input('source'));
-        }
-
+        $this->service->giveGiftByRoom($user_id, $to_user_ids_arr, $gift_id, $count, $room_id ?: 0, input('source'));
 
         //更新热力值
         $redis = redis();
@@ -244,7 +229,6 @@ class Gift extends Base
             //匹配收礼人是否在座上,记录麦上打赏明细
             $seat_num = array_search($receiver, $seat_user) ?: 0;
         }
-        $ls_flag = db('user')->where('id', $user_id)->value('ls_flag');
 
         try {
             Db::startTrans();
@@ -288,7 +272,6 @@ class Gift extends Base
                     'room_id'           => (int)$room_id,
                     'union_id'          => (int)($room['union_id']),
                     'union_reward_rate' => config('app.gift_union_owner'),
-                    'ls_flag'           => $ls_flag ?? '',
                     'create_time'       => datetime()
                 ];
                 $item['price'] = (int)$item['price'];

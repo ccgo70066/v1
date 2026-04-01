@@ -211,3 +211,27 @@ function show_error_notify($e)
 {
     return $e->getMessage();
 }
+
+
+function union_profit_statistics($union_id, $gift_val, $union_reward_val, $receiver)
+{
+    if (!$union_id) {
+        return;
+    }
+    // 用户在自己家族房间收礼, 自己家族族长分15%收益
+    $union_user = db('union_user')->where('user_id', $receiver)->where('status', 'in', [2, 3, 6])->find();
+    if ($union_user && $union_user['union_id'] == $union_id) {
+        $union = db('union')->where(['id' => $union_id])->find();
+        $owner_rate = config('app.gift_union_owner');
+        user_business_change($union['owner_id'], 'reward_amount', $gift_val * $owner_rate, 'increase', '联盟派对收获礼物', 4);
+    }
+
+    // 用户在家族房间收礼, 流水5%进家族收益
+    $exist = db('union_profit')->where(['union_id' => $union_id])->find();
+    if (!$exist) {
+        db('union_profit')->insert(['union_id' => $union_id, 'val' => $gift_val, 'reward_val' => $union_reward_val]);
+    } else {
+        db('union_profit')->where(['union_id' => $union_id])->setInc('val', $gift_val);
+        db('union_profit')->where(['union_id' => $union_id])->setInc('reward_val', $union_reward_val);
+    }
+}
