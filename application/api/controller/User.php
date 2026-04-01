@@ -164,7 +164,7 @@ class User extends Base
         $mobile = $this->request->param('mobile');
         $password = $this->request->param('password');
 
-        //(!$mobile || !\think\Validate::regex($mobile, $this->rule)) && $this->error(__('请输入正确的手机号'));
+        (!$mobile || !\think\Validate::regex($mobile, $this->rule)) && $this->error(__('请输入正确的手机号'));
         $this->check_blacklist('', '', $mobile);
         (mb_strlen($password) < 6 || mb_strlen($password) > 22) && $this->error(__('Password length cannot be less than %s digits', 6));
         $user = UserService::getByMobile($mobile);
