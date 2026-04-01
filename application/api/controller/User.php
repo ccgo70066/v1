@@ -87,8 +87,8 @@ class User extends Base
      */
     public function mobile_login()
     {
-        $mobile = $this->request->request('mobile');
-        $captcha = $this->request->request('captcha');
+        $mobile = input('mobile');
+        $captcha = input('captcha');
         $this->operate_check('flag:mobile_login:' . $mobile);
 
         if (!$mobile || !\think\Validate::regex($mobile, $this->rule)) {
@@ -161,8 +161,8 @@ class User extends Base
      */
     public function password_login()
     {
-        $mobile = $this->request->request('mobile');
-        $password = $this->request->request('password');
+        $mobile = $this->request->param('mobile');
+        $password = $this->request->param('password');
 
         //(!$mobile || !\think\Validate::regex($mobile, $this->rule)) && $this->error(__('请输入正确的手机号'));
         $this->check_blacklist('', '', $mobile);
@@ -222,8 +222,8 @@ class User extends Base
      */
     public function id_login()
     {
-        $id = $this->request->request('id');
-        $password = $this->request->request('password');
+        $id = $this->request->param('id');
+        $password = $this->request->param('password');
 
         $this->check_blacklist($id);
         (mb_strlen($password) < 6 || mb_strlen($password) > 22) && $this->error(__('Password length cannot be less than %s digits', 6));
@@ -358,17 +358,17 @@ class User extends Base
     {
         try {
             $user = $this->auth->getUser();
-            $nickname = Shield::sensitive_filter($this->request->request('nickname'));
+            $nickname = Shield::sensitive_filter($this->request->param('nickname'));
             $nickname = preg_replace('/\p{C}+/u', "", trim($nickname));
-            $gender = $this->request->request('gender');
-            $area = $this->request->request('area');
-            $voice = $this->request->request('voice');
-            $voice_size = $this->request->request('voice_size');
-            $constellation = $this->request->request('constellation');
-            $birthday = $this->request->request('birthday') ?: null;
-            $age = $this->request->request('age') ?: null;
-            $bio = Shield::sensitive_filter($this->request->request('bio', '', 'trim,strip_tags,htmlspecialchars'));
-            $interest_ids = $this->request->request('interest_ids');
+            $gender = $this->request->param('gender');
+            $area = $this->request->param('area');
+            $voice = $this->request->param('voice');
+            $voice_size = $this->request->param('voice_size');
+            $constellation = $this->request->param('constellation');
+            $birthday = $this->request->param('birthday') ?: null;
+            $age = $this->request->param('age') ?: null;
+            $bio = Shield::sensitive_filter($this->request->param('bio', '', 'trim,strip_tags,htmlspecialchars'));
+            $interest_ids = $this->request->param('interest_ids');
 
             $isNicknameEdit = false;
             if (isset($nickname) && $nickname != '') {
@@ -449,7 +449,7 @@ class User extends Base
             if (get_site_config('user_image_audit') == 1) {
                 $image_audit = [];
                 foreach ($image_types as $image_type) {
-                    $image_url = $this->request->request($image_type, '', 'trim,strip_tags,htmlspecialchars');
+                    $image_url = $this->request->param($image_type, '', 'trim,strip_tags,htmlspecialchars');
                     if ($image_url) {
                         $third = parse_url($image_url);
                         if (
@@ -475,7 +475,7 @@ class User extends Base
                 }
             } else {
                 foreach ($image_types as $image_type) {
-                    $image_url = $this->request->request($image_type, '', 'trim,strip_tags,htmlspecialchars');
+                    $image_url = $this->request->param($image_type, '', 'trim,strip_tags,htmlspecialchars');
                     if ($image_url) {
                         $user[$image_type] && $delete_images[] = $user[$image_type];
                         $user->avatar = $image_url;
