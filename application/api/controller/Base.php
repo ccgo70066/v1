@@ -150,9 +150,9 @@ class Base extends Api
         if ($this->auth->match($this->noNeedSign)) return;
 
         $des = new OpenSSL3DES('7iLs8KF08pVL222PHegRxLny', 'xK4M5ph1');
-        $token = $this->request->header('v-token');
-        $rs = json_decode(base64_decode($des->decrypt($token)), true);
-        if (!$rs) throw new ApiException(__('Request failed'));
+        $vToken = $this->request->header('v-token');
+        $rs = @json_decode(base64_decode($des->decrypt($vToken)), true);
+        if (!$rs) throw new ApiException(__('Request sign failed'));
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
         if (isset($rs['version'])) $this->version = $rs['version'];
