@@ -143,23 +143,23 @@ class Base extends Api
             throw new ApiException(__('Operation too fast'));
     }
 
-    protected function sign_decode()
+    protected function sign_decode(): void
     {
         //if (Env::get('app.debug')) return;
         if (!Env::get('api.api_request_sign_switch')) return;
         if ($this->auth->match($this->noNeedSign)) return;
 
         $des = new OpenSSL3DES('7iLs8KF08pVL222PHegRxLny', 'xK4M5ph1');
-        $vToken = $this->request->header('v-token');
-        $rs = @json_decode(base64_decode($des->decrypt($vToken)), true);
-        if (!$rs) throw new ApiException(__('Request sign failed'));
+        $vToken = $this->request->header('v-token', '');
+        $rs = json_decode(base64_decode($des->decrypt($vToken)), true);
+        if (!$rs) $this->error(__('Request sign failed'));
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
         if (isset($rs['version'])) $this->version = $rs['version'];
         if (isset($rs['time']) && !Env::get('api.api_request_sign_switch')) {
             $time = $rs['time'];
             $i = 15;
-            if ((time() - $i) > $time || (time() + $i) < $time) throw new ApiException(__('Request timeout'));
+            if ((time() - $i) > $time || (time() + $i) < $time) $this->error(__('Request timeout'));
         }
     }
 
