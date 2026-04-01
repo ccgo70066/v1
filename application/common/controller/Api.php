@@ -2,28 +2,20 @@
 
 namespace app\common\controller;
 
-use app\api\library\ApiCode;
-use app\common\exception\ApiException;
 use app\common\library\Auth;
-use ReflectionClass;
-use ReflectionException;
 use think\Config;
-use think\Cookie;
-use think\Env;
 use think\exception\HttpResponseException;
 use think\exception\ValidateException;
 use think\Hook;
 use think\Lang;
 use think\Loader;
-use think\Log;
 use think\Request;
 use think\Response;
 use think\Route;
-use util\OpenSSL3DES;
+use think\Validate;
 
 /**
  * API控制器基类
- * @ApiInternal
  */
 class Api
 {
@@ -61,12 +53,6 @@ class Api
     protected $noNeedRight = [];
 
     /**
-     * 无需要签名的方法
-     * @var array
-     */
-    protected $noNeedSign = [];
-
-    /**
      * 权限Auth
      * @var Auth
      */
@@ -78,14 +64,12 @@ class Api
      */
     protected $responseType = 'json';
 
-    protected $system, $version, $appid;
-
     /**
      * 构造方法
      * @access public
      * @param Request $request Request 对象
      */
-    public function __construct(Request $request)
+    public function __construct(Request $request = null)
     {
         $this->request = is_null($request) ? Request::instance() : $request;
 
@@ -95,7 +79,9 @@ class Api
         // 前置操作方法
         if ($this->beforeActionList) {
             foreach ($this->beforeActionList as $method => $options) {
-                is_numeric($method) ? $this->beforeAction($options) : $this->beforeAction($method, $options);
+                is_numeric($method) ?
+                    $this->beforeAction($options) :
+                    $this->beforeAction($method, $options);
             }
         }
     }
@@ -118,21 +104,11 @@ class Api
         $this->auth = Auth::instance();
 
         $modulename = $this->request->module();
-        $controllername = strtolower($this->request->controller());
+        $controllername = Loader::parseName($this->request->controller());
         $actionname = strtolower($this->request->action());
 
-        // 参数校验
-        try {
-            $rc = new ReflectionClass($this);
-            $this->validateParams($rc->getMethod($actionname)->getDocComment());
-        } catch (ReflectionException $exception) {
-        }
-
         // token
-        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', Cookie::get('token')));
-        $this->system = $this->request->server('HTTP_SYSTEM', $this->request->request('system'));
-        $this->version = $this->request->server('HTTP_VERSION', $this->request->request('version'));
-        $this->appid = $this->request->server('HTTP_APPID', $this->request->request('appid'));
+        $token = $this->request->server('HTTP_TOKEN', $this->request->request('token', \think\Cookie::get('token')));
 
         $path = str_replace('.', '/', $controllername) . '/' . $actionname;
         // 设置当前请求的URI
@@ -143,13 +119,13 @@ class Api
             $this->auth->init($token);
             //检测是否登录
             if (!$this->auth->isLogin()) {
-                $this->error(__('Please login first'), null, ApiCode::PLEASE_LOGIN);
+                $this->error(__('Please login first'), null, 401);
             }
             // 判断是否需要验证权限
             if (!$this->auth->match($this->noNeedRight)) {
                 // 判断控制器和方法判断是否有对应权限
                 if (!$this->auth->check($path)) {
-                    $this->error(__('You have no permission'), null, ApiCode::PLEASE_LOGIN);
+                    $this->error(__('You have no permission'), null, 403);
                 }
             }
         } else {
@@ -168,8 +144,6 @@ class Api
 
         // 加载当前控制器语言包
         $this->loadlang($controllername);
-
-        $this->sign_check();
     }
 
     /**
@@ -208,7 +182,6 @@ class Api
      */
     protected function error($msg = '', $data = null, $code = 0, $type = null, array $header = [])
     {
-        $msg == '' && $msg = __('Operation failed');
         $this->result($msg, $data, $code, $type, $header);
     }
 
@@ -228,25 +201,18 @@ class Api
         $result = [
             'code' => $code,
             'msg'  => $msg,
-            //            'time' => Request::instance()->server('REQUEST_TIME'),
+            'time' => Request::instance()->server('REQUEST_TIME'),
             'data' => $data,
         ];
-        // 如果未设置类型则自动判断
-        $type = $type ? $type : ($this->request->param(config('var_jsonp_handler')) ? 'jsonp' : $this->responseType);
+        // 如果未设置类型则使用默认类型判断
+        $type = $type ? : $this->responseType;
 
         if (isset($header['statuscode'])) {
             $code = $header['statuscode'];
             unset($header['statuscode']);
         } else {
             //未设置状态码,根据code值判断
-            //$code = $code >= 1000 || $code < 200 ? 200 : $code;
-            $code = 200;
-        }
-
-        if (Env::get('api.api_confuse_switch')) $result = $this->confuse($result);
-        if (Env::get('api.api_encode_switch')) {
-            $result = $this->encode($result);
-            $type = '';
+            $code = $code >= 1000 || $code < 200 ? 200 : $code;
         }
         $response = Response::create($result, $type, $code)->header($header);
         throw new HttpResponseException($response);
@@ -346,170 +312,19 @@ class Api
         return true;
     }
 
-
     /**
-     * 参数校验
-     * @param $docblock string  ApiParams example: (name="system", type="string", required=true, rule="in:1,2", description="平台:1=IOS,2=ANDROID")
+     * 刷新Token
      */
-    protected function validateParams($docblock)
+    protected function token()
     {
-        $lang = $this->request->langset();
-        $validateOption = [];
-        $validateFiled = [];
-        $docblock = substr($docblock, 3, -2);
-        preg_match_all('/@(?<name>[A-Za-z_-]+)[\s\t]*\((?<args>(?:(?!\)).)*)\)\r?/s', $docblock, $matches);
-        $numMatches = count($matches[0]);
-        for ($i = 0; $i < $numMatches; ++$i) {
-            if ($matches['name'][$i] == 'ApiMethod') {
-                if (
-                    //'post' == strtolower($matches['args'][$i]) &&
-                    'post' != strtolower($this->request->method()) &&
-                    !Env::get('app.debug')) {
-                    $this->error(__('post only'));
-                }
-            }
-            if ($matches['name'][$i] == 'ApiParams') {
-                $list = $this->parseArgs($matches['args'][$i]);
-                $lang != 'en' && $validateFiled[$list['name']] = $list['description'];
+        $token = $this->request->param('__token__');
 
-                if (isset($list['required']) && 'true' == $list['required']) {
-                    $validateOption[$list['name']] = 'require|';
-                } else {
-                    $validateOption[$list['name']] = '';
-                }
-                if (isset($list['rule']) && $list['rule'] != '') {
-                    $validateOption[$list['name']] .= $list['rule'];
-                }
-                if (isset($validateOption[$list['name']])
-                    && strpos($validateOption[$list['name']], '|') == (strlen($validateOption[$list['name']]) - 1)) {
-                    $validateOption[$list['name']] = substr(
-                        $validateOption[$list['name']],
-                        0,
-                        strlen($validateOption[$list['name']]) - 1
-                    );
-                }
-                if ($validateOption[$list['name']] == '') {
-                    unset($validateOption[$list['name']]);
-                }
-            }
+        //验证Token
+        if (!Validate::make()->check(['__token__' => $token], ['__token__' => 'require|token'])) {
+            $this->error(__('Token verification error'), ['__token__' => $this->request->token()]);
         }
-        if (!empty($validateOption)) {
-            $validate = new \think\Validate($validateOption, [], $validateFiled);
-            if (!$validate->check(input())) {
-                $this->error($validate->getError());
-            }
-        }
+
+        //刷新Token
+        $this->request->token();
     }
-
-
-    protected function parseArgs($content)
-    {
-        $arr = [];
-        $content = preg_split('/".*?"(*SKIP)(*FAIL)|,/', $content);
-        foreach ($content as $item) {
-            list($key, $value) = explode('=', $item);
-            if ('description' == trim($key) && strpos($value, ':')) {
-                list($value) = explode(':', $value);
-            }
-            $arr[trim($key)] = str_replace('\'', '', str_replace('"', '', trim($value)));
-        }
-
-        return $arr;
-    }
-
-
-    /**
-     * 频率检测
-     * 防止用户点击太快重复提交
-     * @param string $operate
-     * @param int    $second
-     * @return void
-     * @throws
-     */
-    protected function operate_check(string $operate, int $second = 5)
-    {
-        if (Env::get('app.debug')) return;
-        $redis = redis();
-        if (!$redis->set('operate_check:' . $operate, 1, ['nx', 'ex' => $second]))
-            throw new ApiException(__('Operation too fast'));
-    }
-
-    /**
-     * 签名校验
-     * api_sign_key: CTasUzg0bbTP1qRi
-     * step1: 获取请求参数，按参数名称ASCII码排序
-     * step2: 拼接字符串，key1=v1&key2=v2&key3=v3
-     * step3: 追加time和api_sign_key, key1=v1&key2=v2&key3=v3&time=1744014428&x=CTasUzg0bbTP1qRi
-     * step4: md5并大写
-     * step5: 将time和sign放到请求头中
-     * @return void
-     * @throws ApiException
-     */
-    protected function sign_check()
-    {
-        if (Env::get('app.debug')) {
-            return;
-        }
-        if ($this->auth->match($this->noNeedSign)) {
-            return;
-        }
-
-        $time = $this->request->header('time');
-        $sign = $this->request->header('sign');
-
-        $i = 30;
-        if ((time() - $i) > $time || (time() + $i) < $time) {
-            throw new ApiException(__('Request timeout'));
-        }
-
-        $params = input();
-        ksort($params);
-        $params['time'] = $time;
-        $params['x'] = Env::get('app.api_sign_key');
-
-        $check = strtoupper(md5(urldecode(http_build_query($params))));
-        if ($sign != $check) {
-            throw new ApiException('404 not found: ' . $check);
-        }
-    }
-
-    protected function confuse(array $result)
-    {
-        $diff = [
-            'code'     => 'c',
-            'msg'      => 'm',
-            'data'     => 'd',
-            'username' => 'ue',
-            'image'    => 'ie',
-            'test'     => 'tt',
-            'list'     => 'l',
-            'id'       => 'i',
-            'name'     => 'n'
-        ];
-        foreach ($result as $key => &$value) {
-            if (isset($diff[$key])) {
-                $newKey = $diff[$key];
-                $result[$newKey] = $value;
-                unset($result[$key]);
-                if (is_array($result[$newKey])) {
-                    $temp = [$newKey => $result[$newKey]];
-                    $temp = $this->confuse($temp);
-                    $result[$newKey] = $temp[$newKey];
-                }
-            } elseif (is_array($value)) {
-                $value = $this->confuse($value);
-            }
-        }
-        return $result;
-    }
-
-    protected function encode(array $result)
-    {
-        $key = Env::get('api.api_encode_key');
-        $vi = Env::get('api.api_encode_vi');
-        $des = new OpenSSL3DES($key, $vi);
-        return $des->encrypt(json_encode($result));
-    }
-
-
 }
