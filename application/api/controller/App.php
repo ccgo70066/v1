@@ -296,7 +296,7 @@ class App extends Base
             'share_url'       => Env::get('app.share_url'), // 分享链接
             'share_text'      => 'VooPea',
             'sign_key'        => config('app.sign_key'),
-            'api_sign_key'    => Env::get('app.api_sign_key'),
+            'request_encode_key'    => Env::get('app.request_encode_key'),
             'kf_id'           => config('app.kf_id'),
             'document_prefix' => Env::get('app.page_url', $self_url),
             //'green_pact'      => get_site_config('green_pact') ?: "",   //公屏绿色公约

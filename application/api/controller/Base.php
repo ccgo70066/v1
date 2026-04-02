@@ -62,8 +62,8 @@ class Base extends Api
             $code = 200;
         }
 
-        if (Env::get('api.api_confuse_switch')) $result = $this->confuse($result);
-        if (Env::get('api.api_encode_switch')) {
+        if (Env::get('api.response_confuse_switch')) $result = $this->confuse($result);
+        if (Env::get('api.response_encode_switch')) {
             $result = $this->encode($result);
             $type = '';
         }
@@ -131,7 +131,7 @@ class Base extends Api
     protected function sign_decode(): void
     {
         //if (Env::get('app.debug')) return;
-        if (!Env::get('api.api_request_sign_switch')) return;
+        if (!Env::get('api.request_encode_switch')) return;
         if ($this->auth->match($this->noNeedSign)) return;
 
         $des = new OpenSSL3DES('7iLs8KF08pVL222PHegRxLny', 'xK4M5ph1');
@@ -141,7 +141,7 @@ class Base extends Api
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
         if (isset($rs['version'])) $this->version = $rs['version'];
-        if (isset($rs['time']) && Env::get('api.api_request_sign_switch') && !Env::get('app.debug')) {
+        if (isset($rs['time']) && Env::get('api.request_encode_switch') && !Env::get('app.debug')) {
             $time = $rs['time'];
             $i = 15;
             if ((time() - $i) > $time || (time() + $i) < $time) $this->error(__('Request timeout'));

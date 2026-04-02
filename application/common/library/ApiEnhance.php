@@ -15,10 +15,10 @@ class ApiEnhance
 
     protected function __construct($options = [])
     {
-        $this->requestKey = Env::get('api.api_sign_key');
-        $this->requestVi = Env::get('api.api_sign_vi');
-        $this->responseKey = Env::get('api.api_encode_key');
-        $this->responseVi = Env::get('api.api_encode_vi');
+        $this->requestKey = Env::get('api.request_encode_key');
+        $this->requestVi = Env::get('api.request_encode_vi');
+        $this->responseKey = Env::get('api.response_encode_key');
+        $this->responseVi = Env::get('api.response_encode_vi');
 
         foreach ($options as $name => $item) {
             if (property_exists($this, $name)) {
