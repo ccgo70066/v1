@@ -4,10 +4,12 @@ namespace app\api\controller;
 
 use app\common\controller\Api;
 use app\common\exception\ApiException;
+use app\common\library\ApiEnhance;
 use ReflectionClass;
 use ReflectionException;
 use think\Env;
 use think\exception\HttpResponseException;
+use think\Request;
 use think\Response;
 use util\OpenSSL3DES;
 
@@ -47,6 +49,7 @@ class Base extends Api
             'msg'  => $msg,
             'data' => $data,
         ];
+        Request::instance()->post(['__response' => $result]);
         // 如果未设置类型则自动判断
         $type = $type ? $type : ($this->request->param(config('var_jsonp_handler')) ? 'jsonp' : $this->responseType);
 
@@ -138,7 +141,7 @@ class Base extends Api
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
         if (isset($rs['version'])) $this->version = $rs['version'];
-        if (isset($rs['time']) && !Env::get('api.api_request_sign_switch')) {
+        if (isset($rs['time']) && Env::get('api.api_request_sign_switch') && !Env::get('app.debug')) {
             $time = $rs['time'];
             $i = 15;
             if ((time() - $i) > $time || (time() + $i) < $time) $this->error(__('Request timeout'));
@@ -158,7 +161,7 @@ class Base extends Api
             'id'       => 'i',
             'name'     => 'n'
         ];
-        
+
         foreach ($result as $key => $value) {
             if (isset($diff[$key])) {
                 // 需要混淆的键名
@@ -175,17 +178,16 @@ class Base extends Api
 
     protected function encode(array $result)
     {
-        $key = Env::get('api.api_encode_key');
-        $vi = Env::get('api.api_encode_vi');
-        $des = new OpenSSL3DES($key, $vi);
-        return $des->encrypt(json_encode($result));
+        return ApiEnhance::instance()->responseEncode(json_encode($result));
     }
 
     protected function decodeRequest($string)
     {
+        traceWithLine($string);
         if (!$string) return [];
-        $des = new OpenSSL3DES('7iLs8KF08pVL222PHegRxLny', 'xK4M5ph1');
-        $rs = json_decode(base64_decode($des->decrypt($string)), true);
+        $rs = json_decode(ApiEnhance::instance()->requestDecode($string), true);
+        traceWithLine($rs);
+
         return $rs ?? [];
     }
 

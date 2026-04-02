@@ -2,6 +2,7 @@
 
 namespace addons\apilog;
 
+use app\common\library\ApiEnhance;
 use think\Cache;
 use think\Addons;
 use think\Request;
@@ -128,7 +129,10 @@ class Apilog extends Addons
             $username = $auth->isLogin() ? $auth->username : __('Unknown');
             $log['url'] = Request::instance()->baseUrl();
             $log['method'] = Request::instance()->method();
-            $log['param'] = json_encode(Request::instance()->param());
+            $param = Request::instance()->param();
+            $response = $param['__response'];
+            unset($param['raw'], $param['__response']);
+            $log['param'] = json_encode($param);
             $log['ip'] = Request::instance()->ip();
             $log['ua'] = Request::instance()->header('user-agent');
             $log['controller'] = Request::instance()->controller();
@@ -136,7 +140,7 @@ class Apilog extends Addons
             $log['code'] = (string)$params->getCode();
             $log['user_id'] = (string)$user_id;
             $log['username'] = $username;
-            $log['response'] = $params->getContent();
+            $log['response'] = json_encode($response);
             (new ModelApilog)->save($log);
             $config = get_addon_config('apilog');
 
