@@ -130,7 +130,7 @@ class Apilog extends Addons
             $log['url'] = Request::instance()->baseUrl();
             $log['method'] = Request::instance()->method();
             $param = Request::instance()->param();
-            $response = $param['__response'];
+            $response = $param['__response'] ?? [];
             unset($param['raw'], $param['__response']);
             $log['param'] = json_encode($param);
             $log['ip'] = Request::instance()->ip();
