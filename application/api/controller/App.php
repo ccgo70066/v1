@@ -23,12 +23,7 @@ class App extends Base
     protected $noNeedSign = ['*'];
 
     /**
-     * 获取配置
-     * @ApiSummary  ("密钥: 7iLs8KF08pVL222PHegRxLny <br>向量: xK4M5ph1 <br><br>
-    html命名:1=隐私政策2=用戶協議3=註銷協議4=帮助5=贵族说明6=亲密榜
-    ")
      * @ApiInternal
-     * @ApiReturnParams   (name="image_level", type="int",  required=false, rule="", description="// 前端图片回传等级:0=违规,1=可疑,2=正常")
      */
     public function config_bak()
     {
@@ -302,21 +297,19 @@ class App extends Base
     {
         $self_url = url('/', '', '', true);
         $config = [
-            'api_url'             => Env::get('app.api_url', $self_url),
-            'cdn_url'             => Env::get('app.cdn_url', cdnurl('')),
-            'ws_url'              => Env::get('app.web_socket_url'),
-            'share_url'           => Env::get('app.share_url'), // 分享链接
-            'share_text'          => 'VooPea',
-            'kf_id'               => config('app.kf_id'),
-            'request_encode_key'  => Env::get('api.request_encode_key'),
-            'request_encode_vi'   => Env::get('api.request_encode_vi'),
-            'response_encode_key' => Env::get('api.response_encode_key'),
-            'response_encode_vi'  => Env::get('api.response_encode_vi'),
-            'document_prefix'     => Env::get('app.page_url', $self_url),
-            'safety_reminder'     => get_site_config('safety_reminder') ?: "",   //私聊安全提醒
-            'grey_mode'           => get_site_config('grey_mode'),//哀悼灰色模式
-            'show_level'          => get_site_config('show_level'), // 飘屏显示等级限制(>=)
-            'version'             => get_site_config('base_version'),  // 配置文件版本号
+            'api_url'         => Env::get('app.api_url', $self_url),
+            'cdn_url'         => Env::get('app.cdn_url', cdnurl('')),
+            'ws_url'          => Env::get('app.web_socket_url'),
+            'share_url'       => Env::get('app.share_url'), // 分享链接
+            'share_text'      => 'VooPea',
+            'kf_id'           => config('app.kf_id'),
+            'request_key'     => Env::get('api.request_encode_key'),
+            'response_key'    => Env::get('api.response_encode_key'),
+            'document_prefix' => Env::get('app.page_url', $self_url),
+            'safety_reminder' => get_site_config('safety_reminder') ?: "",   //私聊安全提醒
+            'grey_mode'       => get_site_config('grey_mode'),//哀悼灰色模式
+            'show_level'      => get_site_config('show_level'), // 飘屏显示等级限制(>=)
+            'version'         => get_site_config('base_version'),  // 配置文件版本号
         ];
         $data = ApiEnhance::instance()->responseEncode(json_encode($config));
         return [$config, $data];

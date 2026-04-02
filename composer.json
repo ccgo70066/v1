@@ -36,7 +36,8 @@
         "zoujingli/ip2region": "^3.0",
         "hashids/hashids": "^5.0",
         "spatie/emoji": "^4.1",
-	  "ext-gd": "*"
+	  "ext-gd": "*",
+	  "ext-openssl": "*"
 	},
     "config": {
         "preferred-install": "dist",

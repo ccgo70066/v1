@@ -9,16 +9,12 @@ class ApiEnhance
 {
     protected static $instance;
     protected $requestKey = '';
-    protected $requestVi = '';
     protected $responseKey = '';
-    protected $responseVi = '';
 
     protected function __construct($options = [])
     {
         $this->requestKey = Env::get('api.request_encode_key');
-        $this->requestVi = Env::get('api.request_encode_vi');
         $this->responseKey = Env::get('api.response_encode_key');
-        $this->responseVi = Env::get('api.response_encode_vi');
 
         foreach ($options as $name => $item) {
             if (property_exists($this, $name)) {
@@ -37,25 +33,41 @@ class ApiEnhance
 
     public function requestEncode($string)
     {
-        $des = new OpenSSL3DES($this->requestKey, $this->requestVi);
-        return $des->encrypt(base64_encode($string));
+        return $this->encode($string, $this->requestKey);
     }
 
     public function requestDecode($string)
     {
-        $des = new OpenSSL3DES($this->requestKey, $this->requestVi);
-        return base64_decode($des->decrypt($string));
+        return $this->decode($string, $this->requestKey);
     }
 
     public function responseEncode($string)
     {
-        $des = new OpenSSL3DES($this->responseKey, $this->responseVi);
-        return $des->encrypt(base64_encode($string));
+        return $this->encode($string, $this->responseKey);
     }
 
     public function responseDecode($string)
     {
-        $des = new OpenSSL3DES($this->responseKey, $this->responseVi);
-        return base64_decode($des->decrypt($string));
+        return $this->decode($string, $this->responseKey);
+    }
+
+    public function encode($plaintext, $key)
+    {
+        $key = substr(hash('sha256', $key, true), 0, 32);
+        $iv = random_bytes(12);
+        $tag = '';
+        $ciphertext = openssl_encrypt($plaintext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+        return base64_encode($iv . $ciphertext . $tag);
+    }
+
+    public function decode($encrypted, $key)
+    {
+        $data = base64_decode($encrypted);
+        $key = substr(hash('sha256', $key, true), 0, 32);
+        $iv = substr($data, 0, 12);
+        $tag = substr($data, -16);
+        $ciphertext = substr($data, 12, -16);
+
+        return openssl_decrypt($ciphertext, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
     }
 }
