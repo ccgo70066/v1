@@ -71,6 +71,28 @@ class Base extends Api
         throw new HttpResponseException($response);
     }
 
+    protected function resultWithoutEncode($msg, $data = null, $code = 0, $type = null, array $header = [])
+    {
+        $result = [
+            'code' => $code,
+            'msg'  => $msg,
+            'data' => $data,
+        ];
+        Request::instance()->post(['__response' => $result]);
+        // 如果未设置类型则自动判断
+        $type = $type ?: ($this->request->param(config('var_jsonp_handler')) ? 'jsonp' : $this->responseType);
+
+        if (isset($header['statuscode'])) {
+            $code = $header['statuscode'];
+            unset($header['statuscode']);
+        } else {
+            $code = 200;
+        }
+        $response = Response::create($result, $type, $code)->header($header);
+        throw new HttpResponseException($response);
+    }
+
+
 
     protected function validateParams($docblock): void
     {

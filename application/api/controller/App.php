@@ -2,6 +2,7 @@
 
 namespace app\api\controller;
 
+use app\common\library\ApiEnhance;
 use app\common\model\ChannelBlacklist;
 use app\common\model\Shield;
 use think\Env;
@@ -32,7 +33,18 @@ class App extends Base
     public function config_bak()
     {
         [$config, $data] = $this->get_config();
-        $this->success($config, $data);
+        $this->resultWithoutEncode($config, $data, 1);
+    }
+
+
+    /**
+     * @ApiInternal
+     * @return void
+     */
+    public function config()
+    {
+        [$config, $data] = $this->get_config();
+        echo $data;
     }
 
 
@@ -290,23 +302,23 @@ class App extends Base
     {
         $self_url = url('/', '', '', true);
         $config = [
-            'api_url'         => Env::get('app.api_url', $self_url),
-            'cdn_url'         => Env::get('app.cdn_url', cdnurl('')),
-            'ws_url'          => Env::get('app.web_socket_url'),
-            'share_url'       => Env::get('app.share_url'), // 分享链接
-            'share_text'      => 'VooPea',
-            'sign_key'        => config('app.sign_key'),
-            'request_encode_key'    => Env::get('app.request_encode_key'),
-            'kf_id'           => config('app.kf_id'),
-            'document_prefix' => Env::get('app.page_url', $self_url),
-            //'green_pact'      => get_site_config('green_pact') ?: "",   //公屏绿色公约
-            'safety_reminder' => get_site_config('safety_reminder') ?: "",   //私聊安全提醒
-            'grey_mode'       => get_site_config('grey_mode'),//哀悼灰色模式
-            'show_level'      => get_site_config('show_level'), // 飘屏显示等级限制(>=)
-            'version'         => get_site_config('base_version'),  // 配置文件版本号
+            'api_url'             => Env::get('app.api_url', $self_url),
+            'cdn_url'             => Env::get('app.cdn_url', cdnurl('')),
+            'ws_url'              => Env::get('app.web_socket_url'),
+            'share_url'           => Env::get('app.share_url'), // 分享链接
+            'share_text'          => 'VooPea',
+            'kf_id'               => config('app.kf_id'),
+            'request_encode_key'  => Env::get('api.request_encode_key'),
+            'request_encode_vi'   => Env::get('api.request_encode_vi'),
+            'response_encode_key' => Env::get('api.response_encode_key'),
+            'response_encode_vi'  => Env::get('api.response_encode_vi'),
+            'document_prefix'     => Env::get('app.page_url', $self_url),
+            'safety_reminder'     => get_site_config('safety_reminder') ?: "",   //私聊安全提醒
+            'grey_mode'           => get_site_config('grey_mode'),//哀悼灰色模式
+            'show_level'          => get_site_config('show_level'), // 飘屏显示等级限制(>=)
+            'version'             => get_site_config('base_version'),  // 配置文件版本号
         ];
-        $des = new OpenSSL3DES('7iLs8KF08pVL222PHegRxLny', 'xK4M5ph1');
-        $data = $des->encrypt(json_encode($config));
+        $data = ApiEnhance::instance()->responseEncode(json_encode($config));
         return [$config, $data];
     }
 
