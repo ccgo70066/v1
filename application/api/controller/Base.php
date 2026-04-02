@@ -79,36 +79,20 @@ class Base extends Api
         $numMatches = count($matches[0]);
         for ($i = 0; $i < $numMatches; ++$i) {
             if ($matches['name'][$i] == 'ApiMethod') {
-                if (
-                    //'post' == strtolower($matches['args'][$i]) &&
-                    'post' != strtolower($this->request->method()) &&
-                    !Env::get('app.debug')) {
-                    $this->error(__('post only'));
-                }
+                if ('post' != strtolower($this->request->method()) && !Env::get('app.debug')) $this->error(__('post only'));
             }
             if ($matches['name'][$i] == 'ApiParams') {
                 $list = $this->parseArgs($matches['args'][$i]);
+                if (empty($list['name'])) continue;
+
                 $lang != 'en' && $validateFiled[$list['name']] = $list['description'];
 
-                if (isset($list['required']) && 'true' == $list['required']) {
-                    $validateOption[$list['name']] = 'require|';
-                } else {
-                    $validateOption[$list['name']] = '';
-                }
-                if (isset($list['rule']) && $list['rule'] != '') {
-                    $validateOption[$list['name']] .= $list['rule'];
-                }
-                if (isset($validateOption[$list['name']])
-                    && strpos($validateOption[$list['name']], '|') == (strlen($validateOption[$list['name']]) - 1)) {
-                    $validateOption[$list['name']] = substr(
-                        $validateOption[$list['name']],
-                        0,
-                        strlen($validateOption[$list['name']]) - 1
-                    );
-                }
-                if ($validateOption[$list['name']] == '') {
-                    unset($validateOption[$list['name']]);
-                }
+                $fieldName = $list['name'];
+                $validateRules = [];
+
+                if (isset($list['required']) && 'true' == $list['required']) $validateRules[] = 'require';
+                if (isset($list['rule']) && $list['rule'] != '') $validateRules[] = $list['rule'];
+                if ($validateRules) $validateOption[$fieldName] = implode('|', $validateRules);
             }
         }
         if (!empty($validateOption)) {
@@ -174,18 +158,16 @@ class Base extends Api
             'id'       => 'i',
             'name'     => 'n'
         ];
-        foreach ($result as $key => &$value) {
+        
+        foreach ($result as $key => $value) {
             if (isset($diff[$key])) {
+                // 需要混淆的键名
                 $newKey = $diff[$key];
-                $result[$newKey] = $value;
+                $result[$newKey] = is_array($value) ? $this->confuse($value) : $value;
                 unset($result[$key]);
-                if (is_array($result[$newKey])) {
-                    $temp = [$newKey => $result[$newKey]];
-                    $temp = $this->confuse($temp);
-                    $result[$newKey] = $temp[$newKey];
-                }
             } elseif (is_array($value)) {
-                $value = $this->confuse($value);
+                // 不需要混淆键名，但值需要递归处理
+                $result[$key] = $this->confuse($value);
             }
         }
         return $result;
