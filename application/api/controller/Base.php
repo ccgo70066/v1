@@ -183,11 +183,8 @@ class Base extends Api
 
     protected function decodeRequest($string)
     {
-        traceWithLine($string);
         if (!$string) return [];
         $rs = json_decode(ApiEnhance::instance()->requestDecode($string), true);
-        traceWithLine($rs);
-
         return $rs ?? [];
     }
 
