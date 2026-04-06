@@ -116,7 +116,6 @@ class Gift extends Base
      */
     public function room_give_gift()
     {
-        traceWithLine(input());
         $user_id = $this->auth->id;
         $this->operate_check('give_gift:' . $user_id, 1);
         $gift_id = input('gift_id');
@@ -347,7 +346,6 @@ class Gift extends Base
         $size = input('size') ?: 15;
 
         $giftIds = db('gift_wall l')->join('gift g', 'g.id=l.gift_id', 'left')->where('l.user_id', $user_id)->column('g.id');
-        traceWithLine($giftIds);
         $where = [];
         if ($light !== '') $where['id'] = [$light == 1 ? 'in' : 'not in', $giftIds];
         $cate && $where['cate'] = $cate;
