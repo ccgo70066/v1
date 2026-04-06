@@ -62,7 +62,7 @@ class ApiEnhance
      * @param string $plaintext 明文
      * @param string $key       密钥
      * @return string Base64 编码的密文（IV + Ciphertext + Tag）
-     * @throws InvalidArgumentException 当加密失败时抛出
+     * @throws
      */
     public function encode(string $plaintext, string $key): string
     {
@@ -79,7 +79,7 @@ class ApiEnhance
      * @param string $encrypted Base64 编码的密文
      * @param string $key       密钥
      * @return string 解密后的明文
-     * @throws InvalidArgumentException 当数据格式错误或解密失败时抛出
+     * @throws
      */
     public function decode(string $encrypted, string $key): string
     {
