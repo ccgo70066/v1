@@ -32,6 +32,7 @@ class Base extends Api
         parent::_initialize();
 
         $this->sign_decode();
+        trace(input());
         $this->request->post($this->decodeRequest(input('raw')));
 
         try {
@@ -156,9 +157,7 @@ class Base extends Api
         if ($this->auth->match($this->noNeedSign)) return;
 
         $vToken = $this->request->header('v-token', '');
-        trace($vToken);
         $rs = json_decode(base64_decode(ApiEnhance::instance()->requestDecode($vToken)), true);
-        trace($rs);
         if (!$rs) $this->error(__('Request sign failed'));
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
