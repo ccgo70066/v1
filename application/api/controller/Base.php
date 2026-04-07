@@ -32,7 +32,6 @@ class Base extends Api
         parent::_initialize();
 
         $this->sign_decode();
-        trace(input());
         $this->request->post($this->decodeRequest(input('raw')));
 
         try {
@@ -205,7 +204,8 @@ class Base extends Api
     protected function decodeRequest($string)
     {
         if (!$string) return [];
-        $rs = json_decode(ApiEnhance::instance()->requestDecode($string), true);
+        $requestDecode = ApiEnhance::instance()->requestDecode($string);
+        $rs = json_decode(base64_decode($requestDecode), true);
         return $rs ?? [];
     }
 
