@@ -15,7 +15,6 @@ class RabbitMQ extends Command
 {
     protected $processPath = 'application/common/library/rabbitmq/';    //文件目录
     protected $processNamespace = '\app\common\library\rabbitmq';     //命名空间
-    protected static $_workers = [];
 
     public function __construct()
     {
