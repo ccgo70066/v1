@@ -67,9 +67,9 @@ class Api
     /**
      * 构造方法
      * @access public
-     * @param Request $request Request 对象
+     * @param Request|null $request Request 对象
      */
-    public function __construct(Request $request = null)
+    public function __construct(?Request $request = null)
     {
         $this->request = is_null($request) ? Request::instance() : $request;
 
