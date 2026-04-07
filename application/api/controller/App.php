@@ -311,7 +311,7 @@ class App extends Base
             'show_level'      => get_site_config('show_level'), // 飘屏显示等级限制(>=)
             'version'         => get_site_config('base_version'),  // 配置文件版本号
         ];
-        $data = ApiEnhance::instance()->responseEncode(json_encode($config));
+        $data = ApiEnhance::instance()->encode(json_encode($config), Env::get('api.config_key'));
         return [$config, $data];
     }
 

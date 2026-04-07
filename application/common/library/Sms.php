@@ -54,6 +54,8 @@ class Sms
         $time = time();
         $ip = request()->ip();
         $sms = \app\common\model\Sms::create(['event' => $event, 'mobile' => $mobile, 'code' => $code, 'ip' => $ip, 'createtime' => $time]);
+        // todo debug
+        return true;
         $result = Hook::listen('sms_send', $sms, null, true);
         if (!$result) {
             $sms->delete();

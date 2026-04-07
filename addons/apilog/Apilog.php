@@ -105,10 +105,10 @@ class Apilog extends Addons
     private function is_filter()
     {
         $config = get_addon_config('apilog');
-        if (in_array(Request::instance()->controller(), explode(",", $config['base']['filter_controller']))) {
+        if (in_array(strtolower(Request::instance()->controller()), explode(",", $config['base']['filter_controller']))) {
             return true;
         }
-        if (in_array(Request::instance()->action(), explode(",", $config['base']['filter_controller']))) {
+        if (in_array(strtolower(Request::instance()->action()), explode(",", $config['base']['filter_controller']))) {
             return true;
         }
         if (in_array(Request::instance()->baseUrl(), explode("\n", $config['base']['filter_url']))) {
