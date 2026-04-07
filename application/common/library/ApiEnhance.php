@@ -88,6 +88,7 @@ class ApiEnhance
         $iv = substr($data, 0, self::IV_LENGTH);
         $tag = substr($data, -self::TAG_LENGTH);
         $ciphertext = substr($data, self::IV_LENGTH, -self::TAG_LENGTH);
+        if (!$key || !$iv || !$tag || !$ciphertext) return '';
 
         return openssl_decrypt($ciphertext, self::CIPHER, $key, OPENSSL_RAW_DATA, $iv, $tag);
     }
