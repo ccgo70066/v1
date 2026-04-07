@@ -5,7 +5,7 @@ namespace app\api\controller;
 /**
  * 广播交友
  */
-class Broadcast extends Base
+class Broadcast extends ApiBase
 {
     protected $noNeedLogin = ['*'];
     protected $noNeedRight = ['*'];

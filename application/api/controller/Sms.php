@@ -11,7 +11,7 @@ use think\Hook;
 /**
  * 手机短信接口
  */
-class Sms extends Base
+class Sms extends ApiBase
 {
     protected $noNeedLogin = '*';
     protected $noNeedRight = '*';
