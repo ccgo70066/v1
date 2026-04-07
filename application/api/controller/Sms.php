@@ -59,9 +59,9 @@ class Sms extends Base
         $code = Random::numeric(config('captcha.length'));
         $ret = Smslib::send($mobile, $code, $event);
         if ($ret) {
-            $this->success(__('Send successfully').": ".$code);
+            $this->success(__('Operation completed').": ".$code);
         } else {
-            $this->error(__('Send failed'));
+            $this->error(__('Operation failed'));
         }
     }
 

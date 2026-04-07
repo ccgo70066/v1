@@ -3,7 +3,6 @@
 namespace app\api\controller;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\api\library\ImService;
 use app\api\library\RoomService;
 use app\common\exception\ApiException;
 use app\common\library\rabbitmq\GiveGiftMQ;
@@ -11,6 +10,7 @@ use app\common\model\Gift as GiftModel;
 use app\common\model\GiftSendStatistic;
 use app\common\model\Room as RoomModel;
 use app\common\service\GiftService;
+use app\common\service\ImService;
 use app\common\service\RedisService;
 use think\Db;
 use think\Log;

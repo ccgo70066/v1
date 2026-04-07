@@ -2,7 +2,6 @@
 
 namespace app\api\controller;
 
-use app\api\library\ImService;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\library\ChinaName;
@@ -10,6 +9,7 @@ use app\common\library\Sms;
 use app\common\model\Shield;
 use app\common\model\User as UserModel;
 use app\common\model\UserGuest;
+use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\service\UserService;
 use fast\Random;
