@@ -301,7 +301,7 @@ class App extends Base
             'cdn_url'         => Env::get('app.cdn_url', cdnurl('')),
             'ws_url'          => Env::get('app.web_socket_url'),
             'share_url'       => Env::get('app.share_url'), // 分享链接
-            'share_text'      => 'VooPea',
+            'share_text'      => 'hello',
             'kf_id'           => config('app.kf_id'),
             'request_key'     => Env::get('api.request_encode_key'),
             'response_key'    => Env::get('api.response_encode_key'),
