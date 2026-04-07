@@ -93,7 +93,6 @@ class Base extends Api
     }
 
 
-
     protected function validateParams($docblock): void
     {
         $lang = $this->request->langset();
@@ -156,9 +155,8 @@ class Base extends Api
         if (!Env::get('api.request_encode_switch')) return;
         if ($this->auth->match($this->noNeedSign)) return;
 
-        $des = new OpenSSL3DES('7iLs8KF08pVL222PHegRxLny', 'xK4M5ph1');
         $vToken = $this->request->header('v-token', '');
-        $rs = json_decode(base64_decode($des->decrypt($vToken)), true);
+        $rs = json_decode(ApiEnhance::instance()->requestDecode($vToken), true);
         if (!$rs) $this->error(__('Request sign failed'));
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
