@@ -11,10 +11,6 @@ use think\console\input\Option;
 use think\console\Output;
 use think\Request;
 
-use function fast\e;
-
-//消费代码更新后，需要重启消费者，命令 php think rabbitmq -m restart a- all
-
 class RabbitMQ extends Command
 {
     protected $processPath = 'application/common/library/rabbitmq/';    //文件目录

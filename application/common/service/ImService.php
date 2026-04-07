@@ -2,7 +2,6 @@
 
 namespace app\common\service;
 
-use app\api\library\BaseService;
 use app\common\exception\ApiException;
 use app\common\library\Yunxin;
 use app\common\model\ChannelBlacklist;
@@ -13,7 +12,7 @@ use app\common\model\Union;
 /**
  * Im服务类
  */
-class ImService extends BaseService
+class ImService
 {
     public Yunxin $im;
     //系统消息ID
@@ -52,12 +51,7 @@ class ImService extends BaseService
 
     public function __construct()
     {
-        parent::__construct();
         $this->im = new Yunxin();
-        // if (!self::$KF_IDS) {
-        //     $kf_id = config('app.kf_id');
-        //     self::$KF_IDS = is_array($kf_id) ? $kf_id : [$kf_id];
-        // }
     }
 
 

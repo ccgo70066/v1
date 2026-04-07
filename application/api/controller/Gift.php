@@ -191,7 +191,17 @@ class Gift extends ApiBase
             ($gift['screen_show'] == GiftModel::ScreenShowPrice && $total_amount >= get_site_config('gift_value'))) {
             foreach ($to_user_ids_arr as $to_user_id) {
                 $to_nickname = RedisService::getUserCache($to_user_id, 'nickname');
-                $this->service->screenShow(Message::CMD_SHOW_GIFT_GLOBAL, $this->auth->nickname, $gift['name'], $count, $gift['price'], $gift['image'], $to_nickname, $gift['cate'] == GiftModel::GIFT_CATE_SPECIAL, $room_id);
+                //$this->service->screenShow(
+                //    Message::CMD_SHOW_GIFT_GLOBAL,
+                //    $this->auth->nickname,
+                //    $gift['name'],
+                //    $count,
+                //    $gift['price'],
+                //    $gift['image'],
+                //    $to_nickname,
+                //    $gift['cate'] == GiftModel::GIFT_CATE_SPECIAL,
+                //    $room_id
+                //);
             }
         }
         $this->success();

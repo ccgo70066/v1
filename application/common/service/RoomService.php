@@ -2,7 +2,6 @@
 
 namespace app\common\service;
 
-use app\api\library\BaseService;
 use app\common\exception\ApiException;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
@@ -11,14 +10,13 @@ use think\Log;
 /**
  * 房间服务类
  */
-class RoomService extends BaseService
+class RoomService
 {
 
     private RoomModel $model;
 
     public function __construct()
     {
-        parent::__construct();
         $this->model = new RoomModel();
     }
 

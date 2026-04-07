@@ -3,7 +3,6 @@
 namespace app\common\service;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\api\library\BaseService;
 use app\common\exception\ApiException;
 use app\common\model\Gift as GiftModel;
 use app\common\model\GiftSendStatistic;
@@ -13,15 +12,9 @@ use think\Exception;
 /**
  * 礼物服务类
  */
-class GiftService extends BaseService
+class GiftService
 {
     protected GiftModel $model;
-
-    public function __construct()
-    {
-        //$this->model = new GiftModel();
-        parent::__construct();
-    }
 
     /**
      * 参数验证
@@ -112,20 +105,20 @@ class GiftService extends BaseService
         $is_all_server = false,
         $room_id
     ) {
-        if ($cmd == Message::CMD_SHOW_GIFT_GLOBAL) {
-            //广播
-            $board_data = [
-                'nickname'      => $nickname,
-                'gift_name'     => $gift_name,
-                'count'         => $count,
-                'price'         => (string)($price + 0),
-                'image'         => $image,
-                'to_nickname'   => $to_nickname,
-                'is_all_server' => $is_all_server,
-                'room_id'       => $room_id
-            ];
-            board_notice(Message::CMD_SHOW_GIFT_GLOBAL, $board_data, '打赏礼物飘屏');
-        }
+        //if ($cmd == Message::CMD_SHOW_GIFT_GLOBAL) {
+        //    //广播
+        //    $board_data = [
+        //        'nickname'      => $nickname,
+        //        'gift_name'     => $gift_name,
+        //        'count'         => $count,
+        //        'price'         => (string)($price + 0),
+        //        'image'         => $image,
+        //        'to_nickname'   => $to_nickname,
+        //        'is_all_server' => $is_all_server,
+        //        'room_id'       => $room_id
+        //    ];
+        //    board_notice(Message::CMD_SHOW_GIFT_GLOBAL, $board_data, '打赏礼物飘屏');
+        //}
     }
 
 
