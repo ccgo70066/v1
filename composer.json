@@ -49,7 +49,10 @@
     "autoload": {
         "psr-4": {
             "addons\\": "addons/"
-        }
+        },
+        "files": [
+            "application/business.php"
+        ]
     },
     "repositories": [
         {
