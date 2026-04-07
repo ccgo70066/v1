@@ -3,8 +3,6 @@
 namespace app\common\service;
 
 use app\api\library\BaseService;
-use app\api\library\RoomService;
-use app\api\library\RpcService;
 use app\common\exception\ApiException;
 use app\common\library\Yunxin;
 use app\common\model\ChannelBlacklist;

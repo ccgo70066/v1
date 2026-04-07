@@ -391,6 +391,7 @@ class Yunxin
         if (!isset($res['code']) || $res['code'] <> 200) {
             \think\Log::error('云信响应打印--url:' . $url);
             \think\Log::error($res);
+            return false;
         }
         return $res;
     }
