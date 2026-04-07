@@ -7,6 +7,7 @@ use app\common\model\User;
 use app\common\model\UserBusiness;
 use app\common\model\UserGuest;
 use app\common\model\UserRule;
+use app\common\service\ImService;
 use app\common\service\RedisService;
 use fast\Random;
 use think\Config;
@@ -206,15 +207,14 @@ class Auth
         Db::startTrans();
         try {
             $user = User::create($params);
-            UserBusiness::create(['id' => $user->id, 'lang' => request()->langset(),]);
-
-            //$imService = new ImService();
-            //$res = $imService->createUser($user->id, $extend['nickname'], $extend['avatar']);
-            //if (!$res) {
-            //    throw new ApiException(__('IM registration failed'));
-            //} else {
-            //    User::where('id', $user->id)->setField('im_token', $res['info']['token']);
-            //}
+            $imService = new ImService();
+            $res = $imService->createUser($user->id, $extend['nickname'], $extend['avatar']);
+            if (!$res) throw new ApiException(__('IM registration failed'));
+            UserBusiness::create([
+                'id'       => $user->id,
+                'lang'     => request()->langset(),
+                'im_token' => $res['info']['token']
+            ]);
 
             $this->_user = User::get($user->id);
             //设置Token

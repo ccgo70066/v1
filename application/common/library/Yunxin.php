@@ -47,7 +47,6 @@ class Yunxin
      */
     public function send_msg($from, $to, $data)
     {
-
         $url = "/msg/sendMsg.action";
         $imData = [
             "from" => $from,
@@ -80,7 +79,6 @@ class Yunxin
             'attach'    => json_encode(['msg' => $body])
         ];
         return $this->im($url, $imData);
-
     }
 
     /**
@@ -209,12 +207,12 @@ class Yunxin
 
 
     /** 创建IM房间
-     * @param $id   int 创建者user_id
-     * @param $name string 房间名称
+     * @param $id           int 创建者user_id
+     * @param $name         string 房间名称
      * @param $announcement string 房间公告
      * @return mixed
      */
-    public function room_create($id, $name, $announcement)
+    public function room_create($id, $name, $announcement = '')
     {
         $url = '/chatroom/create.action';
         $data = ['creator' => $id, 'name' => $name, 'announcement' => $announcement];
@@ -252,11 +250,11 @@ class Yunxin
 
     /**
      * 云信消息记录
-     * @param string $user_id 用户
-     * @param int $to_user_id 用户
-     * @param int $start_time 记录区间开始时间戳
-     * @param int $start_time 记录区间结束时间戳
-     * @param int $limit 条数
+     * @param string $user_id    用户
+     * @param int    $to_user_id 用户
+     * @param int    $start_time 记录区间开始时间戳
+     * @param int    $start_time 记录区间结束时间戳
+     * @param int    $limit      条数
      * @return mixed
      */
     public function msg_log($user_id, $to_user_id, $start_time, $end_time, $limit = 10)
@@ -275,10 +273,10 @@ class Yunxin
 
     /**
      * 聊天室云端历史消息查询
-     * @param int $im_roomid 云信聊天室ID
-     * @param int $time 查询的时间戳锚点。reverse=1时timetag为起始时间戳，reverse=2时timetag为终止时间戳
-     * @param string $user_id 发送人
-     * @param int $limit 条数
+     * @param int    $im_roomid 云信聊天室ID
+     * @param int    $time      查询的时间戳锚点。reverse=1时timetag为起始时间戳，reverse=2时timetag为终止时间戳
+     * @param string $user_id   发送人
+     * @param int    $limit     条数
      * @return mixed
      */
     public function queryChatroomMsg($im_roomid, $time, $user_id)
@@ -298,17 +296,17 @@ class Yunxin
 
     /**
      * 设置聊天室内用户角色
-     * @param int $operator 云信房间 创建者,创建者不一定等于业务上的房主
-     * @param int $to_user_id 目标对象
-     * @param int $room_id 房间ID
-     * @param string $type true或false，true:设置；false:取消设置；必须是字符串 true或者false
-     * @param boolean $opt 1: 设置为管理员，operator必须是创建者
+     * @param int     $operator   云信房间 创建者,创建者不一定等于业务上的房主
+     * @param int     $to_user_id 目标对象
+     * @param int     $room_id    房间ID
+     * @param string  $type       true或false，true:设置；false:取消设置；必须是字符串 true或者false
+     * @param boolean $opt        1: 设置为管理员，operator必须是创建者
      *                            2:设置普通等级用户，operator必须是创建者或管理员
      *                            -1:设为黑名单用户，operator必须是创建者或管理员
      *                            -2:设为禁言用户，operator必须是创建者或管理员
      *
      */
-    public function sel_room_role($operator, $to_user_id, $im_roomid, $type = 'true', $opt = 1)
+    public function set_room_role($operator, $to_user_id, $im_roomid, $type = 'true', $opt = 1)
     {
         $url = "/chatroom/setMemberRole.action";
         $imData = [
@@ -326,7 +324,7 @@ class Yunxin
     /**
      * 批量获取在线成员信息
      * @param string $im_roomid 房间号
-     * @param array $user_ids 用户数组
+     * @param array  $user_ids  用户数组
      * @return mixed
      */
     public function queryMembers($im_roomid, $user_ids)
@@ -445,7 +443,7 @@ class Yunxin
     /**
      * 查询聊天室在线成员ID
      * @param int $im_room_id 云信房间号
-     * @param int $type 需要查询的成员类型,0:固定成员;1:非固定成员;2:仅返回在线的固定成员
+     * @param int $type       需要查询的成员类型,0:固定成员;1:非固定成员;2:仅返回在线的固定成员
      */
     public function membersByPage($im_room_id, $type, $endtime)
     {
@@ -490,7 +488,7 @@ class Yunxin
     }
 
 
-    public function sel_room_role_ext($user_id, $im_roomid, $ext)
+    public function set_room_role_ext($user_id, $im_roomid, $ext)
     {
         $url = "/chatroom/updateMyRoomRole.action";
         $imData = [
@@ -500,6 +498,19 @@ class Yunxin
         ];
         return $this->im($url, $imData);
     }
+
+    public function kickMember($operator, $to_user_id, $im_roomid, $ext = '')
+    {
+        $url = "/chatroom/kickMember.action";
+        $imData = [
+            "roomid"      => $im_roomid,
+            'accid'       => $operator,
+            'targetAccid' => $to_user_id,
+            'notifyExt'   => $ext,
+        ];
+        return $this->im($url, $imData);
+    }
+
 
     /**
      * 获取用户查看用户的黑名单列表
