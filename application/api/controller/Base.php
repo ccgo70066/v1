@@ -205,7 +205,7 @@ class Base extends Api
     {
         if (!$string) return [];
         $requestDecode = ApiEnhance::instance()->requestDecode($string);
-        $rs = json_decode($requestDecode, true);
+        $rs = json_decode(base64_decode($requestDecode), true);
         return $rs ?? [];
     }
 
