@@ -2,6 +2,7 @@
 
 use app\admin\model\User;
 use app\common\exception\ApiException;
+use app\common\library\rabbitmq\BaseHandler;
 use app\common\model\MoneyLog;
 use think\Db;
 use think\Env;
@@ -10,6 +11,7 @@ use think\Log;
 function getLastSql()
 {
     return \think\Db::getLastSql();
+
 }
 
 function traceInDB($content)
@@ -238,5 +240,42 @@ function union_profit_statistics($union_id, $gift_val, $union_reward_val, $recei
     } else {
         db('union_profit')->where(['union_id' => $union_id])->setInc('val', $gift_val);
         db('union_profit')->where(['union_id' => $union_id])->setInc('reward_val', $union_reward_val);
+    }
+}
+
+
+function mq_publish(BaseHandler $baseHandler, array $message, $delay = 0)
+{
+    try {
+        return $baseHandler->publish($message, $delay);
+    } catch (throwable|Exception $e) {
+        error_log_out($e);
+        Log::error($e->getMessage());
+        //$baseHandler::InsertMqLog($e->getMessage());
+        return false;
+    }
+}
+
+function mq_stop_consume(BaseHandler $baseHandler)
+{
+    try {
+        $baseHandler->stopCurrentConsume();
+    } catch (throwable|Exception $e) {
+        Log::error($e->getMessage());
+        error_log_out($e);
+        return false;
+    }
+}
+
+function mq_consume(BaseHandler $baseHandler)
+{
+    try {
+        // $baseHandler->stopCurrentConsume();
+        $baseHandler->consume();
+    } catch (throwable|Exception $e) {
+        error_log_out($e);
+
+        Log::error($e->getMessage());
+        return false;
     }
 }
