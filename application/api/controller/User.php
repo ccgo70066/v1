@@ -22,7 +22,7 @@ use util\Minio;
  * 会员接口
  * @ApiWeigh    (9998)
  */
-class User extends ApiBase
+class User extends Base
 {
     protected $noNeedLogin = [
         'login',

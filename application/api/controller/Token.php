@@ -10,7 +10,7 @@ use think\Db;
 /**
  * Token接口
  */
-class Token extends ApiBase
+class Token extends Base
 {
     protected $noNeedLogin = ['*'];
     protected $noNeedRight = ['*'];

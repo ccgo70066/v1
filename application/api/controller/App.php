@@ -15,7 +15,7 @@ use util\OpenSSL3DES;
  * APP环境配置
  * @ApiWeigh    (9999)
  */
-class App extends ApiBase
+class App extends Base
 {
 
     protected $noNeedLogin = ['*'];

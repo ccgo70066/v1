@@ -21,7 +21,7 @@ use Throwable;
  * 礼物
  * @ApiWeigh    (100)
  */
-class Gift extends ApiBase
+class Gift extends Base
 {
     protected $noNeedLogin = [];
     protected $noNeedRight = ['*'];

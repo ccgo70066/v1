@@ -17,7 +17,7 @@ use util\OpenSSL3DES;
  * API控制器基类
  * @ApiInternal
  */
-class ApiBase extends Api
+class Base extends Api
 {
     protected $service;
     protected $noNeedSign = '';
