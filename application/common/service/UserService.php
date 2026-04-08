@@ -73,7 +73,7 @@ class UserService
             $user->imei = $user->imei ?? '';
             $user->system = $user->system ?? '';
             $user->version = $user->version ?? '';
-            //$update['first_login'] = 0;
+            $update['first_login'] = 0;
         }
 
         if ($user && $data['imei'] != '' && $data['imei'] != $user->imei) {

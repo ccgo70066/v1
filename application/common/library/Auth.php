@@ -49,8 +49,9 @@ class Auth
         'constellation',
         'voice',
         'voice_size',
-        //'first_login',
+        'first_login',
         'im_token',
+        'role',
         //'is_follow',
         //'area',
         //'hidden_level',
@@ -464,7 +465,8 @@ class Auth
             UserGuest::addGuestLog($this->_user->id, $userId);
         }
         $business = UserBusiness::find($data['id']);
-        $data['im_token'] = $business['im_token'];
+        $data += $business->toArray();
+        //$data['im_token'] = $business['im_token'];
 
         $allowFields = $this->getAllowFields();
         $userinfo = array_intersect_key($data, array_flip($allowFields));
@@ -473,6 +475,7 @@ class Auth
         //    return RedisService::loadLang($value);
         //}, db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name')));
 
+        $userinfo['room_id'] = 0;
         $userinfo['token'] = $this->_token;
         //list(
         //    $userinfo['level_info'],
