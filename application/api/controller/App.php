@@ -235,7 +235,7 @@ class App extends Base
             }
         }
 
-        $this->success('', new \ArrayObject());
+        $this->success('');
     }
 
     /**

@@ -24,18 +24,6 @@ class Home extends Base
     }
 
     /**
-     * @ApiTitle    (房间主题分类列表)
-     *
-     * @ApiReturnParams    (name="theme_name", type="str", description="派对分类名称")
-     * @ApiReturnParams    (name="theme_color", type="str", description="派对分类名称-颜色")
-     */
-    public function room_theme_list()
-    {
-        $result = $this->service->roomThemeList(1);
-        $this->success('', $result);
-    }
-
-    /**
      * @ApiTitle    (房间列表[精选,派对])
      * @ApiMethod   (get)
      * @ApiParams   (name="theme_id",type="int",  required=true, rule="", description="主题ID:0=热门,-1=收藏.-2=全部")
@@ -61,9 +49,7 @@ class Home extends Base
                 $where['id'] = ['not in', $already_show_ids];
             }
         }
-
         $where['is_show'] = 1;
-        //$where['type'] = RoomModel::ROOM_TYPE_NUION;
         if ($theme_id == -1) {
             if ($page > 1) {
                 $this->success('', []);
