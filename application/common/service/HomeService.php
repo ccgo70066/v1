@@ -21,13 +21,14 @@ class HomeService
         $result = RoomModel::getRoomList($where, $limit);
         $redis = redis();
 
-        $owner = db('user')->where('id', 'in', array_column($result, 'owner_id'))->column('avatar', 'id');
+        $condition = array_column((array)$result, 'owner_id');
+        $owner = db('user')->where('id', 'in', $condition)->column('avatar', 'id');
         //获取房间类似数组
         //$roomCateArr = $this->getRoomCate();
         foreach ($result as $k => &$v) {
             $room_user = $redis->zRevRange(RedisService::ROOM_USER_KEY_PRE . $v['id'], 0, 5);
             $result[$k]['room_user'] = db('user')->where('id', 'in', $room_user)->limit(5)->column('avatar');
-            $v['owner_avatar'] = $owner[$v['owner_id']];
+            $v['owner_avatar'] = $owner[$v['owner_id']] ?? '';
         }
         return $result;
     }
