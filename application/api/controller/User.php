@@ -28,10 +28,10 @@ class User extends ApiBase
         'login',
         'mobile_login',
         'third_login',
+        'reset_password',
         'check',
         'id_login',
         'password_login',
-        'pswd_login',
         'get_nickname',
     ];
     protected $noNeedRight = ['*'];
@@ -339,7 +339,6 @@ class User extends ApiBase
 
         $this->success(__('Password set successfully'));
     }
-
 
 
     /**
