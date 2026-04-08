@@ -26,7 +26,6 @@ class Token extends ApiBase
         $res = (isset($tokenInfo) && $tokenInfo && $tokenInfo['token'] && $tokenInfo['expires_in'] > 1) ? 1 : 0;
         if ($res) {
             Db::name('user')->where('id', $tokenInfo['user_id'])->update(['loginip' => request()->ip()]);
-            Db::name('user_business')->where('id', $tokenInfo['user_id'])->update(['lang' => request()->langset()]);
         }
         $this->success('', ['ret' => $res]);
     }
