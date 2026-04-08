@@ -2,6 +2,7 @@
 
 namespace app\common\service;
 
+use app\api\library\RedisService;
 use app\common\model\AnchorRecommend as AnchorRecommendModel;
 use app\common\model\Gift as GiftModel;
 use app\common\model\User;
@@ -260,6 +261,31 @@ class UserService
             ->count(1);
 
         return $is_black > 0;
+    }
+
+
+    public static function getWallInfo($userId)
+    {
+        $giftIds = db('gift_wall')->where('user_id', $userId)->column('gift_id');
+        $where = [];
+        if ($giftIds) {
+            $where['id'] = ['in', $giftIds];
+        }
+
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
+        $query = db('gift')->where('status', GiftModel::STATUS_ON)
+            ->whereIn('type', $typeArr)
+            ->order('price desc');
+
+        $data = [];
+        $data['list'] = [];
+        $data['hasNum'] = 0;
+        $data['totalNum'] = $query->count();
+        if ($giftIds) {
+            $data['list'] = $query->where($where)->field('id,name,image,price_type,price')->order('price desc')->limit(5)->select();
+            $data['hasNum'] = count($giftIds);
+        }
+        return $data;
     }
 
 }
