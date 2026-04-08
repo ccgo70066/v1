@@ -20,7 +20,7 @@ return [
         ['gender' => 0, 'avatar' => '/assets/avatar/f_1.png',],
         ['gender' => 0, 'avatar' => '/assets/avatar/f_2.png',],
         ['gender' => 0, 'avatar' => '/assets/avatar/f_3.png',],
-        ['gender' => 0, 'avatar' => '/assets/avatar/f_4.png',],
+        //['gender' => 0, 'avatar' => '/assets/avatar/f_4.png',],
         // ['gender' => 0, 'avatar' => '/assets/avatar/f_5.png',],
         ['gender' => 1, 'avatar' => '/assets/avatar/m_1.png',],
         ['gender' => 1, 'avatar' => '/assets/avatar/m_2.png',],
