@@ -11,7 +11,6 @@ use think\Log;
 function getLastSql()
 {
     return \think\Db::getLastSql();
-
 }
 
 function traceInDB($content)
@@ -50,6 +49,7 @@ function redis()
  */
 function cacheFlag(): bool
 {
+    if (Env::get('app.debug')) return false;
     return Env::get('app.cache', 1) == 1;
 }
 
@@ -278,4 +278,45 @@ function mq_consume(BaseHandler $baseHandler)
         Log::error($e->getMessage());
         return false;
     }
+}
+
+
+function get_user_info($userIds, array $extend = []): array
+{
+    $data = [];
+    if (empty($userIds)) {
+        return $data;
+    }
+
+    $query = db('user r')->where('r.id', 'in', $userIds)
+        ->field('r.id as user_id,r.nickname,r.avatar,r.age,r.gender');
+
+    if (in_array('level', $extend)) {
+        $query->join('user_business s', 'r.id = s.id');
+        $query->join('level i', 's.level = i.grade', 'left');
+        $query->field('s.level,i.icon as level_icon');
+    }
+
+    if (in_array('noble', $extend)) {
+        $time = datetime(time() - config('app.noble_protection_time'));
+        $query->join('user_noble un', "r.id = un.user_id and un.end_time >'{$time}'", 'left');
+        $query->join('noble l', 'un.noble_id = l.id', 'left');
+        $query->field('l.name as noble_name,l.badge as noble_badge');
+    }
+    if (in_array('adornment', $extend)) {
+        $time = datetime();
+        $query->join('user_adornment ua', "r.id = ua.user_id and ua.expired_time >'{$time}' and ua.is_wear = 1", 'left');
+        $query->join('adornment a', 'ua.adornment_id = a.id', 'left');
+        $query->field('a.face_image as adornment');
+    }
+    if (!is_array($userIds)) {
+        $data = $query->find();
+    } else {
+        $list = $query->select();
+        foreach ($list as $v) {
+            $data[$v['user_id']] = $v;
+        }
+    }
+
+    return $data;
 }
