@@ -50,7 +50,7 @@ class Auth
         'voice',
         'voice_size',
         //'first_login',
-        //'im_token',
+        'im_token',
         //'is_follow',
         //'area',
         //'hidden_level',
@@ -451,7 +451,6 @@ class Auth
      */
     public function getUserinfo($userId = 0)
     {
-        //查自己
         if (empty($userId) || $userId == $this->_user->id) {
             $data = User::find($this->_user->id)->toArray();
             $data['is_follow'] = 0;
@@ -464,6 +463,8 @@ class Auth
             $data['is_follow'] = (int)db('user_follow')->where(['user_id' => $this->_user->id, 'to_user_id' => $userId])->find();
             UserGuest::addGuestLog($this->_user->id, $userId);
         }
+        $business = UserBusiness::find($data['id']);
+        $data['im_token'] = $business['im_token'];
 
         $allowFields = $this->getAllowFields();
         $userinfo = array_intersect_key($data, array_flip($allowFields));

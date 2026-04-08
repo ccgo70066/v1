@@ -298,7 +298,7 @@ class App extends ApiBase
         $self_url = url('/', '', '', true);
         $config = [
             'api_url'         => Env::get('app.api_url', $self_url),
-            'cdn_url'         => Env::get('app.cdn_url', cdnurl('')),
+            'cdn_url'         => Env::get('app.cdn_url', cdnurl('')) ?: $self_url,
             'ws_url'          => Env::get('app.web_socket_url'),
             'share_url'       => Env::get('app.share_url'), // 分享链接
             'share_text'      => 'hello',
