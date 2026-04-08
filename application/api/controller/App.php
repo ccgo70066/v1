@@ -198,50 +198,24 @@ class App extends ApiBase
 
     /**
      * @ApiTitle    (版本更新)
-     * @ApiSummary  (post)
-     * @ApiMethod   (get)
-     * @ApiParams   (name="system", type="string", required=true, rule="in:1,2", description="平台:1=IOS,2=ANDROID")
-     * @ApiParams   (name="version", type="string", required=true, rule="", description="版本号")
+     * @ApiMethod   (post)
      * @ApiReturnParams (name="force", type="string", required=true, rule="", description="强制更新:1=是,0=否")
      * @ApiReturn   ({ "code": 1, "msg": "", "data": { "version": "0.0.2", "download": "https://www.baidu.com", "force": 0, "comment": "" } })
      */
     public function get_new_version()
     {
-        $system = $this->request->param('system') == 1 ? 'IOS' : 'ANDROID';
+        $system = $this->request->param('system');
         $version = $this->request->param('version');
 
-        $user = '101164';
-        $this->auth->id == $user && $this->success('', new \ArrayObject());
-
-        $data = db('channel_package')->alias('cp')
-            ->field('cp.id,cp.channel_id')
-            ->where([
-                'cp.system'  => $system,
-                'cp.version' => $version,
-                'cp.status'  => 1,
-            ])
-            ->find();
-        if ($system == 'IOS') {
-            Log::error('IOS');
-            Log::error($data);
-            Log::error(Db()->getLastSql());
-        }
+        $data = db('channel_package')->alias('cp')->field('cp.id,cp.channel_id')
+            ->where(['cp.system' => $system, 'cp.version' => $version, 'cp.status' => 1,])->find();
         if ($data) {
             $lastData = db('channel_package')->field('version,download,force,comment')->where([
                 'channel_id' => $data['channel_id'],
                 'system'     => $system,
                 'status'     => 1,
             ])->order('version desc')->find();
-            if ($system == 'IOS') {
-                Log::error('IOS' . __LINE__);
-                Log::error($lastData);
-                Log::error(Db()->getLastSql());
-            }
             if ($lastData && version_compare($lastData['version'], $version) > 0) {
-                // 企业签的版本直接更新成App Store的版本
-                // $share_url = 'https://wx.ttworknet.com/';
-                // $lastData['download'] = $system == 'IOS' ? $share_url : $lastData['download'];
-
                 if ($lastData['force'] == 0) {
                     $between = db('channel_package')->where([
                         'channel_id' => $data['channel_id'],
@@ -249,11 +223,6 @@ class App extends ApiBase
                         'status'     => 1,
                         'version'    => [['>', $version], ['<', $lastData['version']]]
                     ])->column('force');
-                    if ($system == 'IOS') {
-                        Log::error('IOS' . __LINE__);
-                        Log::error($between);
-                        Log::error(Db()->getLastSql());
-                    }
                     foreach ($between as $item) {
                         if ($item == 1) {
                             $lastData['force'] = 1;
