@@ -299,6 +299,48 @@ class User extends ApiBase
         $this->success(__('Password set successfully'));
     }
 
+    /**
+     * 未登录状态下重置密码
+     * @ApiMethod   (post)
+     * @ApiParams   (name="mobile", type="string", required=true, description="手机号")
+     * @ApiParams   (name="captcha", type="string", required=true, rule="", description="验证码:set_password")
+     * @ApiParams   (name="password", type="string", required=true, description="密码")
+     * @ApiWeigh    (9801)
+     */
+    public function reset_password()
+    {
+        $mobile = input('mobile');
+
+        $user_id = db('user')->where(['mobile' => $mobile])->value('id');
+        $captcha = input('captcha');
+
+        if (!$mobile || !$user_id) {
+            $this->error(__('This number is not registered'));
+        }
+        (mb_strlen(input('password', '', 'trim')) < 6 || mb_strlen(input('password', '', 'trim')) > 22) &&
+        $this->error(__('Password length cannot be less than %s digits', 6));
+
+        if (!Sms::check($mobile, $captcha, 'set_password')) {
+            $this->error(__('The verification code is incorrect'));
+        }
+        try {
+            Sms::flush($mobile, 'set_password');
+            $password = input('password', '', 'trim');
+            $salt = Random::alnum();
+            db('user')->where(['id' => $user_id])->setField([
+                'salt'     => $salt,
+                'password' => (new Auth())->getEncryptPassword($password, $salt),
+            ]);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            error_log_out($e);
+            $this->error(show_error_notify($e));
+        }
+
+        $this->success(__('Password set successfully'));
+    }
+
+
 
     /**
      * 退出登录
