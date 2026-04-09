@@ -1155,9 +1155,6 @@ class Room extends Base
     {
         $config = get_site_config('room_chat_word');
         $data = $config ? explode('#', $config) : [];
-        foreach ($data as &$item) {
-            $item = RedisService::loadLang($item);
-        }
         $this->success('', $data);
     }
 
@@ -1192,15 +1189,14 @@ class Room extends Base
      * @ApiParams   (name="size", type="int",  required=false, rule="", description="页码大小")
      * @throws
      */
-    public function get_list()
+    public function get_list(): void
     {
         $user_id = $this->auth->id;
         $list = db('room')->field('id,beautiful_id,name,is_lock,hot,cover,member_count')
             ->where(['name|id|beautiful_id' => ['like', '%' . input('keyword') . '%']])
             ->page(input('page', 1), input('size', 10))->select();
 
-        $my = db('room r')
-            ->join('room_admin a', 'r.id = a.room_id', 'left')
+        $my = db('room r')->join('room_admin a', 'r.id = a.room_id', 'left')
             ->field('id,beautiful_id,name,is_lock,hot,cover,member_count', false, 'r')
             ->field('a.status')
             ->where('a.user_id', $user_id)->where('a.status', 'in', [0, 1])->find();
