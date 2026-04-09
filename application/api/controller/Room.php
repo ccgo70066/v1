@@ -914,10 +914,7 @@ class Room extends Base
      **/
     public function get_bg_img()
     {
-        $data['upload'] = db('room_img')->where(
-            'room_id',
-            input('room_id')
-        )->field('id,image as url')->order('id')->select();
+        $data['upload'] = db('room_img')->where('room_id', input('room_id'))->field('id,image as url')->order('id')->select();
         $data['sys'] = db('room_img')->where('type', 1)->order('weigh asc')->field('image as url')->select();
         $this->success('', $data);
     }
