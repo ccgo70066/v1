@@ -103,7 +103,7 @@ class App extends Base
         in_array($suffix, ['gif', 'jpg', 'jpeg', 'png', 'webp']) &&
         $targetFile = $this->compressImage($fileInfo['tmp_name']);
         $upload = $minio->putObject($targetFile, $uploadDir . $fileName);
-        trace($upload);
+        str_contains($upload, 'error') && trace($upload, 'error');
         if ($fileInfo['type'] == 'video/mp4') {
             $ffmpeeg = new Ffmpeeg();
             $cover_url = $uploadDir . $fileName . '.jpg';
