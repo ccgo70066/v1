@@ -5,10 +5,10 @@ namespace app\common\library;
 use app\common\exception\ApiException;
 use app\common\model\User;
 use app\common\model\UserBusiness;
-use app\common\model\UserGuest;
 use app\common\model\UserRule;
 use app\common\service\ImService;
 use app\common\service\RedisService;
+use app\common\service\UserBaseStatisticsService;
 use fast\Random;
 use think\Config;
 use think\Db;
@@ -468,33 +468,44 @@ class Auth
         $allowFields = $this->getAllowFields();
         $userinfo = array_intersect_key($data, array_flip($allowFields));
         //$userinfo['constellation'] = __($userinfo['constellation']);
-        //$userinfo['interest_text'] = implode(',', array_map(function ($value) {
-        //    return RedisService::loadLang($value);
-        //}, db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name')));
+        $userinfo['interest_text'] = implode(',', db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name'));
 
         $userinfo['room_id'] = 0;
         $userinfo['token'] = $this->_token;
-        //list(
-        //    $userinfo['level_info'],
-        //    $userinfo['user_adornment'],
-        //    $userinfo['user_car'],
-        //    $userinfo['user_bubble'],
-        //    $userinfo['user_tail']
-        //    ) = [
-        //    UserBusiness::getUserLevelInfoById($userinfo['id']),
-        //    UserBusiness::getWearAdornmentImage($userinfo['id']),
-        //    UserBusiness::getWearCarImage($userinfo['id']),
-        //    UserBusiness::getWearBubbleImage($userinfo['id']),
-        //    UserBusiness::getWearTailImage($userinfo['id']),
-        //];
+        [
+            $userinfo['level_info'],
+            $userinfo['user_adornment'],
+            $userinfo['user_car'],
+            $userinfo['user_bubble'],
+            $userinfo['user_tail']
+        ] = [
+            UserBusiness::getUserLevelInfoById($userinfo['id']),
+            UserBusiness::getWearAdornmentImage($userinfo['id']),
+            UserBusiness::getWearCarImage($userinfo['id']),
+            UserBusiness::getWearBubbleImage($userinfo['id']),
+            UserBusiness::getWearTailImage($userinfo['id']),
+        ];
 
         $currentRoomId = redis()->hGet(RedisService::USER_NOW_ROOM_KEY, $userinfo['id']);
-        //$statistics = UserBaseStatisticsService::getUserStatistics($userinfo['id']);
-        //$userinfo['fan_num'] = $statistics['fan_num'];
-        //$userinfo['follow_num'] = $statistics['follow_num'];
-        //$userinfo['guest_num'] = $statistics['guest_num'];
-        //$userinfo['blacklist_num'] = $statistics['blacklist_num'];
-        //$userinfo['red_packet_auth'] = UserBusiness::getRedPacketAuth($userinfo['id']);
+        $userinfo['is_on_room'] = $currentRoomId ?: 0;
+        if ($currentRoomId) {
+            $currentRoom = Db::name('room')->alias('r')->join('room_theme_cate c', 'r.theme_id = c.id')
+                ->where('r.id', $currentRoomId)->field('c.name as theme_name,r.name,r.cover')->find();
+            $userinfo['current_room'] = [
+                'id'    => $currentRoomId,
+                'name'  => $currentRoom['name'],
+                'cover' => $currentRoom['cover'],
+                'cate'  => $currentRoom['theme_name'],
+            ];
+        } else {
+            $userinfo['current_room'] = null;
+        }
+        $statistics = UserBaseStatisticsService::getUserStatistics($userinfo['id']);
+        $userinfo['fan_num'] = $statistics['fan_num'];
+        $userinfo['follow_num'] = $statistics['follow_num'];
+        $userinfo['guest_num'] = $statistics['guest_num'];
+        $userinfo['blacklist_num'] = $statistics['blacklist_num'];
+        $userinfo['red_packet_auth'] = UserBusiness::getRedPacketAuth($userinfo['id']);
         $userinfo['shutup'] = db('user_shutup')->where('user_id', $userinfo['id'])->find() ? 1 : 0;
 
         return $userinfo;
