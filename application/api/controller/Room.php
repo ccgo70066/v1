@@ -879,17 +879,12 @@ class Room extends Base
      * @ApiParams  (name="img_url",    type="string",  required=true, rule="require", description="图片地址")
      * @ApiParams  (name="id",    type="string",  required=false, rule="", description="id,新增图片不传")
      **/
-    public function upload_bg_img(RoomModel $roomModel)
+    public function upload_bg_img()
     {
         $room_id = input('room_id');
         $img_url = input('img_url');
         $id = input('id');
-
-        //房间管理员才能更改房间背景图
-        $check_auth = $this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]);
-        if (!$check_auth) {
-            throw new ApiException(__('No permissions'));
-        }
+        if (!($this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]))) $this->error(__('No permissions'));
 
         if ($id) {
             db('room_img')->where('room_id', $room_id)->where(['id' => $id, 'room_id' => $room_id])->setField([
