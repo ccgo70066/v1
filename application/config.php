@@ -34,8 +34,8 @@ return [
     // 扩展函数文件
     'extra_file_list'         => [
         THINK_PATH . 'helper' . EXT,
-        ROOT_PATH . 'application/extend' . EXT,
-        //ROOT_PATH . 'application/business' . EXT,
+        ROOT_PATH . 'application/helper' . EXT,
+        ROOT_PATH . 'application/business' . EXT,
     ],
     // 默认输出类型
     'default_return_type'     => 'html',

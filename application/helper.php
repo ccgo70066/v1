@@ -1,19 +1,9 @@
 <?php
 
-use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\admin\model\User;
-use app\common\exception\ApiException;
-use app\common\library\rabbitmq\BaseHandler;
-use app\common\library\rabbitmq\BoardNoticeMQ;
-use app\common\model\MoneyLog;
-use app\common\model\UserBusiness;
-use app\common\service\ImService;
-use GatewayClient\Gateway;
-use think\Db;
 use think\Env;
 use think\Log;
 
-function getLastSql()
+function getSql()
 {
     return \think\Db::getLastSql();
 }
@@ -23,16 +13,14 @@ function traceInDB($content)
     db('test')->insert(['content' => json_encode($content)]);
 }
 
-if (!function_exists('trace')) {
-    function trace($log = '[think]', $level = 'log')
-    {
-        if ('[think]' === $log) {
-            return Log::getLog();
-        }
-        $back = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        Log::record($back[0]['file'] . ':' . $back[0]['line'], $level);
-        Log::record($log, $level);
+function t($log = '[think]', $level = 'log')
+{
+    if ('[think]' === $log) {
+        return Log::getLog();
     }
+    $back = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+    Log::record($back[0]['file'] . ':' . $back[0]['line'], $level);
+    Log::record($log, $level);
 }
 
 function redis()
@@ -80,9 +68,7 @@ function get_site_config($name)
  */
 function array_index_filter($array, $filter, $exclude = false)
 {
-    if (!is_array($filter) && is_string($filter)) {
-        $filter = explode(',', $filter);
-    }
+    !is_array($filter) && is_string($filter) && $filter = explode(',', $filter);
     if ($exclude) {
         return array_diff_key($array, array_flip($filter));
     } else {
@@ -90,11 +76,6 @@ function array_index_filter($array, $filter, $exclude = false)
     }
 }
 
-
-function show_error_notify($e)
-{
-    return $e->getMessage();
-}
 
 /**
  * 验证是否有锁，没锁会创建锁并返回false,如果已经有锁了则返回true

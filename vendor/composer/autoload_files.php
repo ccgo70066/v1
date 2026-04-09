@@ -24,5 +24,4 @@ return array(
     '1cfd2761b63b0a29ed23657ea394cb2d' => $vendorDir . '/topthink/think-captcha/src/helper.php',
     'cc56288302d9df745d97c934d6a6e5f0' => $vendorDir . '/topthink/think-queue/src/common.php',
     '190ec939e5c9a714534abbb4232740cb' => $vendorDir . '/zoujingli/ip2region/function.php',
-    '8a8452863f575483e209cfa6e96fbb01' => $baseDir . '/application/business.php',
 );
