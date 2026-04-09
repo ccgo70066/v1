@@ -146,7 +146,7 @@ class Base extends Api
         if (Env::get('app.debug')) return;
         $redis = redis();
         if (!$redis->set('operate_check:' . $operate, 1, ['nx', 'ex' => $second]))
-            throw new ApiException(__('Operation too fast'));
+            $this->error(__('Operation too fast'));
     }
 
     protected function sign_decode(): void
