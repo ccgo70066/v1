@@ -955,7 +955,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (获取成员列表[公,个])
+     * 获取在线用户
      * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
      * @ApiMethod   (get)
      **/
@@ -1198,11 +1198,51 @@ class Room extends Base
 
         $my = db('room r')->join('room_admin a', 'r.id = a.room_id', 'left')
             ->field('id,beautiful_id,name,is_lock,hot,cover,member_count', false, 'r')
-            ->field('a.status')
-            ->where('a.user_id', $user_id)->where('a.status', 'in', [0, 1])->find();
+            ->field('a.status,a.role')
+            ->where('a.user_id', $user_id)->where('a.status', '>=', 0)->find();
         $this->success('', [
             'my'   => $my,
             'list' => $list,
         ]);
+    }
+
+    /** 获取房间成员
+     * @ApiMethod   (post)
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
+     * @ApiParams   (name="status", type="int",  required=true, rule="", description="类型:1=正常,0=申请加入,2=申请退出")
+     * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
+     * @ApiParams   (name="size", type="int",  required=false, rule="", description="页码大小")
+     * @throws
+     */
+    public function get_member_list()
+    {
+        $room_id = input('room_id', 0);
+        $list = db('room_admin')->alias('a')->join('user u', 'a.user_id = u.id', 'left')
+            ->field('a.status,u.id,u.nickname,u.avatar,u.sex')
+            ->where('a.room_id', $room_id)
+            ->where('status', input('status', 1))
+            ->page(input('page', 1), input('size', 10))->select();
+
+        $this->success('', $list);
+    }
+
+    /**
+     * 审核成功
+     * @ApiMethod   (post)
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
+     * @ApiParams   (name="user_id", type="int",  required=true, rule="", description="用户ID")
+     * @ApiParams   (name="status", type="int",  required=true, rule="", description="审核结果:1=同意加入,-1=拒绝加入,-2=同意退出,-3=拒绝退出")
+     * @throws
+     */
+    public function member_audit()
+    {
+        $status = input('status', 0);
+        $status == -3 && $status = 1;
+        db('room_admin')->where([
+            'room_id' => input('room_id'),
+            'user_id' => input('user_id'),
+        ])->setField('status', $status);
+
+        $this->success();
     }
 }
