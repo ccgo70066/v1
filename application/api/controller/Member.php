@@ -14,7 +14,7 @@ use think\Hook;
  */
 class Member extends Base
 {
-    protected $noNeedLogin = '*';
+    protected $noNeedLogin = [];
     protected $noNeedRight = '*';
 
     /**
