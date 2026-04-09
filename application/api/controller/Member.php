@@ -10,6 +10,7 @@ use think\Hook;
 
 /**
  * 房间成员
+ * @ApiWeigh    (901)
  */
 class Member extends Base
 {
