@@ -32,6 +32,8 @@
 	"hashids/hashids": "^5.0",
 	"spatie/emoji": "^4.1",
 	"php-amqplib/php-amqplib": "^3.7",
+	"lustre/php-dfa-sensitive": "^1.4",
+	"aws/aws-sdk-php": "^3.378",
 	"ext-json": "*",
 	"ext-curl": "*",
 	"ext-pdo": "*",
@@ -40,8 +42,7 @@
 	"ext-gd": "*",
 	"ext-openssl": "*",
 	"ext-posix": "*",
-    "lustre/php-dfa-sensitive": "^1.4",
-    "aws/aws-sdk-php": "^3.378"
+	"ext-fileinfo": "*"
   },
   "config": {
 	"preferred-install": "dist",
