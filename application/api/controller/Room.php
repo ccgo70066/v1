@@ -1182,4 +1182,31 @@ class Room extends Base
         db('room')->where('id', $room_id)->setField('status', -1);
         $this->success(__('Submitted successfully, please wait for review'));
     }
+
+
+    /**
+     * 获取房间列表及自己的当前房间信息
+     * @ApiMethod   (post)
+     * @ApiParams   (name="keyword", type="string",  required=false, rule="", description="搜索关键字")
+     * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
+     * @ApiParams   (name="size", type="int",  required=false, rule="", description="页码大小")
+     * @throws
+     */
+    public function get_list()
+    {
+        $user_id = $this->auth->id;
+        $list = db('room')->field('id,beautiful_id,name,is_lock,hot,cover,member_count')
+            ->where(['name|id|beautiful_id' => ['like', '%' . input('keyword') . '%']])
+            ->page(input('page', 1), input('size', 10))->select();
+
+        $my = db('room r')
+            ->join('room_admin a', 'r.id = a.room_id', 'left')
+            ->field('id,beautiful_id,name,is_lock,hot,cover,member_count', false, 'r')
+            ->field('a.status')
+            ->where('a.user_id', $user_id)->where('a.status', 'in', [0, 1])->find();
+        $this->success('', [
+            'my'   => $my,
+            'list' => $list,
+        ]);
+    }
 }
