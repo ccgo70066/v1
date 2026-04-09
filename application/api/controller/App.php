@@ -46,7 +46,7 @@ class App extends Base
     /**
      * 上传文件
      * @ApiMethod (POST)
-     * @ApiParams   (name="scene", type="int", required=true, rule="between:0,100", description="存儲場景:0=默認,1=用戶資料,2=廣場,3=房間和家族,4=聊天,5=签名-主播,6=签名-家族,99=前端日志")
+     * @ApiParams   (name="scene", type="int", required=false, rule="between:0,100", description="存儲場景:0=默認,1=用戶資料,2=廣場,3=房間和家族,4=聊天,5=签名-主播,6=签名-家族,99=前端日志")
      * @ApiParams   (name="file", type="file", required=false, rule="", description="文件")
      */
     public function upload()
@@ -103,7 +103,6 @@ class App extends Base
         in_array($suffix, ['gif', 'jpg', 'jpeg', 'png', 'webp']) &&
         $targetFile = $this->compressImage($fileInfo['tmp_name']);
         $upload = $minio->putObject($targetFile, $uploadDir . $fileName);
-        trace('upload');
         trace($upload);
         if ($fileInfo['type'] == 'video/mp4') {
             $ffmpeeg = new Ffmpeeg();
