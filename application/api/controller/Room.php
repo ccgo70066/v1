@@ -71,8 +71,10 @@ class Room extends Base
      **/
     public function edit(RoomModel $roomModel)
     {
-        $arr = [];
-        $room_id = input('room_id');
+        $update = array_filter(input(), function ($value) {
+            return $value !== '' && $value !== null;
+        });
+        $room_id = $update['room_id'];
         $this->operate_check('edit_room:' . $this->auth->id, 2);
         $check_role = $this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]);
         if (!$check_role) $this->error(__('No permissions'));
@@ -80,108 +82,80 @@ class Room extends Base
         if ($is_blacklist) $this->error(__('You\'re on the party blacklist'));
 
         $room = db('room')->where('id', $room_id)->find();
+        if ($room['status'] == 1) $this->error(__('Room under review, status cannot be modified'));
+        if ($room['status'] == 0) $this->error(__('Room is being banned, cannot modify'));
+
+        if (isset($update['name'])) {
+            $update['name'] = Shield::sensitive_filter($update['name']);
+            $res = db('room')->where('name', $update['name'])->whereIn('status', [2, 3])->where('id', '<>', $room_id)->count();
+            if ($res) $this->error(__('Room name already exists'));
+            if ($update['name'] <> $room['name']) {
+                $roomModel->add_room_log($room_id, $this->auth->id, "變更房間名稱", ' change room name');
+            }
+        }
+        if (isset($update['notice'])) {
+            $update['notice'] = Shield::sensitive_filter(input('notice'));
+            if ($update['notice'] <> $room['notice']) {
+                $roomModel->add_room_log($room_id, $this->auth->id, "變更房間公告", ' change room notice');
+            }
+        }
+        if (isset($update['bg_img'])) {
+            if ($update['bg_img'] <> $room['bg_img']) {
+                $roomModel->add_room_log($room_id, $this->auth->id, "更換了派對背景", ' change room background');
+            }
+        }
+        if (isset($update['way'])) {
+            if ($update['way'] == 1) $this->service->clearMicQueue($room_id); //清空排麦
+            if ($update['way'] <> $room['way']) {
+                $way = [1 => '更改為自由上麥', 2 => '更改為排麥模式'];
+                $way_en = [1 => ' changed to free Mic', 2 => ' changed to queue Mic mode'];
+                $roomModel->add_room_log($room_id, $this->auth->id, $way[$update['way']], $way_en[$update['way']]);
+            }
+        }
+        if (input('welcome_switch') || input('welcome_switch') === 0 || input('welcome_switch') === '0') {
+            if ($update['welcome_switch'] <> $room['welcome_switch']) {
+                $t = [0 => '關閉歡迎語', 1 => '開啟歡迎語'];
+                $t_en = [0 => ' welcome-message off', 1 => ' welcome-message on'];
+                $roomModel->add_room_log($room_id, $this->auth->id, $t[$update['welcome_switch']], $t_en[$update['welcome_switch']]);
+            }
+        }
+        if (isset($update['welcome_msg'])) {
+            $update['welcome_msg'] = Shield::sensitive_filter(input('welcome_msg'));
+            if (strlen($update['welcome_msg']) > 500) $this->error(__('Welcome message character length exceeds limit'));
+        }
+
+        if (input('is_show') || input('is_show') === 0 || input('is_show') === '0') {
+            $redis = redis();
+            if (input('is_show') == 1 && $redis->hGet(RedisService::ADMIN_SET_ROOM_NOT_SHOW, $room_id)) {
+                $this->error(__('Unable to update to business, please contact customer service'));
+            }
+
+            $update['is_show'] = input('is_show');
+            if ($update['is_show'] == 0) $this->service->clearMicQueue($room_id); //清空排麦
+            if ($update['is_show'] <> $room['is_show']) {
+                $is_show = [1 => '更改房間狀態為開業', 0 => '更改房間狀態為歇業'];
+                $is_show_en = [1 => ' changed to opening', 0 => ' changed to closed'];
+                $roomModel->add_room_log($room_id, $this->auth->id, $is_show[$update['is_show']], $is_show_en[$update['is_show']]);
+            }
+        }
+        if (input('is_lock') || input('is_lock') === 0 || input('is_lock') === '0') {
+            $update['is_lock'] = input('is_lock');
+            if ($update['is_lock'] <> $room['is_lock']) {
+                $lock = [0 => '取消房間密碼', 1 => '設置房間密碼'];
+                $lock_en = [0 => ' cancelled room password', 1 => ' set room password'];
+                $roomModel->add_room_log($room_id, $this->auth->id, $lock[$update['is_lock']], $lock_en[$update['is_lock']]);
+            }
+        }
+
+        if (input('is_lock')) {
+            if (!input('password')) $this->error(__('Password cannot be empty'));
+            if (mb_strlen((input('password'))) > 6 || mb_strlen((input('password'))) < 4) $this->error(__('Password must be 4-6 characters'));
+        }
+
+
+        Db::startTrans();
         try {
-            Db::startTrans();
-            if (input('name')) {
-                $arr['name'] = Shield::sensitive_filter(input('name'));
-                if ($arr['name'] <> $room['name']) {
-                    $roomModel->add_room_log($room_id, $this->auth->id, "變更房間名稱", ' change room name');
-                }
-            }
-            if (input('theme_id')) $arr['theme_id'] = input('theme_id');
-            if (input('notice')) {
-                $arr['notice'] = Shield::sensitive_filter(input('notice'));
-                if ($arr['notice'] <> $room['notice']) {
-                    $roomModel->add_room_log($room_id, $this->auth->id, "變更房間公告", ' change room notice');
-                }
-            }
-            if (input('cover')) $arr['cover'] = input('cover');
-            if (input('password')) $arr['password'] = input('password');
-            if (input('bg_img')) {
-                $arr['bg_img'] = input('bg_img');
-                if ($arr['bg_img'] <> $room['bg_img']) {
-                    $roomModel->add_room_log($room_id, $this->auth->id, "更換了派對背景", ' change room background');
-                }
-            }
-            if (input('label')) $arr['label'] = input('label');
-            if (input('way')) {
-                $arr['way'] = input('way');
-                if ($arr['way'] == 1) $this->service->clearMicQueue($room_id); //清空排麦
-                if ($arr['way'] <> $room['way']) {
-                    $way = [1 => '更改為自由上麥', 2 => '更改為排麥模式'];
-                    $way_en = [1 => ' changed to free Mic', 2 => ' changed to queue Mic mode'];
-                    $roomModel->add_room_log($room_id, $this->auth->id, $way[$arr['way']], $way_en[$arr['way']]);
-                }
-            }
-            if (input('welcome_switch') || input('welcome_switch') === 0 || input('welcome_switch') === '0') {
-                $arr['welcome_switch'] = input('welcome_switch');
-                if ($arr['welcome_switch'] <> $room['welcome_switch']) {
-                    $t = [0 => '關閉歡迎語', 1 => '開啟歡迎語'];
-                    $t_en = [0 => ' welcome-message off', 1 => ' welcome-message on'];
-                    $roomModel->add_room_log($room_id, $this->auth->id, $t[$arr['welcome_switch']], $t_en[$arr['welcome_switch']]);
-                }
-            }
-            if (input('status')) $arr['status'] = input('status');
-            if (input('welcome_msg')) {
-                $arr['welcome_msg'] = Shield::sensitive_filter(input('welcome_msg'));
-                if (strlen($arr['welcome_msg']) > 500) {
-                    throw new ApiException(__('Welcome message character length exceeds limit'));
-                }
-            }
-
-            if (input('is_show') || input('is_show') === 0 || input('is_show') === '0') {
-                if (input('is_show') == 1) {
-                    $union = db('union')->where('id', $room['union_id'])->find();
-                    if ($union['status'] == 2) {
-                        throw new ApiException(__('Clan status is disabled'));
-                    }
-                }
-                $redis = redis();
-                if (input('is_show') == 1 && $redis->hGet(RedisService::ADMIN_SET_ROOM_NOT_SHOW, $room_id)) {
-                    $this->error(__('Unable to update to business, please contact customer service'));
-                }
-
-                $arr['is_show'] = input('is_show');
-                if ($arr['is_show'] == 0) $this->service->clearMicQueue($room_id); //清空排麦
-                if ($arr['is_show'] <> $room['is_show']) {
-                    $is_show = [1 => '更改房間狀態為開業', 0 => '更改房間狀態為歇業'];
-                    $is_show_en = [1 => ' changed to opening', 0 => ' changed to closed'];
-                    $roomModel->add_room_log($room_id, $this->auth->id, $is_show[$arr['is_show']], $is_show_en[$arr['is_show']]);
-                }
-            }
-            if (input('is_lock') || input('is_lock') === 0 || input('is_lock') === '0') {
-                $arr['is_lock'] = input('is_lock');
-                if ($arr['is_lock'] <> $room['is_lock']) {
-                    $lock = [0 => '取消房間密碼', 1 => '設置房間密碼'];
-                    $lock_en = [0 => ' cancelled room password', 1 => ' set room password'];
-                    $roomModel->add_room_log($room_id, $this->auth->id, $lock[$arr['is_lock']], $lock_en[$arr['is_lock']]);
-                }
-            }
-
-            if (input('name')) {
-                $res = db('room')->where('name', $arr['name'])->where('status', '<>', RoomModel::ROOM_STATUS_FORBIDDEN)->where('id', '<>', $room_id)->count();
-                if ($res) throw new ApiException(__('Room name already exists'));
-            }
-
-            if (input('is_lock')) {
-                if (!input('password')) {
-                    throw new ApiException(__('Password cannot be empty'));
-                }
-                if (mb_strlen((input('password'))) > 6 || mb_strlen((input('password'))) < 4) {
-                    throw new ApiException(__('Password must be 4-6 characters'));
-                }
-            }
-            if (isset($arr['status']) && $arr['status']) {
-                $status = db('room')->where('id', $room_id)->value('status');
-                if ($status == 1) {
-                    throw new ApiException(__('Room under review, status cannot be modified'));
-                }
-                if ($status == 0) {
-                    throw new ApiException(__('Room is being banned, cannot modify'));
-                }
-            }
-
-            db('room')->where('id', $room_id)->update($arr);
+            db('room')->where('id', $room_id)->update($update);
             Db::commit();
             $data = db('room')->where('id', $room_id)->find();
             $this->success('', $data);
