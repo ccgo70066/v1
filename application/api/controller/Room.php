@@ -7,6 +7,7 @@ use app\common\model\ChannelBlacklist;
 use app\common\model\NoblePrivilege;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
+use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
 use think\Db;
@@ -47,10 +48,10 @@ class Room extends Base
      * @ApiParams   (name="cover",  type="string",  required=true, rule="require", description="封面")
      * @ApiParams   (name="intro",  type="string",  required=true, rule="require", description="简介")
      * @ApiParams   (name="bg_img",   type="string",  required=false, rule="", description="背景图")
-     * @ApiParams   (name="welcome_switch",   type="int",  required=false, rule="", description="歡迎語開關:1=開,0=關")
+     * @ApiParams   (name="welcome_switch",   type="int",  required=false, rule="", description="欢迎语开关:1=开,0=关")
      * @ApiParams   (name="welcome_msg",   type="string",  required=false, rule="", description="欢迎语")
      */
-    public function create_room(RoomModel $roomModel)
+    public function create_room()
     {
         if (input('welcome_switch', 0) == 1 && input('welcome_msg') == '') $this->error(__('Please enter welcome message'));
         $user_id = $this->auth->id;
@@ -67,21 +68,21 @@ class Room extends Base
     /**
      * 修改房间
      * @ApiMethod   (post)
-     * @ApiParams   (name="id", type="int",  required=true, rule="require", description="房間ID")
-     * @ApiParams   (name="name",    type="int",  required=false, rule="", description="房間名稱")
-     * @ApiParams   (name="theme_id",    type="int",  required=false,rule="min:1", description="房間主題類型")
+     * @ApiParams   (name="id", type="int",  required=true, rule="require", description="房间ID")
+     * @ApiParams   (name="name",    type="int",  required=false, rule="", description="房间名称")
+     * @ApiParams   (name="theme_id",    type="int",  required=false,rule="min:1", description="房间主题类型")
      * @ApiParams   (name="notice",  type="str",  required=false, rule="", description="公告")
      * @ApiParams   (name="cover",   type="int",  required=false, rule="min:0", description="封面")
-     * @ApiParams   (name="is_lock", type="int",  required=false, rule="", description="是否要密碼:1=要,0=不要")
-     * @ApiParams   (name="password",type="int",  required=false, rule="", description="明文密碼")
-     * @ApiParams   (name="bg_img",  type="str",  required=false, rule="", description="聊天背景圖片")
-     * @ApiParams   (name="label",   type="str",  required=false, rule="max:4", description="自定義標簽")
-     * @ApiParams   (name="way",   type="int",  required=false, rule="between:0,5", description="排麥方式:1=自由麥,2=排麥")
-     * @ApiParams   (name="is_show",   type="int",  required=false, rule="between:0,5", description="是否營業:1=營業,0=不營業")
-     * @ApiParams   (name="welcome_msg",   type="str",  required=false, rule="", description="房間歡迎語")
-     * @ApiParams   (name="welcome_switch",   type="int",  required=false, rule="", description="歡迎語開關:1=開,0=關")
+     * @ApiParams   (name="is_lock", type="int",  required=false, rule="", description="是否要密码:1=要,0=不要")
+     * @ApiParams   (name="password",type="int",  required=false, rule="", description="明文密码")
+     * @ApiParams   (name="bg_img",  type="str",  required=false, rule="", description="聊天背景图片")
+     * @ApiParams   (name="label",   type="str",  required=false, rule="max:4", description="自定义标签")
+     * @ApiParams   (name="way",   type="int",  required=false, rule="between:0,5", description="排麦方式:1=自由麦,2=排麦")
+     * @ApiParams   (name="is_show",   type="int",  required=false, rule="between:0,5", description="是否营业:1=营业,0=不营业")
+     * @ApiParams   (name="welcome_msg",   type="str",  required=false, rule="", description="房间欢迎语")
+     * @ApiParams   (name="welcome_switch",   type="int",  required=false, rule="", description="欢迎语开关:1=开,0=关")
      **/
-    public function edit(RoomModel $roomModel)
+    public function edit()
     {
         $update = array_filter(input(), function ($value) {
             return $value !== '' && $value !== null;
@@ -130,11 +131,11 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (開啓/關閉個人房間)
-     * @ApiSummary  (開啓/關閉個人房間,關閉房間前端刪除第三方im平台成員數據)
-     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房間號")
-     * @ApiParams   (name="is_close", type="int",  required=true, rule="", description="關閉房間:1=關閉,0=開啓")
-     * @ApiParams   (name="user_id",  type="int",  required=false, rule="", description="房主id,默認當前用戶")
+     * 开启/关闭个人房间
+     * @ApiSummary  (开启/关闭个人房间,关闭房间前端删除第三方im平台成员数据)
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间号")
+     * @ApiParams   (name="is_close", type="int",  required=true, rule="", description="关闭房间:1=关闭,0=开启")
+     * @ApiParams   (name="user_id",  type="int",  required=false, rule="", description="房主id,默认当前用户")
      **/
     public function close()
     {
@@ -142,15 +143,10 @@ class Room extends Base
         $room_id = input('room_id');
         $is_close = input('is_close');
         $room = db('room')->where('id', $room_id)->find();
-        if (!$room) {
-            $this->error(__('No results were found'), 406);
-        }
-
-        if ($room['owner_id'] <> $user_id) {
-            $this->error(__('No homeowner permission'));
-        }
+        if (!$room) $this->error(__('No results were found'), 406);
+        if ($room['owner_id'] <> $user_id) $this->error(__('No homeowner permission'));
+        Db::startTrans();
         try {
-            Db::startTrans();
             switch ($is_close) {
                 case 1:
                     if ($room['is_close'] === 1) {
@@ -222,9 +218,9 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (訪問記錄)
+     * @ApiTitle    (访问记录)
      * @ApiSummary
-     * @ApiParams   (name="size",       type="int", required=true,  rule="", description="分頁大小,默認20")
+     * @ApiParams   (name="size",       type="int", required=true,  rule="", description="分页大小,默认20")
      * @ApiParams   (name="start_id",   type="int",  required=true,  rule="", description="分页id")
      */
     public function enter_log()
@@ -260,12 +256,12 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (上座[公,個])
+     * @ApiTitle    (上座[公,个])
      * @ApiSummary  (上座)
-     * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="ID房間")
-     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用戶ID")
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="ID房间")
+     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户ID")
      * @ApiParams   (name="op_user_id", type="int",  required=false, rule="", description="操作者")
-     * @ApiParams   (name="seat", type="str",  required=true, rule="", description="座位號:1到9")
+     * @ApiParams   (name="seat", type="str",  required=true, rule="", description="座位号:1到9")
      **/
     public function sit_seat(RoomModel $roomModel)
     {
@@ -300,17 +296,17 @@ class Room extends Base
                 db('room')->where('id', $room_id)->setField($key, 0);
             }
         }
-        //上座了将其退出排麥隊列
+        //上座了将其退出排麦队列
         if ($room['way'] == 2) {
             $imService = new ImService();
             $imService->room_wait_mic_delete($room_id, $user_id);
         }
         if ($user_id == $op_user_id) {
-            $msg = "坐上了" . ($seat - 1) . "號麥";
+            $msg = "坐上了" . ($seat - 1) . "号麦";
             $msg_en = " on the Mic " . ($seat - 1);
         } else {
             $nickname = RedisService::getUserCache($user_id, 'nickname');
-            $msg = "將*" . $nickname . "*抱上" . ($seat - 1) . "號麥";
+            $msg = "将*" . $nickname . "*抱上" . ($seat - 1) . "号麦";
             $msg_en = " hold *{$nickname}* on the Mic " . ($seat - 1);
         }
         $roomModel->add_room_log($room_id, $op_user_id, $msg, $msg_en, $user_id);
@@ -318,10 +314,10 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (下座[公,個])
-     * @ApiParams   (name="room_id", type="int",  required=false, rule="", description="房間ID")
-     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用戶ID,不傳則爲操作者")
-     * @ApiParams   (name="seat", type="str",  required=true, rule="", description="座位號:1到9")
+     * @ApiTitle    (下座[公,个])
+     * @ApiParams   (name="room_id", type="int",  required=false, rule="", description="房间ID")
+     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户ID,不传则为操作者")
+     * @ApiParams   (name="seat", type="str",  required=true, rule="", description="座位号:1到9")
      **/
     public function leave_seat(RoomModel $roomModel)
     {
@@ -333,11 +329,11 @@ class Room extends Base
         }
         $roomModel->sit_leave($room_id, $user_id);
         if ($user_id == $this->auth->id) {
-            $msg = "離開了" . ($seat - 1) . "號麥";
+            $msg = "离开了" . ($seat - 1) . "号麦";
             $msg_en = " take off the Mic " . ($seat - 1);
         } else {
             $nickname = RedisService::getUserCache($user_id, 'nickname');
-            $msg = "將*" . $nickname . "*抱下" . ($seat - 1) . "號麥";
+            $msg = "将*" . $nickname . "*抱下" . ($seat - 1) . "号麦";
             $msg_en = " take *{$nickname}* off the Mic " . ($seat - 1);
         }
         $roomModel->add_room_log($room_id, $this->auth->id, $msg, $msg_en, $user_id);
@@ -346,9 +342,9 @@ class Room extends Base
     }
 
     /**
-     * 獲取房間是否有密碼鎖
+     * 获取房间是否有密码锁
      * @ApiMethod   (get)
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      **/
     public function has_lock()
     {
@@ -368,10 +364,10 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (進入房間[公,個])
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
-     * @ApiParams   (name="password",type="int",    required=false,rule="", description="密碼")
-     * @ApiParams   (name="last_room_id", type="int",    required=false, rule="", description="用戶當前所在房間")
+     * @ApiTitle    (进入房间[公,个])
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
+     * @ApiParams   (name="password",type="int",    required=false,rule="", description="密码")
+     * @ApiParams   (name="last_room_id", type="int",    required=false, rule="", description="用户当前所在房间")
      **/
     public function enter(RoomModel $roomModel)
     {
@@ -449,7 +445,7 @@ class Room extends Base
         $data['game_flag'] = false; // 参与游戏vip等级限制、参与游戏收到IM红包限制
         $green_pact = [
             'en' => 'Safety reminder: 24-hour online inspection. Any dissemination of illegal, irregular, vulgar, violent or other harmful information will result in account suspension; Do not trust investments and financial management lightly; Do not believe in unofficial stored value advertisements in private chats, as they are all fraudulent activities! If you have any questions, please communicate with the platform customer service to confirm!',
-            'zh' => '安全提示：24小時線上巡查，任何傳播違法、違規、低俗、暴力等不良資訊的行為將會導致帳號被封停； 切勿輕信投資、理財； 切勿相信私聊的非官方儲值廣告，均屬於詐騙行為！ 如有疑問請通過平臺客服溝通確認！',
+            'zh' => '安全提示：24小时线上巡查，任何传播违法、违规、低俗、暴力等不良资讯的行为将会导致账号被封停； 切勿轻信投资、理财； 切勿相信私聊的非官方储值广告，均属于诈骗行为！ 如有疑问请通过平台客服沟通确认！',
         ];
         $data['green_pact'] = $green_pact[request()->langset()];
         $level = db('user_business')->where('id', $user_id)->value('level');
@@ -469,9 +465,9 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (退出房間)
-     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用戶id")
-     * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="房間ID")
+     * @ApiTitle    (退出房间)
+     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户id")
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="房间ID")
      **/
     public function quit(RoomModel $roomModel)
     {
@@ -487,8 +483,8 @@ class Room extends Base
 
     /**
      * 重连进入房间
-     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用戶id")
-     * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="房間ID")
+     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户id")
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="房间ID")
      **/
     public function reconnect(RoomModel $roomModel)
     {
@@ -513,10 +509,10 @@ class Room extends Base
 
 
     /**
-     * @ApiTitle    (舉報房間)
-     * @ApiSummary  (舉報房間)
-     * @ApiParams   (name="room_id",    type="int",  required=false, rule="require", description="房間ID")
-     * @ApiParams   (name="comment",    type="str",  required=true,  rule="require|min:0", description="反饋內容")
+     * @ApiTitle    (举报房间)
+     * @ApiSummary  (举报房间)
+     * @ApiParams   (name="room_id",    type="int",  required=false, rule="require", description="房间ID")
+     * @ApiParams   (name="comment",    type="str",  required=true,  rule="require|min:0", description="反馈内容")
      **/
     public function accusation()
     {
@@ -537,20 +533,20 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (開始/暫停座位打賞金額[公,個])
-     * @ApiSummary  (開始/暫停座位打賞金額)
-     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房間ID")
-     * @ApiParams   (name="pause",    type="int", required=true,  rule="require|min:0", description="設置統計狀態:0:關閉,1=開啓,2=暫停,3=清空")
+     * @ApiTitle    (开始/暂停座位打赏金额[公,个])
+     * @ApiSummary  (开始/暂停座位打赏金额)
+     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房间ID")
+     * @ApiParams   (name="pause",    type="int", required=true,  rule="require|min:0", description="设置统计状态:0:关闭,1=开启,2=暂停,3=清空")
      */
     public function sit_sum(roomModel $roomModel)
     {
         $room_id = input('room_id');
         $pause = input('pause');
         $explain = [
-            0 => '關閉了麥上打賞統計',
-            1 => '開啟了麥上打賞統計',
-            2 => '暫停了麥上打賞統計',
-            3 => '清空了麥上打賞統計'
+            0 => '关闭了麦上打赏统计',
+            1 => '开启了麦上打赏统计',
+            2 => '暂停了麦上打赏统计',
+            3 => '清空了麦上打赏统计'
         ];
         $explain_en = [
             0 => ' disabled Mic gift statistics',
@@ -580,9 +576,9 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (重置某壹個座位打賞金額)
-     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房間ID")
-     * @ApiParams   (name="seat_no",  type="int", required=false,  rule="", description="指定座位號:1-9,不填默認全麥")
+     * @ApiTitle    (重置某一个座位打赏金额)
+     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房间ID")
+     * @ApiParams   (name="seat_no",  type="int", required=false,  rule="", description="指定座位号:1-9,不填默认全麦")
      */
     public function sit_reset(roomModel $roomModel)
     {
@@ -597,7 +593,7 @@ class Room extends Base
         } else {
             $seat = $seat_en = $seat_no - 1;
         }
-        $roomModel->add_room_log($room_id, $this->auth->id, "清空了{$seat}號麥的麥上打賞統計", " cleared the gift statistics for Mic {$seat_en}");
+        $roomModel->add_room_log($room_id, $this->auth->id, "清空了{$seat}号麦的麦上打赏统计", " cleared the gift statistics for Mic {$seat_en}");
 
         $imService = new ImService();
         $hot = redis()->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;  //热力值
@@ -608,9 +604,9 @@ class Room extends Base
 
 
     /**
-     * @ApiTitle    (收藏聊天室[公,個])
+     * @ApiTitle    (收藏聊天室[公,个])
      * @ApiSummary  (收藏聊天室)
-     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房間ID")
+     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房间ID")
      */
     public function collect()
     {
@@ -635,9 +631,9 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (取消收藏[公,個])
-     * @ApiSummary  (用戶取消收藏聊天室)
-     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房間ID")
+     * @ApiTitle    (取消收藏[公,个])
+     * @ApiSummary  (用户取消收藏聊天室)
+     * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房间ID")
      */
     public function uncollect()
     {
@@ -654,11 +650,11 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (礼物统计[公,個])
+     * @ApiTitle    (礼物统计[公,个])
      * @ApiMethod   (get)
-     * @ApiParams   (name="room_id",    type="int", required=true,  rule="require|min:0", description="房間ID")
+     * @ApiParams   (name="room_id",    type="int", required=true,  rule="require|min:0", description="房间ID")
      * @ApiParams   (name="start_id", type="int", required=true,  rule="", description="查询起始ID")
-     * @ApiParams   (name="size",       type="int", required=true,  rule="", description="分頁大小,默認20")
+     * @ApiParams   (name="size",       type="int", required=true,  rule="", description="分页大小,默认20")
      */
     public function gift_log()
     {
@@ -705,8 +701,8 @@ class Room extends Base
 
     /**
      * @ApiTitle    (踢出用户)
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
-     * @ApiParams   (name="to_user_id", type="int",  required=true, rule="require", description="被禁用戶id")
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
+     * @ApiParams   (name="to_user_id", type="int",  required=true, rule="require", description="被禁用户id")
      **/
     public function kick_room(RoomModel $roomModel)
     {
@@ -727,18 +723,18 @@ class Room extends Base
         if (user_vip_switch($to_user_id, 5)) {
             throw new ApiException(__('Operation failed, unable to kick the premium member out of the room'));
         }
-        //發送訊息給房主
-        send_im_msg_by_system_with_lang($room['owner_id'], '%s將*%s*踢出派對%s', $this->auth->nickname, $nickname, $room['beautiful_id']);
-        $roomModel->add_room_log($room_id, $this->auth->id, "將*{$nickname}*踢出了派對", " kicked *{$nickname}* out of the room", $to_user_id);
+        //发送消息给房主
+        send_im_msg_by_system_with_lang($room['owner_id'], '%s将*%s*踢出派对%s', $this->auth->nickname, $nickname, $room['beautiful_id']);
+        $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", " kicked *{$nickname}* out of the room", $to_user_id);
         $roomModel->quit_room($to_user_id, $room_id, 0, 1);
         $this->success();
     }
 
     /**
-     * @ApiTitle    (將用戶拉入/移出黑名單)
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
-     * @ApiParams   (name="to_user_id", type="int",  required=true, rule="require", description="被禁用戶id")
-     * @ApiParams   (name="type",       type="int",  required=true, rule="require", description="操作類型:1=加入黑名單,2=移出黑名單")
+     * @ApiTitle    (将用户拉入/移出黑名单)
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
+     * @ApiParams   (name="to_user_id", type="int",  required=true, rule="require", description="被禁用户id")
+     * @ApiParams   (name="type",       type="int",  required=true, rule="require", description="操作类型:1=加入黑名单,2=移出黑名单")
      **/
     public function user_blacklist(RoomModel $roomModel)
     {
@@ -773,9 +769,9 @@ class Room extends Base
                 db('room_blacklist')->insert(['room_id' => $room_id, 'user_id' => $to_user_id,]);
             }
             //给房主发消息
-            send_im_msg_by_system_with_lang($room['owner_id'], '%s將*%s*踢出派對%s,並加入派對黑名單', $this->auth->nickname, $nickname, $room['beautiful_id']);
-            $roomModel->add_room_log($room_id, $this->auth->id, "將*{$nickname}*踢出了派對", " kicked *{$nickname}* out of the room", $to_user_id);
-            //移除房間角色
+            send_im_msg_by_system_with_lang($room['owner_id'], '%s将*%s*踢出派对%s,并加入派对黑名单', $this->auth->nickname, $nickname, $room['beautiful_id']);
+            $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", " kicked *{$nickname}* out of the room", $to_user_id);
+            //移除房间角色
             $this->service->roomRoleRemove($room_id, $to_user_id);
         }
 
@@ -783,7 +779,7 @@ class Room extends Base
 
         if ($type == 2) {
             db('room_blacklist')->where(['room_id' => $room_id, 'user_id' => $to_user_id])->delete();
-            $roomModel->add_room_log($room_id, $this->auth->id, "將*{$nickname}*解除了派對黑名單", " unblocked *{$nickname}* from the room blacklist", $to_user_id);
+            $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*解除了派对黑名单", " unblocked *{$nickname}* from the room blacklist", $to_user_id);
         }
 
         $this->success();
@@ -791,10 +787,10 @@ class Room extends Base
 
 
     /**
-     * @ApiTitle    (獲取黑名單列表)
+     * @ApiTitle    (获取黑名单列表)
      * @ApiMethod   (get)
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
-     * @ApiParams   (name="size", type="int",  required=true, rule="", description="每頁數量")
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
+     * @ApiParams   (name="size", type="int",  required=true, rule="", description="每页数量")
      * @ApiParams   (name="start_id", type="int",  required=true, rule="", description="起始id")
      **/
     public function get_blacklist()
@@ -827,10 +823,10 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (設置用戶角色身份[公])
-     * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="目標用戶id")
+     * @ApiTitle    (设置用户角色身份[公])
+     * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="目标用户id")
      * @ApiParams   (name="role",       type="int",  required=true, rule="require", description="角色:0=取消角色,2=设为房管,3=设为陪陪")
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间id")
      **/
     public function set_role(RoomModel $roomModel)
     {
@@ -862,16 +858,16 @@ class Room extends Base
         }
         $to_nickname = db('user')->where('id', $to_user_id)->value('nickname');
 
-        $arr = [0 => "取消了{$to_nickname}角色身份", 2 => "將*{$to_nickname}*設為主持", 3 => "將*{$to_nickname}*設為主播"];
+        $arr = [0 => "取消了{$to_nickname}角色身份", 2 => "将*{$to_nickname}*设为主持", 3 => "将*{$to_nickname}*设为主播"];
         $arr_en = [0 => " canceled {$to_nickname}'s role", 2 => " set *{$to_nickname}* as host", 3 => " set *{$to_nickname}* as anchor"];
         $roomModel->add_room_log($room_id, $this->auth->id, $arr[$role], $arr_en[$role], $to_user_id);
         $this->success();
     }
 
     /**
-     * @ApiTitle    (獲取房間操作日志[公,個])
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間id")
-     * @ApiParams   (name="size",       type="int",  required=true, rule="", description="分頁大小")
+     * @ApiTitle    (获取房间操作日志[公,个])
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间id")
+     * @ApiParams   (name="size",       type="int",  required=true, rule="", description="分页大小")
      * @ApiParams   (name="start_id",   type="int",  required=false, rule="", description="查询起始id")
      **/
     public function get_log()
@@ -904,13 +900,13 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (寫入房間操作日志[公,個])
+     * @ApiTitle    (写入房间操作日志[公,个])
      * @ApiSummary  ("action:1=封座,2=解封座,3=封人麦,4=解封人麦,5=禁言,6=取消禁言")
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间id")
      * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="操作者user_id")
      * @ApiParams   (name="to_user_id", type="int",  required=false,rule="",        description="被操作者user_id,如果目标是user_id")
-     * @ApiParams   (name="action",     type="str",  required=true, rule="require", description="操作行爲,见注释")
-     * @ApiParams   (name="action_val", type="str",  required=false, rule="",       description="操作行爲参数:如座位号")
+     * @ApiParams   (name="action",     type="str",  required=true, rule="require", description="操作行为,见注释")
+     * @ApiParams   (name="action_val", type="str",  required=false, rule="",       description="操作行为参数:如座位号")
      **/
     public function add_log(RoomModel $room)
     {
@@ -918,27 +914,27 @@ class Room extends Base
         $to_nickname = db('user')->where('id', input('to_user_id'))->value('nickname');
         switch (input('action')) {
             case 1:
-                $action = "封禁了{$action_val}號麥";
+                $action = "封禁了{$action_val}号麦";
                 $action_en = " banned Mic {$action_val}";
                 break;
             case 2:
-                $action = "解封了{$action_val}號麥";
+                $action = "解封了{$action_val}号麦";
                 $action_en = " unbanned Mic {$action_val}";
                 break;
             case 3:
-                $action = "將*{$to_nickname}*禁麥";
+                $action = "将*{$to_nickname}*禁麦";
                 $action_en = " muted *{$to_nickname}*";
                 break;
             case 4:
-                $action = "取消了{$to_nickname}的禁麥";
+                $action = "取消了{$to_nickname}的禁麦";
                 $action_en = " unmute *{$to_nickname}*";
                 break;
             case 5:
-                $action = "關閉了公屏";
+                $action = "关闭了公屏";
                 $action_en = " close the public screen";
                 break;
             case 6:
-                $action = "打開了公屏";
+                $action = "打开了公屏";
                 $action_en = " turned on the public screen";
                 break;
             default:
@@ -950,10 +946,10 @@ class Room extends Base
 
 
     /**
-     * @ApiTitle    (上傳房間背景圖)
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
-     * @ApiParams  (name="img_url",    type="string",  required=true, rule="require", description="圖片地址")
-     * @ApiParams  (name="id",    type="string",  required=false, rule="", description="id,新增圖片不傳")
+     * @ApiTitle    (上传房间背景图)
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
+     * @ApiParams  (name="img_url",    type="string",  required=true, rule="require", description="图片地址")
+     * @ApiParams  (name="id",    type="string",  required=false, rule="", description="id,新增图片不传")
      **/
     public function upload_bg_img(RoomModel $roomModel)
     {
@@ -984,8 +980,8 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (獲取房間背景圖[公,個])
-     * @ApiParams   (name="room_id",    type="int",  required=false, rule="", description="房間號")
+     * @ApiTitle    (获取房间背景图[公,个])
+     * @ApiParams   (name="room_id",    type="int",  required=false, rule="", description="房间号")
      * @ApiMethod   (get)
      **/
     public function get_bg_img()
@@ -999,9 +995,9 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (刪除上傳的房間背景圖)
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
-     * @ApiParams   (name="id",    type="int",  required=true, rule="require", description="圖片ID")
+     * @ApiTitle    (删除上传的房间背景图)
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
+     * @ApiParams   (name="id",    type="int",  required=true, rule="require", description="图片ID")
      **/
     public function del_bg_img(RoomModel $model)
     {
@@ -1014,8 +1010,8 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (獲取排麥隊列用戶(普通排麥)[公,個])
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
+     * @ApiTitle    (获取排麦队列用户(普通排麦)[公,个])
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
      **/
     public function queue_list()
     {
@@ -1031,8 +1027,8 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (獲取成員列表[公,個])
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
+     * @ApiTitle    (获取成员列表[公,个])
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
      * @ApiMethod   (get)
      **/
     public function online_user()
@@ -1047,8 +1043,8 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (獲取房間綜合通知信息[公,個])
-     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房間號")
+     * @ApiTitle    (获取房间综合通知信息[公,个])
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
      **/
     public function get_notice()
     {
@@ -1062,9 +1058,9 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (獲取房間詳情[公,個])
+     * @ApiTitle    (获取房间详情[公,个])
      * @ApiMethod   (get)
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      **/
     public function get_room_info()
     {
@@ -1102,7 +1098,7 @@ class Room extends Base
     /**
      * @ApiTitle    (获取声网token)
      * @ApiParams   (name="im_roomid",    type="int",  required=true, rule="require", description="云信房间号")
-     * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="用戶ID")
+     * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="用户ID")
      **/
     public function get_agora_token()
     {
@@ -1114,10 +1110,10 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (麥上打賞統計明細[公,個])
+     * @ApiTitle    (麦上打赏统计明细[公,个])
      * @ApiMethod   (get)
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
-     * @ApiParams   (name="seat", type="str",  required=true, rule="require", description="座位號:1到9")
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
+     * @ApiParams   (name="seat", type="str",  required=true, rule="require", description="座位号:1到9")
      **/
     public function seat_gift_detail()
     {
@@ -1140,7 +1136,7 @@ class Room extends Base
     /**
      * @ApiTitle    (获取房管和陪陪)
      * @ApiMethod   (get)
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      **/
     public function get_admin()
     {
@@ -1152,11 +1148,11 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (添加倒計時)
+     * @ApiTitle    (添加倒计时)
      * @ApiMethod   (get)
-     * @ApiParams   (name="seat_no", type="int",    required=false, rule="", description="座位號:1 - 9")
+     * @ApiParams   (name="seat_no", type="int",    required=false, rule="", description="座位号:1 - 9")
      * @ApiParams   (name="second", type="int",    required=true, rule="require", description="秒")
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      **/
     public function add_countdown()
     {
@@ -1170,7 +1166,7 @@ class Room extends Base
     }
 
     /**
-     * 獲取共享音樂
+     * 获取共享音乐
      * @ApiMethod   (get)
      */
     public function get_share_song()
@@ -1189,7 +1185,7 @@ class Room extends Base
     /**
      * @ApiTitle    (随机进入房间)
      * @ApiMethod   (get)
-     * @ApiParams   (name="theme_id",    type="int",  required=false,rule="min:1", description="房間主題類型")
+     * @ApiParams   (name="theme_id",    type="int",  required=false,rule="min:1", description="房间主题类型")
      **/
     public function rand_room()
     {
@@ -1209,7 +1205,7 @@ class Room extends Base
 
     /**
      * 清理公屏
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      */
     public function clear_screen()
     {
@@ -1240,7 +1236,7 @@ class Room extends Base
     /**
      * 申请注销房间
      * @ApiMethod   (post)
-     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房間id")
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      * @return void
      * @throws
      */
