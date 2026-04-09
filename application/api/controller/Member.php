@@ -28,8 +28,9 @@ class Member extends Base
     public function get_list()
     {
         $room_id = input('room_id', 0);
+        $extend = input('status') == 2 ? ',a.reason' : '';
         $list = db('room_admin')->alias('a')->join('user u', 'a.user_id = u.id', 'left')
-            ->field('a.status,u.id,u.nickname,u.avatar,u.sex')
+            ->field('a.status,u.id,u.nickname,u.avatar,u.sex' . $extend)
             ->where('a.room_id', $room_id)
             ->where('status', input('status', 1))
             ->page(input('page', 1), input('size', 10))->select();
@@ -42,7 +43,7 @@ class Member extends Base
      * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
      * @ApiParams   (name="type", type="int",  required=true, rule="", description="类型:1=加入,2=退出")
-     * @ApiParams   (name="reson", type="string",  required=true, rule="", description="原因")
+     * @ApiParams   (name="reason", type="string",  required=true, rule="", description="原因")
      */
     public function join()
     {
