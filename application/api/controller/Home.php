@@ -5,6 +5,7 @@ namespace app\api\controller;
 use app\common\model\Room as RoomModel;
 use app\common\service\HomeService;
 use app\common\service\RedisService;
+use app\common\service\RoomService;
 use think\Db;
 
 /**
@@ -21,6 +22,18 @@ class Home extends Base
     {
         parent::__construct();
         $this->service = $service;
+    }
+
+    /**
+     * @ApiTitle    (房间主题分类列表)
+     *
+     * @ApiReturnParams    (name="theme_name", type="str", description="派对分类名称")
+     * @ApiReturnParams    (name="theme_color", type="str", description="派对分类名称-颜色")
+     */
+    public function room_theme_list()
+    {
+        $result = RoomModel::getThemeList(1);
+        $this->success('', $result);
     }
 
     /**
@@ -60,7 +73,7 @@ class Home extends Base
         } elseif ($theme_id <> -2 && $theme_id) {
             $theme_id && $where['theme_id'] = $theme_id;
         }
-        $result = $this->service->roomList($where, $limit = 30);
+        $result = (new RoomService())->roomList($where, $limit = 30);
         if ($result && $this->auth->id) {
             redis()->sAddArray('room_list:' . $theme_id . $this->auth->id, array_column($result, 'id'));
             redis()->expire('room_list:' . $theme_id . $this->auth->id, 60 * 30);
@@ -130,7 +143,7 @@ class Home extends Base
         $where = [];
         $keyword && $where['name'] = ['like', "%{$keyword}%"];
 
-        $list['room'] = $this->service->roomList($where, $limit = 30);
+        $list['room'] = (new RoomService())->roomList($where, $limit = 30);
 
         if ($this->auth->id) {
             foreach ($list['user'] as &$item) {
