@@ -340,8 +340,8 @@ class RoomService
     {
         $room = db('room')->where(['id' => $room_id])->find();
         $roomModel = new RoomModel();
-        if ($room['status'] == RoomModel::ROOM_STATUS_IDLE || $room['is_close'] == 1) {
-            db('room')->where('id', $room_id)->setField(['status' => RoomModel::ROOM_STATUS_PLAYING, 'is_close' => 0]);
+        if ($room['status'] == 2 || $room['is_close'] == 1) {
+            db('room')->where('id', $room_id)->setField(['status' => 3, 'is_close' => 0]);
         }
         $imService = new ImService();
         $hiding = $room['type'] == 1 && user_vip_switch($user_id, 9);
@@ -387,8 +387,8 @@ class RoomService
         $this->model->where('id', $room_id)->setField(['is_close' => 1]);
         $this->model->where('id', $room_id)->where(
             'status',
-            RoomModel::ROOM_STATUS_PLAYING
-        )->setField(['status' => RoomModel::ROOM_STATUS_IDLE]);
+            3
+        )->setField(['status' => 2]);
 
         $imService = new ImService();
         $imService->room_wait_mic_delete_all($room_id);
@@ -450,7 +450,7 @@ class RoomService
             'owner_id'       => $union_master,
             'cover'          => $cover,
             'im_roomid'      => $resultIm['chatroom']['roomid'],
-            'status'         => RoomModel::ROOM_STATUS_AUDIT,
+            'status'         => 1,
             'is_show'        => 0,
             'theme_id'       => input('theme_id') ?: db('room_theme_cate')->where('room_type', 1)->value('id'),
             'way'            => input('way') ?: 1,

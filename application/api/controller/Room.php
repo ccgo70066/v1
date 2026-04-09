@@ -194,7 +194,7 @@ class Room extends Base
         $result = db('room r')
             ->join('room_theme_cate t', 't.id=r.theme_id')
             ->where('type', RoomModel::ROOM_TYPE_NUION)
-            ->where('r.status', 'in', [RoomModel::ROOM_STATUS_PLAYING, RoomModel::ROOM_STATUS_IDLE])
+            ->where('r.status', 'in', [3, 2])
             ->where('r.is_show', 1)
             ->where($where)
             ->where('r.id', '<>', $room_id)
@@ -254,6 +254,7 @@ class Room extends Base
 
     /**
      * 上座
+     * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="ID房间")
      * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户ID")
      * @ApiParams   (name="op_user_id", type="int",  required=false, rule="", description="操作者")
@@ -302,6 +303,7 @@ class Room extends Base
 
     /**
      * @ApiTitle    (下座[公,个])
+     * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",  required=false, rule="", description="房间ID")
      * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户ID,不传则为操作者")
      * @ApiParams   (name="seat", type="str",  required=true, rule="", description="座位号:1到9")
@@ -361,17 +363,10 @@ class Room extends Base
         $user_id = input('user_id') ?: $this->auth->id;
         $room_id = input('room_id');
         $password = input('password');
-        if ($user_id == 0) {
-            throw new ApiException(__('Please log in to the app again'));
-        }
 
-        $room = db('room')->where(['id' => $room_id])->where(
-            'status',
-            'in',
-            [RoomModel::ROOM_STATUS_IDLE, RoomModel::ROOM_STATUS_PLAYING, RoomModel::ROOM_STATUS_AUDIT, RoomModel::ROOM_STATUS_CANCEL]
-        )->find();
+        $room = db('room')->where(['id' => $room_id])->where('status', 'in', [2, 3, 1, -1])->find();
 
-        if ($room && !in_array($room['status'], [RoomModel::ROOM_STATUS_IDLE, RoomModel::ROOM_STATUS_PLAYING, RoomModel::ROOM_STATUS_CANCEL])) {
+        if ($room && !in_array($room['status'], [2, 3, -1])) {
             throw new ApiException(__('Party under review, please wait patiently'));
         }
         if (!$room || ($room['is_close'] == 1 && $this->auth->id <> $room['owner_id'])) {
@@ -1124,7 +1119,7 @@ class Room extends Base
     {
         $theme_id = (int)input('theme_id');
         $res = db('room')->where([
-            'status'  => RoomModel::ROOM_STATUS_PLAYING,
+            'status'  => 3,
             'is_lock' => 0,
             'type'    => 1
         ])->where($theme_id ? 'theme_id = ' . $theme_id : [])->column('id');
@@ -1184,7 +1179,7 @@ class Room extends Base
         if ($room['owner_id'] != $user_id) {
             $this->error(__('You are not the owner of the room'));
         }
-        db('room')->where('id', $room_id)->setField('status', RoomModel::ROOM_STATUS_CANCEL);
+        db('room')->where('id', $room_id)->setField('status', -1);
         $this->success(__('Submitted successfully, please wait for review'));
     }
 }

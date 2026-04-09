@@ -60,7 +60,6 @@ class Home extends Base
         } elseif ($theme_id <> -2 && $theme_id) {
             $theme_id && $where['theme_id'] = $theme_id;
         }
-        if ($theme_id == 0) $where['type'] = ['<>', 2];
         $result = $this->service->roomList($where, $limit = 30);
         if ($result && $this->auth->id) {
             redis()->sAddArray('room_list:' . $theme_id . $this->auth->id, array_column($result, 'id'));
@@ -86,7 +85,7 @@ class Home extends Base
             if ($user['current_room']) {
                 $user['current_room'] = Db::name('room')
                     ->where('type', 1)
-                    ->where('status', 'in', [\app\common\model\Room::ROOM_STATUS_IDLE, RoomModel::ROOM_STATUS_PLAYING])
+                    ->where('status', 'in', [2, 3])
                     ->where('is_show', 1)->where('id', $user['current_room'])->value('id') ?: 0;
             }
         }

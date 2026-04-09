@@ -91,7 +91,7 @@ class UnionService
 
         (new Union())->add_union_log($union_id, $union['owner_id'], "将{$nickname}移出家族", $to_user_id);
 
-        $room_ids = db('room')->where('status', 'in', [Room::ROOM_STATUS_IDLE, Room::ROOM_STATUS_PLAYING])
+        $room_ids = db('room')->where('status', 'in', [2, 3])
             ->where('union_id', $union_id)->column('id');
 
         $roomService = new RoomService();
