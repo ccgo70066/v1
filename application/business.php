@@ -437,7 +437,7 @@ function get_expiry_days($expiry_date)
 function incrLock($lockName, $expire = 10)
 {
     $redis = redis();
-    $key = 'INCLOCK:' . $lockName;
+    $key = 'inClock:' . $lockName;
     $re = $redis->incr($key);
     if ($re == 1) {
         $redis->expire($key, $expire);
