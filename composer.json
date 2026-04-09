@@ -40,7 +40,8 @@
 	"ext-gd": "*",
 	"ext-openssl": "*",
 	"ext-posix": "*",
-    "lustre/php-dfa-sensitive": "^1.4"
+    "lustre/php-dfa-sensitive": "^1.4",
+    "aws/aws-sdk-php": "^3.378"
   },
   "config": {
 	"preferred-install": "dist",
