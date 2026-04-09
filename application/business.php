@@ -1,10 +1,13 @@
 <?php
 
+use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\admin\model\User;
 use app\common\exception\ApiException;
 use app\common\library\rabbitmq\BaseHandler;
+use app\common\library\rabbitmq\BoardNoticeMQ;
 use app\common\model\MoneyLog;
 use app\common\service\ImService;
+use GatewayClient\Gateway;
 use think\Db;
 use think\Env;
 use think\Log;
@@ -443,4 +446,20 @@ function incrLock($lockName, $expire = 10)
         $redis->expire($key, $expire);
     }
     return $re;
+}
+
+
+function board_notice($cmd, $data, $msg = '')
+{
+    if (Env::get('app.debug')) return;
+    if (in_array($cmd, [Message::CMD_REFRESH_USER, Message::CMD_KICK_USER])) {
+        Gateway::sendToUid($data['user_id'], Message::json($cmd, $data, $msg));
+    } else {
+        Gateway::sendToAll(Message::json($cmd, $data, $msg));
+    }
+}
+
+function board_notice_delay($cmd, $data, $msg = '', $delay = 2)
+{
+    mq_publish(BoardNoticeMQ::instance(), ['cmd' => $cmd, 'data' => $data, 'msg' => $msg,], $delay * 1000);
 }
