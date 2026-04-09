@@ -51,6 +51,21 @@ class RoomService
     }
 
     /**
+     * 添加房间日志
+     */
+    public function add_room_log($room_id, $user_id, $text = '', $text_en = '', $to_user_id = 0)
+    {
+        db('room_log')->insert([
+            'user_id'    => $user_id,
+            'room_id'    => $room_id,
+            'action'     => $text,
+            'action_en'  => $text_en,
+            'to_user_id' => $to_user_id,
+        ]);
+    }
+
+
+    /**
      * 获取房间在线用户
      * @param $room_id
      * @return array [全部用户ID数组,隐身用户ID数组]

@@ -3,10 +3,12 @@
 namespace app\api\controller;
 
 use app\common\exception\ApiException;
+use app\common\library\Agora;
 use app\common\model\ChannelBlacklist;
 use app\common\model\NoblePrivilege;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
+use app\common\service\HomeService;
 use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
@@ -121,13 +123,13 @@ class Room extends Base
             RoomService::addRoomLog($room, $update, $this->auth->id);
             Db::commit();
             $data = db('room')->where('id', $room_id)->find();
-            $this->success('', $data);
         } catch (Exception $e) {
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
             $this->error(show_error_notify($e));
         }
+        $this->success('', $data ?? '');
     }
 
     /**
@@ -149,15 +151,11 @@ class Room extends Base
         try {
             switch ($is_close) {
                 case 1:
-                    if ($room['is_close'] === 1) {
-                        throw new ApiException(__('Room closed'), 406);
-                    }
+                    if ($room['is_close'] === 1) throw new ApiException(__('Room closed'), 406);
                     $this->service->closeRoom($room_id);
                     break;
                 case 0:
-                    if ($room['is_close'] === 0) {
-                        throw new ApiException(__('Room opened'), 406);
-                    }
+                    if ($room['is_close'] === 0) throw new ApiException(__('Room opened'), 406);
                     $imService = new ImService();
                     $imService->roomSetSwitch($room_id, true);
                     db('room')->where('id', $room_id)->setField('is_close', $is_close);
@@ -166,7 +164,6 @@ class Room extends Base
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
-            Log::error($e->getMessage());
             error_log_out($e);
             $this->error(show_error_notify($e));
         }
@@ -175,7 +172,7 @@ class Room extends Base
 
 
     /**
-     * @ApiTitle    (更多房间)
+     * 更多房间
      * @ApiMethod   (get)
      * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="当前房间号")
      * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
@@ -256,14 +253,13 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (上座[公,个])
-     * @ApiSummary  (上座)
+     * 上座
      * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="ID房间")
      * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户ID")
      * @ApiParams   (name="op_user_id", type="int",  required=false, rule="", description="操作者")
      * @ApiParams   (name="seat", type="str",  required=true, rule="", description="座位号:1到9")
      **/
-    public function sit_seat(RoomModel $roomModel)
+    public function sit_seat()
     {
         $room_id = input('room_id');
         $user_id = input('user_id');
@@ -272,21 +268,12 @@ class Room extends Base
         $room = db('room')->where('id', $room_id)->find();
 
         $isset = $this->service->isInRoomByImApi($user_id, $room_id);
-        if (!$isset) {
-            $this->error(__('The user is no longer in the room'));
-        }
-        if ($user_id == $op_user_id) {
-            //为了健全,更新用户在哪房间
-            $this->service->saveUserWhichRoom($user_id, $room_id);
-        }
+        if (!$isset) $this->error(__('The user is no longer in the room'));
+        if ($user_id == $op_user_id) $this->service->saveUserWhichRoom($user_id, $room_id);
         $seatField = "no{$seat}_user_id";
-        if ($room[$seatField]) {
-            if ($room[$seatField] == $user_id) {
-                $this->success();
-            }
-        }
-        db('room')->where('id', $room_id)->setField($seatField, $user_id);
+        if (isset($room[$seatField]) && $room[$seatField] == $user_id) $this->success();
 
+        db('room')->where('id', $room_id)->setField($seatField, $user_id);
         //位置上换座
         $seat_info = db('room')->where('id', $room_id)
             ->field('no1_user_id,no2_user_id,no3_user_id,no4_user_id,no5_user_id,no6_user_id,no7_user_id,no8_user_id,no9_user_id')
@@ -309,7 +296,7 @@ class Room extends Base
             $msg = "将*" . $nickname . "*抱上" . ($seat - 1) . "号麦";
             $msg_en = " hold *{$nickname}* on the Mic " . ($seat - 1);
         }
-        $roomModel->add_room_log($room_id, $op_user_id, $msg, $msg_en, $user_id);
+        $this->service->add_room_log($room_id, $op_user_id, $msg, $msg_en, $user_id);
         $this->success();
     }
 
@@ -417,17 +404,13 @@ class Room extends Base
         $data['agora_token'] = $agora->get_token($room['im_roomid'], $user_id);
 
         $data['room'] = db('room')->where('id', $room_id)
-            ->field(
-                'welcome_msg,welcome_switch,way,id,beautiful_id,name,type,owner_id,screen_clear_time,
-            im_roomid,union_id,theme_id,cover,notice,hot,bg_img,is_lock,is_show'
-            )
+            ->field('welcome_msg,welcome_switch,way,id,beautiful_id,name,type,owner_id,screen_clear_time, im_roomid,theme_id,cover,notice,hot,bg_img,is_lock,is_show')
             ->find();
         $theme = db('room_theme_cate')->where('id', $data['room']['theme_id'])->field('name,image')->find();;
         $data['room']['theme_cate_name'] = $theme['name'] ?: '';
         $data['room']['theme_cate_image'] = $theme['image'] ?: '';
         $data['room']['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $data['owner'] = db('user')->where('id', $data['room']['owner_id'])->field('id,avatar,nickname')->find();
-        $data['union_master_id'] = db('union')->where('id', $data['room']['union_id'])->value('owner_id');
         $data['role'] = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->value('role') ?: 0;
         $data['vip_info'] = db('user_vip')->alias('uv')->cache(cacheFlag(), 3600, 'user_vip')
             ->join('vip v', 'uv.grade=v.grade', 'left')->join('car c', 'v.car=c.id', 'left')
@@ -604,7 +587,7 @@ class Room extends Base
 
 
     /**
-     * @ApiTitle    (收藏聊天室[公,个])
+     * 收藏房间
      * @ApiSummary  (收藏聊天室)
      * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房间ID")
      */
@@ -612,26 +595,14 @@ class Room extends Base
     {
         $room_id = input('room_id');
         $user_id = $this->auth->id;
-
-        $res = db('room_collect')->where([
-            'room_id' => $room_id,
-            'user_id' => $user_id
-        ])
-            ->find();
-        if ($res) {
-            throw new ApiException(__('Already collected'));
-        }
-        $arr = [
-            'user_id' => $user_id,
-            'room_id' => $room_id,
-        ];
-        db('room_collect')->insert($arr);
+        if (db('room_collect')->where(['room_id' => $room_id, 'user_id' => $user_id])->find()) $this->error(__('Already collected'));
+        db('room_collect')->insert(['user_id' => $user_id, 'room_id' => $room_id,]);
 
         $this->success(__('Operation completed'));
     }
 
     /**
-     * @ApiTitle    (取消收藏[公,个])
+     * 取消收藏
      * @ApiSummary  (用户取消收藏聊天室)
      * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房间ID")
      */
@@ -639,18 +610,13 @@ class Room extends Base
     {
         $room_id = input('room_id');
         $user_id = $this->auth->id;
-
-        db('room_collect')->where([
-            'user_id' => $user_id,
-            'room_id' => $room_id,
-        ])
-            ->delete();
+        db('room_collect')->where(['user_id' => $user_id, 'room_id' => $room_id,])->delete();
 
         $this->success(__('Operation completed'));
     }
 
     /**
-     * @ApiTitle    (礼物统计[公,个])
+     * 礼物统计
      * @ApiMethod   (get)
      * @ApiParams   (name="room_id",    type="int", required=true,  rule="require|min:0", description="房间ID")
      * @ApiParams   (name="start_id", type="int", required=true,  rule="", description="查询起始ID")
@@ -659,18 +625,13 @@ class Room extends Base
     public function gift_log()
     {
         $room_id = input('room_id');
-        $roomService = new RoomService();
-        $check = $roomService->checkRoomRole($room_id, $this->auth->id, [1, 2, 3]);
-        if (!$check) {
-            $this->error(__('No permissions'));
-        }
         $size = input('size') ?: 20;
         $start_id = input('start_id');
+        $roomService = new RoomService();
+        if (!($roomService->checkRoomRole($room_id, $this->auth->id, [1, 2, 3]))) $this->error(__('No permissions'));
 
         $where = [];
-        if ($start_id) {
-            $where['id'] = ['<', $start_id];
-        }
+        if ($start_id) $where['id'] = ['<', $start_id];
         $data = db('gift_log')
             ->where(['room_id' => $room_id])
             ->where($where)
@@ -688,15 +649,12 @@ class Room extends Base
             $item['to_nickname'] = RedisService::getUserCache($item['to_user_id'], 'nickname');
             $item['to_avatar'] = RedisService::getUserCache($item['to_user_id'], 'avatar');
         }
-        $val_total = db('gift_log')->where('room_id', $room_id)
-            ->where($where)
-            ->sum('gift_val');
+        $val_total = db('gift_log')->where('room_id', $room_id)->where($where)->sum('gift_val');
 
-        $data = [
+        $this->success('', [
             'list'      => $data,
             'val_total' => $val_total
-        ];
-        $this->success('', $data);
+        ]);
     }
 
     /**
@@ -708,24 +666,14 @@ class Room extends Base
     {
         $room_id = input('room_id');
         $to_user_id = input('to_user_id');
-        if ($to_user_id == $this->auth->id) {
-            throw new ApiException(__('Unable to kick self from party'));
-        }
-        $check_auth = $this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]);
-        if (!$check_auth) {
-            throw new ApiException(__('No permissions'));
-        }
+        if ($to_user_id == $this->auth->id) $this->error(__('Unable to kick self from party'));
+        if (!($this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]))) $this->error(__('No permissions'));
         $nickname = db('user')->where('id', $to_user_id)->value('nickname');
         $room = db('room')->where('id', $room_id)->field('im_roomid,im_operator,owner_id,beautiful_id')->find();
-        if ($room['owner_id'] == $to_user_id) {
-            throw new ApiException(__('No permissions'));
-        }
-        if (user_vip_switch($to_user_id, 5)) {
-            throw new ApiException(__('Operation failed, unable to kick the premium member out of the room'));
-        }
-        //发送消息给房主
-        send_im_msg_by_system_with_lang($room['owner_id'], '%s将*%s*踢出派对%s', $this->auth->nickname, $nickname, $room['beautiful_id']);
-        $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", " kicked *{$nickname}* out of the room", $to_user_id);
+        if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
+        if (user_vip_switch($to_user_id, 5)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
+        send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s');
+        $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", '', $to_user_id);
         $roomModel->quit_room($to_user_id, $room_id, 0, 1);
         $this->success();
     }
@@ -741,18 +689,11 @@ class Room extends Base
         $room_id = input('room_id');
         $type = input('type');
         $to_user_id = input('to_user_id');
-        if ($to_user_id == $this->auth->id) {
-            throw new ApiException(__('Unable to kick self from party'));
-        }
-        $check_auth = $this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]);
-        if (!$check_auth) {
-            throw new ApiException(__('No permissions'));
-        }
+        if ($to_user_id == $this->auth->id) $this->error(__('Unable to kick self from party'));
+        if (!($this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]))) $this->error(__('No permissions'));
         $nickname = RedisService::getUserCache($to_user_id, 'nickname');
         $room = db('room')->where('id', $room_id)->field('im_roomid,im_operator,owner_id,beautiful_id')->find();
-        if ($room['owner_id'] == $to_user_id) {
-            throw new ApiException(__('No permissions'));
-        }
+        if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
         if ($type == 1) {
             $noble = db('user_noble u')
                 ->join('noble n', 'u.noble_id = n.id')
@@ -769,7 +710,7 @@ class Room extends Base
                 db('room_blacklist')->insert(['room_id' => $room_id, 'user_id' => $to_user_id,]);
             }
             //给房主发消息
-            send_im_msg_by_system_with_lang($room['owner_id'], '%s将*%s*踢出派对%s,并加入派对黑名单', $this->auth->nickname, $nickname, $room['beautiful_id']);
+            send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s,并加入派对黑名单');
             $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", " kicked *{$nickname}* out of the room", $to_user_id);
             //移除房间角色
             $this->service->roomRoleRemove($room_id, $to_user_id);
@@ -839,18 +780,10 @@ class Room extends Base
             throw new ApiException(__('Operation failed'));
         }
 
-        $room = db('room')->where('id', $room_id)->field('im_operator,im_roomid,union_id')->find();
+        $room = db('room')->where('id', $room_id)->field('im_operator,im_roomid')->find();
 
         //房主或者族长才能设置身份
         $check_auth = $this->service->checkRoomRole($room_id, $user_id, [1]);
-        if (!$check_auth && !$roomModel->is_union_user($room['union_id'], $user_id, [1])) {
-            throw new ApiException(__('No permissions'));
-        }
-        $check_union_role = $roomModel->is_union_user($room['union_id'], $to_user_id, [1, 2]);
-        if (!$check_union_role) {
-            throw new ApiException(__("This user is not a clan member"));
-        }
-
         if ($role) {
             $this->service->roomRoleSet($room_id, $to_user_id, $role);
         } else {
@@ -1072,7 +1005,7 @@ class Room extends Base
             ->where('r.id', $room_id)
             ->join('room_theme_cate cate', 'r.theme_id = cate.id')
             ->field('r.welcome_switch,r.password,r.welcome_msg,r.way,r.id,r.beautiful_id')
-            ->field('r.name,r.type,r.owner_id,r.im_roomid,r.union_id,r.theme_id')
+            ->field('r.name,r.type,r.owner_id,r.im_roomid,r.r.theme_id')
             ->field("r . cover,notice,r . hot,r . bg_img,r . is_lock,r . is_show,cate . name as theme_cate_name")
             ->find();
         $room['theme_cate_name'] = RedisService::loadLang($room['theme_cate_name']);

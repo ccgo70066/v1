@@ -149,6 +149,7 @@ class ImService
      * @param $type
      * @param $content
      * @return bool
+     * @throws
      */
     public function sendChatMessageByUser($user_id, $to_user_id, $type, $content)
     {
@@ -157,8 +158,6 @@ class ImService
         }
 
         [$nickname, $avatar, $to_nickname, $to_avatar] = $this->checkChatAuth($user_id, $to_user_id, $type);
-
-
         $body = [
             'type'     => $type,
             'content'  => $content,

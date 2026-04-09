@@ -46,22 +46,9 @@ class RedisService
         return self::returnDataField($data, $field);
     }
 
-    /**
-     * 加载后台自定义多语言
-     * @param $code
-     * @param $lang
-     * @return float|mixed|string
-     */
-    public static function loadLang($code, $lang = '')
-    {
-        $lang == '' && $lang = request()->langset();
-        $type_id = db('lang_type')->cache(cacheFlag(), 3600, 'lang')->where('file_name', $lang)->value('id');
-        $explain = db('lang_code')->cache(cacheFlag(), 3600, 'lang')->where('type_id', $type_id)->where('code', $code)->value('lang_explain');
-        return $explain ?: __($code);
-    }
 
     /*
-     * 获取用户缓存信息
+     * 取用户缓存信息
      */
     public static function getUserCache($id, $field)
     {

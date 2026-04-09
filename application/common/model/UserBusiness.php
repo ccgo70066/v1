@@ -214,7 +214,7 @@ class UserBusiness extends Model
             error_log_out($e);
             throw new \Exception('充值回调报错');
         }
-        send_im_msg_by_system_with_lang($order['user_id'], '您于%s充值成功，到账%s金幣，请到钱包查看余额。', $order['update_time'], $amount);
+        send_im_msg_by_system1($order['user_id'], '您于%s充值成功，到账%s金幣，请到钱包查看余额。');
     }
 
     /** 首充礼包 */
@@ -259,7 +259,7 @@ class UserBusiness extends Model
                         Message::CMD_SHOW_VIP_LEVEL_UP,
                         array_index_filter($nextVip, 'name,grade,icon') + ['nickname' => Db::name('user')->where('id', $user_id)->value('nickname')]
                     );
-                    send_im_msg_by_system_with_lang($user_id, '恭喜,您的VIP升級至%s,已解鎖更多專屬特權!', $nextVip['name']);
+                    send_im_msg_by_system($user_id, '恭喜,您的VIP升級至%s,已解鎖更多專屬特權!');
                 }
             }
         }

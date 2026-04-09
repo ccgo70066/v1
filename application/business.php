@@ -4,6 +4,7 @@ use app\admin\model\User;
 use app\common\exception\ApiException;
 use app\common\library\rabbitmq\BaseHandler;
 use app\common\model\MoneyLog;
+use app\common\service\ImService;
 use think\Db;
 use think\Env;
 use think\Log;
@@ -319,4 +320,70 @@ function get_user_info($userIds, array $extend = []): array
     }
 
     return $data;
+}
+
+
+/**
+ * 验证是否有锁，没锁会创建锁并返回false,如果已经有锁了则返回true
+ * @param     $lockName
+ * @param int $expire
+ * @return bool
+ */
+function locked($lockName, $expire = 10)
+{
+    $redis = redis();
+    $key = 'LOCK:' . $lockName;
+    $re = $redis->setnx($key, 1);
+    if ($re) {
+        $redis->expire($key, $expire);
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/**
+ * 释放锁
+ * @param     $lockName
+ * @param int $expire
+ * @return bool
+ */
+function lock_remove($lockName)
+{
+    $redis = redis();
+    $key = 'LOCK:' . $lockName;
+    $re = $redis->del($key);
+    if (!$re) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+
+function send_im_msg_by_system($user_id, $text)
+{
+    if (Env::get('app.server') != 'test') {
+        $imService = new ImService();
+        return $imService->sendChatMessageByUser($imService::SYS_ID, $user_id, $imService::CHAT_MESSAGE_TEXT, $text);
+    }
+}
+
+// todo inline
+function send_im_msg_by_system_with_lang($user_id, $text, ...$var)
+{
+    send_im_msg_by_system($user_id, $text);
+}
+
+
+function user_vip_switch($user_id, $switch_type)
+{
+    $rs = db('user_vip')->where('id', $user_id)->where('expire_time', '>', datetime())->find();
+    if (!$rs) return 0;
+    $vip = db('vip')->where('grade', $rs['grade'])->where("find_in_set($switch_type, `privilege_ids`)")->find();
+    if ($vip) {
+        $switch = json_decode($rs['switch'], true);
+        return isset($switch[$switch_type]) ? ($switch[$switch_type] == 1 ? 1 : 0) : 1;
+    }
+    return 0;
 }
