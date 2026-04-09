@@ -427,3 +427,20 @@ function get_expiry_days($expiry_date)
     $obj->hours = ceil(($diff % (60 * 60 * 24)) / 3600);
     return $obj;
 }
+
+/**
+ * 自增锁
+ * @param     $lockName
+ * @param int $expire
+ * @return int
+ */
+function incrLock($lockName, $expire = 10)
+{
+    $redis = redis();
+    $key = 'INCLOCK:' . $lockName;
+    $re = $redis->incr($key);
+    if ($re == 1) {
+        $redis->expire($key, $expire);
+    }
+    return $re;
+}
