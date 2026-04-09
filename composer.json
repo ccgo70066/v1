@@ -56,7 +56,7 @@
 	  "addons\\": "addons/"
 	},
 	"files": [
-	  "application/business.php"
+	  "application/helper.php"
 	]
   },
   "repositories": [

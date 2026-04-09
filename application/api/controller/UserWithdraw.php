@@ -1,0 +1,338 @@
+<?php
+
+
+namespace app\api\controller;
+
+use app\api\library\RedisService;
+use app\api\library\UserWithdrawService;
+use app\common\library\ApiException;
+use think\Db;
+use think\Exception;
+use think\Log;
+use util\Enigma;
+
+/**
+ * 会员提现申请
+ */
+class UserWithdraw extends Base
+{
+    protected $noNeedLogin = [];
+    protected $noNeedRight = '*';
+
+    protected $bankLogo = [
+        '上海商業儲蓄銀行'   => 'assets/bank/1.png',
+        '中國信托商業銀行'   => 'assets/bank/2.png',
+        '元大商業銀行'       => 'assets/bank/3.png',
+        '兆豐國際商業銀行'   => 'assets/bank/4.png',
+        '华南银行'           => 'assets/bank/5.png',
+        '台北富邦商業銀行'   => 'assets/bank/6.png',
+        '台新國際商業銀行'   => 'assets/bank/7.png',
+        '台湾银行'           => 'assets/bank/8.png',
+        '台灣中小企業銀行'   => 'assets/bank/9.png',
+        '台灣土地銀行'       => 'assets/bank/10.png',
+        '合作金庫商業銀行'   => 'assets/bank/11.png',
+        '國泰世華商業銀行'   => 'assets/bank/12.png',
+        '彰化商業銀行'       => 'assets/bank/13.png',
+        '星展（台灣）商業銀行' => 'assets/bank/14.png',
+        '永豐商業銀行'       => 'assets/bank/15.png',
+        '渣打國際商業銀行'   => 'assets/bank/16.png',
+        '玉山商業銀行'       => 'assets/bank/17.png',
+        '第一商業銀行'       => 'assets/bank/18.png',
+        '聯邦商業銀行'       => 'assets/bank/19.png',
+        '花旗（台灣）商業銀行' => 'assets/bank/20.png',
+    ];
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->service = new UserWithdrawService();
+    }
+
+
+    /**
+     * 获取银行列表
+     */
+    public function get_bank()
+    {
+        $data = [];
+        foreach ($this->bankLogo as $k => $v) {
+            $data[] = ['name' => $k, 'logo' => $v];
+        }
+        $this->success('', $data);
+    }
+
+
+    /**
+     * @ApiTitle    (添加/修改银行卡提现账号信息)
+     * @ApiMethod   (post)
+     * @ApiSummary  (添加银行)
+     * @ApiParams   (name="id",    type="str",  required=false, description="账号ID")
+     * @ApiParams   (name="account_name",    type="str",  required=false, description="真实姓名")
+     * @ApiParams   (name="card_number",  type="str",  required=false, description="身份证号")
+     * @ApiParams   (name="bank_number",  type="str",  required=false, description="银行卡号")
+     * @ApiParams   (name="bank_name",  type="str",  required=false, description="银行名称")
+     * @ApiParams   (name="bank_img",  type="str",  required=false, description="银行卡图片")
+     * @ApiParams   (name="branch_name", type="str",  required=false, description="开户支行名称")
+     * @ApiParams   (name="province_city",type="str", required=false, description="开户行省市名称")
+     * @ApiParams   (name="mobile",  type="str",  required=false, description="手机号")
+     *
+     * @ApiParams   (name="card_front_img",type="str", required=false, description="身份证正面图")
+     * @ApiParams   (name="card_back_img",type="str", required=false, description="身份证反面图")
+     *
+     * @ApiParams   (name="is_default", type="int",  required=false, description="是否默认支付方式:1=是,0=否")
+     */
+    public function add_bank_account()
+    {
+        $user_id = $this->auth->id;
+        $this->operate_check('account_lock:' . $user_id, 2);
+        $data = input();
+
+        Db::startTrans();
+        try {
+            $data['user_id'] = $user_id;
+            if ($data['is_default']) {
+                db('user_account')->where('user_id', $user_id)->update(['is_default' => 0]);
+            }
+            if ($data['id']) {
+                db('user_account')->where('id', $data['id'])->strict(false)->update($data);
+            } else {
+                $data['id'] = db('user_account')->strict(false)->insertGetId($data);
+            }
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            Log::error($e->getMessage());
+            error_log_out($e);
+            $this->error(show_error_notify($e));
+        }
+
+        $this->success(__('Operation completed'), ['id' => $data['id']]);
+    }
+
+    /**
+     * @ApiTitle    (刪除银行卡提现账号信息)
+     * @ApiMethod   (post)
+     * @ApiSummary  (添加银行)
+     * @ApiParams   (name="id",    type="str",  required=true, description="ID")
+     */
+    public function del_bank_account()
+    {
+        $user_id = $this->auth->id;
+        $this->operate_check('account_lock:' . $user_id, 2);
+        $id = input('id', 0);
+        $account = db('user_account')->where('id', $id)->find();
+        db('user_account')->where('id', $id)->delete();
+        if ($account['is_default']) {
+            $accountOther = db('user_account')->where('user_id', $user_id)->find();
+            if ($accountOther) {
+                $accountOther['is_default'] = 1;
+                db('user_account')->update($accountOther);
+            }
+        }
+
+
+        $this->success(__('Operation completed'));
+    }
+
+
+    /**
+     * 获取提现账户详情
+     */
+    public function get_account_info()
+    {
+        //$data = $this->service->getAccountInfo($this->auth->id);
+        $data = db('user_account')
+            //->field('id,bank_name,bank_logo,bank_number,is_default')
+            ->where(['user_id' => $this->auth->id])->order('is_default', 'desc')->select();
+        foreach ($data as &$item) {
+            $item['bank_logo'] = @$this->bankLogo[$item['bank_name']];
+            //$item['bank_number'] = substr($item['bank_number'], 0, 4);
+        }
+        $this->success('', $data);
+    }
+
+
+    /**
+     * @ApiTitle    (获取提现申请列表)
+     * @ApiMethod   (get)
+     * @ApiParams   (name="page",    type="int",  required=false, rule="", description="页码")
+     * @ApiParams   (name="size", type="int",  required=false, rule="", description="每页数量")
+     * @ApiReturnParams    (name="status", type="int", description="状态:0=审核中,1=一审通过,2=已打款,3=打款失败,-1=驳回,-2=用户取消")
+     * @ApiReturnParams    (name="account_type", type="int", description="打款方式:1=银行卡,2=支付宝")
+     */
+    public function list()
+    {
+        $user_id = $this->auth->id;
+        $list = db('user_withdraw')->field('id,payment_amount,status,account_data,create_time')
+            ->where('user_id', $user_id)->page(input('page', 1), input('size', 10))->order('id desc')->select();
+        foreach ($list as &$value) {
+            if (in_array($value['status'], [0, 1])) {
+                $value['status'] = 0;
+                $value['comment'] = RedisService::loadLang('审核中');
+            }
+            if ($value['status'] == 2) {
+                $value['status'] = 1;
+                $value['comment'] = RedisService::loadLang('成功');
+            }
+            if ($value['status'] == -1) $value['comment'] = RedisService::loadLang('驳回');
+            $info = json_decode($value['account_data'], true);
+            $value['account_info'] = '';
+            isset($info['bank_name']) && $info['bank_name'] && $value['account_info'] = $info['bank_name'] . '(' . substr($info['bank_number'], -4) . ')';
+            unset($value['account_data']);
+        }
+        $this->success(__('Operation completed'), $list);
+    }
+
+
+    /**
+     * @ApiTitle    (新增會員提現申請)
+     * @ApiMethod   (post)
+     * @ApiParams   (name="account_id", type="int",  required=true, rule="", description="提现账户ID")
+     * @ApiParams   (name="amount", type="string",  required=true, rule="", description="金额")
+     */
+    public function add()
+    {
+        $user_id = $this->auth->id;
+        $amount = input('amount');
+        $this->operate_check('withdraw_lock:' . $user_id, 2);
+
+        $amount_list = explode(',', get_site_config('list_withdraw_amount'));
+        !in_array($amount, $amount_list) && $this->error(__('Unsupported credit limit'));
+        $business = db('user_business')->where('id', $user_id)->find();
+        if ($amount > $business['reward_amount']) {
+            $this->error(__('Insufficient withdrawal limit'));
+        }
+        $account = db('user_account')->where('id', input('account_id'))->find();
+        if (empty($account)) {
+            $this->error(__('Withdrawal account does not exist'));
+        }
+        //$list_user = explode(',', get_site_config('list_withdraw_user')); //不受限制提现次数用户
+        //if (in_array($user_id, $list_user) === false) {
+        //    $withdraw = db('user_withdraw')->where([
+        //        'user_id' => $user_id,
+        //        'status'  => ['in', [0, 1, 2]],
+        //        //                's_flag'  => 0,
+        //    ])->whereTime('create_time', 'd')->count(1);
+        //    $num = get_site_config('withdraw_num') ?: "0";   //个人每天的提现次数
+        //    if ($withdraw >= $num) {
+        //        $this->error(__('The number of withdrawals for that day has been exhausted'));
+        //    }
+        //}
+        //$min_withdraw_amount = get_site_config('min_withdraw_amount') ?: "1";   //最低提现(收益)
+        //$max_withdraw_amount = get_site_config('max_withdraw_amount') ?: "1";   //最高提现(收益)
+        //$amount < $min_withdraw_amount && $this->error(__('The withdrawal limit cannot be less than the minimum withdrawal (profit)'));
+        //$amount > $max_withdraw_amount && $this->error(__('The withdrawal limit cannot exceed the maximum withdrawal (profit)'));
+        $withdraw_config = get_site_config('withdraw_fee') ?: "0"; //获取手续费
+
+        $fee = bcmul($amount, $withdraw_config, 2);
+        $less_amount = bcsub($business['reward_amount'], $amount, 2);
+        $payment_amount = bcdiv(bcsub($amount, $fee, 2), 15, 2);
+        try {
+            Db::startTrans();
+            $data = [
+                'withdraw_no'    => date('YmdHis') . random_int(1000, 9999),
+                'user_id'        => $user_id,
+                'account_id'     => $account['id'],
+                'amount'         => $amount,
+                'less_amount'    => $less_amount,
+                'payment_amount' => $payment_amount,
+                'fee'            => $fee,
+                'status'         => 0,
+                'account_data'   => json_encode($account),
+            ];
+            db('user_withdraw')->insert($data);
+            user_business_change($user_id, 'reward_amount', $amount, 'decrease', '用户申请提现', 13);
+
+            Db::commit();
+            Enigma::send_check_message("订单中心--->用户提现申请  - 用户: {$user_id} 提交了新的记录，需要审核！");
+        } catch (\Exception $e) {
+            Db::rollback();
+            Log::error($e->getMessage());
+            error_log_out($e);
+            $this->error(show_error_notify($e));
+        }
+        $this->success(__('Operation completed'));
+    }
+
+    /**
+     * @ApiTitle    (會員取消提現申請)
+     * @ApiMethod   (get)
+     * @ApiParams   (name="id", type="int",  required=true, rule="", description="id")
+     *
+     */
+    public function cancel()
+    {
+        $user_id = $this->auth->id;
+        $id = input('id');
+        $withdraw = db('user_withdraw')->where('id', $id)->find();
+        if (!$withdraw) {
+            $this->error(__('No results were found'));
+        }
+        if ($withdraw['status'] != 0) {
+            $this->error(__('Incorrect status'));
+        }
+        $less_amount = bcadd($withdraw['less_amount'], $withdraw['amount'], 2);
+        try {
+            Db::startTrans();
+            $data = [
+                'id'             => $id,
+                'status'         => -2,
+                'less_amount'    => $less_amount,
+                'payment_amount' => 0,
+            ];
+            db('user_withdraw')->update($data);
+            user_business_change($user_id, 'reward_amount', $withdraw['amount'], 'increase', '用户申请提现', 13);
+            Db::commit();
+        } catch (\Exception $e) {
+            Db::rollback();
+            Log::error($e->getMessage());
+            error_log_out($e);
+            $this->error(show_error_notify($e));
+        }
+        $this->success(__('Operation completed'));
+    }
+
+    /**
+     * 获取提现额度配置
+     * @ApiMethod   (get)
+     * @ApiSummary  ("withdraw_any_amount=是否可自定义提现金额，user_reward_amount=用户可提现收益（不含手续费）")
+     */
+    public function config()
+    {
+        $data = ['unit' => 'NT$'];
+        //提现手续费
+        $data['withdraw_fee'] = get_site_config('withdraw_fee') ?: "0";
+        //是否支持自定义提现额度
+        $data['withdraw_any_amount'] = get_site_config('withdraw_any_amount') ?: "0";
+        //用户可提现的收益
+        $data['user_reward_amount'] = db('user_business')->where('id', $this->auth->id)->value('reward_amount');
+        $list = explode(',', get_site_config('list_withdraw_amount'));
+        foreach ($list as $item) {
+            $data['list'][] = ['amount' => $item, 'pay_amount' => bcdiv($item, 15, 0)];
+        }
+        $data['account'] = null;
+        $account = db('user_account')->where('user_id', $this->auth->id)->where('is_default', 1)->find();
+        if ($account) {
+            $data['account'] = [
+                'id'   => $account['id'],
+                'name' => $account['bank_name'] . '(' . substr($account['bank_number'], -4) . ')',
+                'logo' => @$this->bankLogo[$account['bank_name']],
+            ];
+        }
+        $data['explain_zh'] = [
+            '1. 請選擇提領的收益數量',
+            '2. 提領申請提交24小時内完成審核，節假日順延',
+            '3. 每筆提領需收取3%服務費',
+            '4. 如有其他問題，請咨詢客服',
+        ];
+        $data['explain_en'] = [
+            '1. Please select the amount of earnings to be withdrawn',
+            '2. Submit the application and complete the review within 24 hours. Holidays will be postponed accordingly',
+            '3. Each withdrawal requires a 3% service fee',
+            '4. If you have any other questions, please consult customer service',
+        ];
+
+        $this->success('', $data);
+    }
+
+}

@@ -6,6 +6,7 @@ use app\common\exception\ApiException;
 use app\common\library\rabbitmq\BaseHandler;
 use app\common\library\rabbitmq\BoardNoticeMQ;
 use app\common\model\MoneyLog;
+use app\common\model\UserBusiness;
 use app\common\service\ImService;
 use GatewayClient\Gateway;
 use think\Db;
@@ -158,6 +159,33 @@ function business_log_add(
         'room_id'       => $room_id
     ]);
 }
+
+//添加VIP给用户
+function user_vip_add($user_id, $vip_id, $days, $remark = '')
+{
+    $vipData = db('vip')->where('id', $vip_id)->find();
+    $vip = db('user_vip')->where('id', $user_id)->find();
+    $days = $days == -1 ? 36500 : $days;
+    $date = date('Y-m-d H:i:s');
+    if ($vip && $vip['expire_time'] > $date) {
+        return;
+    }
+    db('user_vip')->insert([
+        'id'                => $user_id,
+        'grade'             => $vipData['grade'],
+        'expire_time'       => date('Y-m-d H:i:s', strtotime("+{$days}day")),
+        'next_protect_time' => date('Y-m-d H:i:s', strtotime("+{$days}day")),
+    ]);
+    db('user_business')->where(['id' => $user_id])->setField(['level' => $vipData['grade']]);
+    db('user_vip_log')->insert(['user_id' => $user_id, 'type' => 1, 'comment' => $remark]);
+    UserBusiness::reward_give(json_decode($vipData['reward_json'], true) ?? [], $user_id, $remark);
+    board_notice_delay(
+        Message::CMD_SHOW_VIP_LEVEL_UP,
+        RedisService::getCache('vip', 2, 'name,icon,grade') + ['nickname' => Db::name('user')->where('id', $user_id)->value('nickname')]
+    );
+    send_im_msg_by_system_with_lang($user_id, '恭喜您成功开通VIP，成为尊貴的VIP會員，已解鎖專屬特權');
+}
+
 
 /**
  * 数组下标过滤
