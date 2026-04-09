@@ -20,6 +20,35 @@ class RoomService
         $this->model = new RoomModel();
     }
 
+    /**
+     * 添加房间日志
+     * @param $room
+     * @param $update
+     * @param $operator_id
+     */
+    public static function addRoomLog($room, $update, $operator_id)
+    {
+        $messages = [
+            'name'           => '变更房间名称',
+            'notice'         => '变更房间公告',
+            'bg_img'         => '更换了房间背景',
+            'welcome_switch' => [0 => '关闭欢迎语', 1 => '开启欢迎语'],
+            'welcome_msg'    => '更换了房间欢迎语',
+            'way'            => [1 => '更改为自由上麦', 2 => '更改为排麦模式'],
+            'is_show'        => [1 => '更改房间状态为开业', 2 => '更改房间状态为歇业'],
+            'is_lock'        => [0 => '取消房间密码', 1 => '设置房间密码'],
+        ];
+        $log = [];
+        foreach ($update as $key => $value) {
+            if ($room[$key] <> $value) {
+                if (isset($messages[$key])) {
+                    $temp = is_array($messages[$key]) ? ($messages[$key][$value] ?? '') : $messages[$key];
+                    if ($temp) $log[] = ['user_id' => $operator_id, 'room_id' => $room['id'], 'action' => $temp,];
+                }
+            }
+        }
+        $log && db('room_log')->insertAll($log);
+    }
 
     /**
      * 获取房间在线用户
@@ -398,20 +427,20 @@ class RoomService
         $imService = new ImService();
         $resultIm = $imService->createRoom($union_master, $room_name);
         $room_data = [
-            'beautiful_id' => $beautiful_id,
-            'union_id' => $union_id,
-            'type' => RoomModel::ROOM_TYPE_NUION,
-            'name' => $room_name,
-            'im_operator' => $union_master,
-            'owner_id' => $union_master,
-            'cover' => $cover,
-            'im_roomid' => $resultIm['chatroom']['roomid'],
-            'status' => RoomModel::ROOM_STATUS_AUDIT,
-            'is_show' => 0,
-            'theme_id' => input('theme_id') ?: db('room_theme_cate')->where('room_type', 1)->value('id'),
-            'way' => input('way') ?: 1,
-            'bg_img' => input('bg_img') ?: db('room_img')->where('type', 1)->order('weigh')->value('image'),
-            'welcome_msg' => Shield::sensitive_filter(input('welcome_msg')),
+            'beautiful_id'   => $beautiful_id,
+            'union_id'       => $union_id,
+            'type'           => RoomModel::ROOM_TYPE_NUION,
+            'name'           => $room_name,
+            'im_operator'    => $union_master,
+            'owner_id'       => $union_master,
+            'cover'          => $cover,
+            'im_roomid'      => $resultIm['chatroom']['roomid'],
+            'status'         => RoomModel::ROOM_STATUS_AUDIT,
+            'is_show'        => 0,
+            'theme_id'       => input('theme_id') ?: db('room_theme_cate')->where('room_type', 1)->value('id'),
+            'way'            => input('way') ?: 1,
+            'bg_img'         => input('bg_img') ?: db('room_img')->where('type', 1)->order('weigh')->value('image'),
+            'welcome_msg'    => Shield::sensitive_filter(input('welcome_msg')),
             'welcome_switch' => input('welcome_switch') ?: 0
         ];
         db('room')->max('id') < 100000 && $room_data['id'] = 100001;

@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\common\model\Union as UnionModel;
 use app\common\service\ImService;
 use app\common\service\RedisService;
@@ -162,14 +162,7 @@ class Room extends Model
      */
     public function getImRoomId($room_id, $throw = 1)
     {
-        $result = db('room')->cache('im_room_id:' . $room_id, 3600, 'data_room')->where(
-            'id',
-            $room_id
-        )->value('im_roomid');
-        if (!$result && $throw) {
-            throw new ApiException(__('Failed to get chat room'));
-        }
-        return $result;
+        return $room_id;
     }
 
     /**

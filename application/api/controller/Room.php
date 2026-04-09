@@ -30,7 +30,18 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (创建房间申请)
+     * 获取房间分类
+     */
+    public function get_cate_column()
+    {
+        $res = db('room_theme_cate')->where(['status' => 1])->field('create_time,status,weigh', true)->order('weigh', 'desc')->select();
+        $this->success('', $res);
+    }
+
+
+    /**
+     * 创建房间申请
+     * @ApiMethod   (post)
      * @ApiParams   (name="theme_id",    type="int",  required=true, rule="", description="主题类型")
      * @ApiParams   (name="name",    type="string",  required=true, rule="", description="名称")
      * @ApiParams   (name="cover",  type="string",  required=true, rule="require", description="封面")
@@ -54,8 +65,9 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (编辑)
-     * @ApiParams   (name="room_id", type="int",  required=true, rule="require", description="房間ID")
+     * 修改房间
+     * @ApiMethod   (post)
+     * @ApiParams   (name="id", type="int",  required=true, rule="require", description="房間ID")
      * @ApiParams   (name="name",    type="int",  required=false, rule="", description="房間名稱")
      * @ApiParams   (name="theme_id",    type="int",  required=false,rule="min:1", description="房間主題類型")
      * @ApiParams   (name="notice",  type="str",  required=false, rule="", description="公告")
@@ -74,10 +86,10 @@ class Room extends Base
         $update = array_filter(input(), function ($value) {
             return $value !== '' && $value !== null;
         });
-        $room_id = $update['room_id'];
+        $room_id = $update['id'];
         $this->operate_check('edit_room:' . $this->auth->id, 2);
-        $check_role = $this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]);
-        if (!$check_role) $this->error(__('No permissions'));
+        if (!($this->service->checkRoomRole($room_id, $this->auth->id, [1, 2])))
+            $this->error(__('No permissions'));
         $is_blacklist = $this->service->isBlacklist($room_id, $this->auth->id);
         if ($is_blacklist) $this->error(__('You\'re on the party blacklist'));
 
@@ -89,73 +101,23 @@ class Room extends Base
             $update['name'] = Shield::sensitive_filter($update['name']);
             $res = db('room')->where('name', $update['name'])->whereIn('status', [2, 3])->where('id', '<>', $room_id)->count();
             if ($res) $this->error(__('Room name already exists'));
-            if ($update['name'] <> $room['name']) {
-                $roomModel->add_room_log($room_id, $this->auth->id, "變更房間名稱", ' change room name');
-            }
         }
-        if (isset($update['notice'])) {
-            $update['notice'] = Shield::sensitive_filter(input('notice'));
-            if ($update['notice'] <> $room['notice']) {
-                $roomModel->add_room_log($room_id, $this->auth->id, "變更房間公告", ' change room notice');
-            }
+        if (isset($update['notice'])) $update['notice'] = Shield::sensitive_filter(input('notice'));
+        if (input('is_lock')) {
+            if (!input('password')) $this->error(__('Password cannot be empty'));
+            if (mb_strlen((input('password'))) > 6 || mb_strlen((input('password'))) < 4) $this->error(__('Password must be 4-6 characters'));
         }
-        if (isset($update['bg_img'])) {
-            if ($update['bg_img'] <> $room['bg_img']) {
-                $roomModel->add_room_log($room_id, $this->auth->id, "更換了派對背景", ' change room background');
-            }
-        }
-        if (isset($update['way'])) {
-            if ($update['way'] == 1) $this->service->clearMicQueue($room_id); //清空排麦
-            if ($update['way'] <> $room['way']) {
-                $way = [1 => '更改為自由上麥', 2 => '更改為排麥模式'];
-                $way_en = [1 => ' changed to free Mic', 2 => ' changed to queue Mic mode'];
-                $roomModel->add_room_log($room_id, $this->auth->id, $way[$update['way']], $way_en[$update['way']]);
-            }
-        }
-        if (input('welcome_switch') || input('welcome_switch') === 0 || input('welcome_switch') === '0') {
-            if ($update['welcome_switch'] <> $room['welcome_switch']) {
-                $t = [0 => '關閉歡迎語', 1 => '開啟歡迎語'];
-                $t_en = [0 => ' welcome-message off', 1 => ' welcome-message on'];
-                $roomModel->add_room_log($room_id, $this->auth->id, $t[$update['welcome_switch']], $t_en[$update['welcome_switch']]);
-            }
-        }
-        if (isset($update['welcome_msg'])) {
-            $update['welcome_msg'] = Shield::sensitive_filter(input('welcome_msg'));
-            if (strlen($update['welcome_msg']) > 500) $this->error(__('Welcome message character length exceeds limit'));
-        }
-
         if (input('is_show') || input('is_show') === 0 || input('is_show') === '0') {
             $redis = redis();
             if (input('is_show') == 1 && $redis->hGet(RedisService::ADMIN_SET_ROOM_NOT_SHOW, $room_id)) {
                 $this->error(__('Unable to update to business, please contact customer service'));
             }
-
-            $update['is_show'] = input('is_show');
-            if ($update['is_show'] == 0) $this->service->clearMicQueue($room_id); //清空排麦
-            if ($update['is_show'] <> $room['is_show']) {
-                $is_show = [1 => '更改房間狀態為開業', 0 => '更改房間狀態為歇業'];
-                $is_show_en = [1 => ' changed to opening', 0 => ' changed to closed'];
-                $roomModel->add_room_log($room_id, $this->auth->id, $is_show[$update['is_show']], $is_show_en[$update['is_show']]);
-            }
         }
-        if (input('is_lock') || input('is_lock') === 0 || input('is_lock') === '0') {
-            $update['is_lock'] = input('is_lock');
-            if ($update['is_lock'] <> $room['is_lock']) {
-                $lock = [0 => '取消房間密碼', 1 => '設置房間密碼'];
-                $lock_en = [0 => ' cancelled room password', 1 => ' set room password'];
-                $roomModel->add_room_log($room_id, $this->auth->id, $lock[$update['is_lock']], $lock_en[$update['is_lock']]);
-            }
-        }
-
-        if (input('is_lock')) {
-            if (!input('password')) $this->error(__('Password cannot be empty'));
-            if (mb_strlen((input('password'))) > 6 || mb_strlen((input('password'))) < 4) $this->error(__('Password must be 4-6 characters'));
-        }
-
-
+        if (input('is_show') == 0 || input('way') == 1) $this->service->clearMicQueue($room_id); //清空排麦
         Db::startTrans();
         try {
             db('room')->where('id', $room_id)->update($update);
+            RoomService::addRoomLog($room, $update, $this->auth->id);
             Db::commit();
             $data = db('room')->where('id', $room_id)->find();
             $this->success('', $data);
@@ -644,24 +606,6 @@ class Room extends Base
         $this->success();
     }
 
-
-    /**
-     * @ApiTitle    (獲取房間分類欄-創建時使用[公,個])
-     * @ApiParams   (name="room_type",  type="int", required=true,  rule="", description="房間類型:1=聯盟房 2=個人房")
-     * @ApiSummary  (房間類別,1=標准房間,2=個人房)
-     */
-    public function get_cate_column()
-    {
-        $where = [
-            //'room_type' => input('room_type'),
-            'status' => 1
-        ];
-        $res = db('room_theme_cate')->where($where)->field('create_time,status,weigh', true)->order('weigh', 'desc')->select();
-        foreach ($res as &$re) {
-            $re['name'] = RedisService::loadLang($re['name']);
-        }
-        $this->success('', $res);
-    }
 
     /**
      * @ApiTitle    (收藏聊天室[公,個])
