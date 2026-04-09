@@ -3,6 +3,7 @@
 namespace app\common\service;
 
 use app\common\exception\ApiException;
+use app\common\model\Room;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
 use think\Log;
@@ -63,6 +64,16 @@ class RoomService
             'to_user_id' => $to_user_id,
         ]);
     }
+
+    public function get_room_cate()
+    {
+        $data = db('room_theme_cate')
+            ->where('status', 1)
+            ->order('weigh desc')
+            ->column('name,color,image', 'id');
+        return $data;
+    }
+
 
 
     /**
@@ -353,7 +364,7 @@ class RoomService
         if ($last_room_id != $room_id) {
             //如果还没有从上个房间退出,则强性退出房间
             if ($last_room_id) {
-                $roomModel->quit_room($user_id, $last_room_id);
+                $this->quit_room($user_id, $last_room_id);
             }
             //如果没有开启房间隐身
             if ($hiding == 0 && user_vip_switch($user_id, 7)) {
@@ -522,5 +533,50 @@ class RoomService
             ['type' => ImService::ROOM_USER_ROLE_REFRESH, 'user_id' => $to_user_id, 'role' => $role]
         );
     }
+
+
+
+    public function quit_room($user_id, $room_id, $autonomic = 0, $is_kick = 0)
+    {
+        $redis = redis();
+        if ($redis->hget(RedisService::USER_NOW_ROOM_KEY, $user_id) == $room_id) {
+            $redis->hDel(RedisService::USER_NOW_ROOM_KEY, $user_id);
+        }
+        $redis->zRem(RedisService::ROOM_USER_KEY_PRE . $room_id, $user_id);
+
+        $redis_del = $redis->sRem(RedisService::SEAT_WAIT_QUEUE_KEY_PRE . $room_id, $user_id);//退出房间从排麦中删除
+        $imService = new ImService();
+        if ($redis_del) {
+            $imService->roomSendNotice(
+                $room_id,
+                [
+                    'type'  => ImService::ROOM_MIC_QUEUE_REFRESH,
+                    'count' => $redis->sCard(RedisService::SEAT_GIFT_KEY_PRE . $room_id)
+                ]
+            );
+            //非用户主动退出房间
+            if ($autonomic) {
+                $imService->room_wait_mic_delete($room_id, $user_id);
+            }
+        }
+        //下座
+        $this->sit_leave($room_id, $user_id);
+        //房间全部人退出来后修改状态为休息中
+        if (!$redis->zCard(RedisService::ROOM_USER_KEY_PRE . $room_id)) {
+            db('room')->where('id', $room_id)->where('status', Room::ROOM_STATUS_PLAYING)
+                ->setField('status', Room::ROOM_STATUS_IDLE);
+        }
+        $imService->roomSendNotice(
+            $room_id,
+            [
+                'type'         => ImService::ROOM_ONLINE_USER_REFRESH,
+                'online_count' => $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $room_id)
+            ]
+        );
+        if ($is_kick) {
+            $imService->room_kick_user($room_id, $user_id);
+        }
+    }
+
 
 }

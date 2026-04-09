@@ -199,6 +199,7 @@ class Room extends Model
     }
 
     /**
+     * todo 待删除
      * 新增房间操作日志
      * @param        $room_id      int 房间号
      * @param        $user_id      int 操作人
@@ -283,6 +284,7 @@ class Room extends Model
     }
 
     /*
+     * todo 待删除
      * 退出房间
      */
     public function quit_room($user_id, $room_id, $autonomic = 0, $is_kick = 0)

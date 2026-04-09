@@ -241,7 +241,7 @@ class Room extends Base
         $redis = redis();
 
         //获取房间类似数组
-        $roomCateArr = (new HomeService())->getRoomCate();
+        $roomCateArr = $this->service->get_room_cate();
         foreach ($result as $k => &$v) {
             $room_user = $redis->zRevRange(RedisService::ROOM_USER_KEY_PRE . $v['id'], 0, 5);
             $result[$k]['room_user'] = db('user')->where('id', 'in', $room_user)->limit(5)->column('avatar');
@@ -325,7 +325,7 @@ class Room extends Base
             $msg = "将*" . $nickname . "*抱下" . ($seat - 1) . "号麦";
             $msg_en = " take *{$nickname}* off the Mic " . ($seat - 1);
         }
-        $roomModel->add_room_log($room_id, $this->auth->id, $msg, $msg_en, $user_id);
+        $this->service->add_room_log($room_id, $this->auth->id, $msg, $msg_en, $user_id);
 
         $this->success();
     }
@@ -454,7 +454,7 @@ class Room extends Base
         if ($user_id == 0) {
             throw new ApiException(__('Please log in to the app again'));
         }
-        $roomModel->quit_room($user_id, $room_id, $user_id == $this->auth->id);
+        $this->service->quit_room($user_id, $room_id, $user_id == $this->auth->id);
         $this->success();
     }
 
@@ -540,7 +540,7 @@ class Room extends Base
             db('room')->where('id', $room_id)->setField('pause', $pause);
         }
 
-        $roomModel->add_room_log($room_id, $this->auth->id, $explain[$pause], $explain_en[$pause]);
+        $this->service->add_room_log($room_id, $this->auth->id, $explain[$pause], $explain_en[$pause]);
 
         if ($pause == 3 || $pause == 0) {
             $roomModel->sit_reset($room_id);
@@ -571,7 +571,7 @@ class Room extends Base
         } else {
             $seat = $seat_en = $seat_no - 1;
         }
-        $roomModel->add_room_log($room_id, $this->auth->id, "清空了{$seat}号麦的麦上打赏统计", " cleared the gift statistics for Mic {$seat_en}");
+        $this->service->add_room_log($room_id, $this->auth->id, "清空了{$seat}号麦的麦上打赏统计", " cleared the gift statistics for Mic {$seat_en}");
 
         $imService = new ImService();
         $hot = redis()->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;  //热力值
@@ -668,8 +668,8 @@ class Room extends Base
         if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
         if (user_vip_switch($to_user_id, 5)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
         send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s');
-        $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", '', $to_user_id);
-        $roomModel->quit_room($to_user_id, $room_id, 0, 1);
+        $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", '', $to_user_id);
+        $this->service->quit_room($to_user_id, $room_id, 0, 1);
         $this->success();
     }
 
@@ -706,16 +706,16 @@ class Room extends Base
             }
             //给房主发消息
             send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s,并加入派对黑名单');
-            $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", " kicked *{$nickname}* out of the room", $to_user_id);
+            $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", " kicked *{$nickname}* out of the room", $to_user_id);
             //移除房间角色
             $this->service->roomRoleRemove($room_id, $to_user_id);
         }
 
-        $roomModel->quit_room($to_user_id, $room_id);
+        $this->service->quit_room($to_user_id, $room_id);
 
         if ($type == 2) {
             db('room_blacklist')->where(['room_id' => $room_id, 'user_id' => $to_user_id])->delete();
-            $roomModel->add_room_log($room_id, $this->auth->id, "将*{$nickname}*解除了派对黑名单", " unblocked *{$nickname}* from the room blacklist", $to_user_id);
+            $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*解除了派对黑名单", " unblocked *{$nickname}* from the room blacklist", $to_user_id);
         }
 
         $this->success();
@@ -788,7 +788,7 @@ class Room extends Base
 
         $arr = [0 => "取消了{$to_nickname}角色身份", 2 => "将*{$to_nickname}*设为主持", 3 => "将*{$to_nickname}*设为主播"];
         $arr_en = [0 => " canceled {$to_nickname}'s role", 2 => " set *{$to_nickname}* as host", 3 => " set *{$to_nickname}* as anchor"];
-        $roomModel->add_room_log($room_id, $this->auth->id, $arr[$role], $arr_en[$role], $to_user_id);
+        $this->service->add_room_log($room_id, $this->auth->id, $arr[$role], $arr_en[$role], $to_user_id);
         $this->success();
     }
 
@@ -868,7 +868,7 @@ class Room extends Base
             default:
                 throw new ApiException(__('Invalid operation'));
         };
-        $room->add_room_log(input('room_id'), input('user_id'), $action, $action_en, input('to_user_id') ?: 0);
+        $this->service->add_room_log(input('room_id'), input('user_id'), $action, $action_en, input('to_user_id') ?: 0);
         $this->success();
     }
 
