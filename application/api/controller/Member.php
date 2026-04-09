@@ -30,9 +30,9 @@ class Member extends Base
         $room_id = input('room_id', 0);
         $extend = input('status') == 2 ? ',a.reason' : '';
         $list = db('room_admin')->alias('a')->join('user u', 'a.user_id = u.id', 'left')
-            ->field('a.status,u.id,u.nickname,u.avatar,u.sex' . $extend)
+            ->field('a.user_id,a.status,u.id,u.nickname,u.avatar' . $extend)
             ->where('a.room_id', $room_id)
-            ->where('status', input('status', 1))
+            ->where('a.status', input('status', 1))
             ->page(input('page', 1), input('size', 10))->select();
 
         $this->success('', $list);
