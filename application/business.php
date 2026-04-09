@@ -387,3 +387,19 @@ function user_vip_switch($user_id, $switch_type)
     }
     return 0;
 }
+
+
+function get_users_info($user_ids)
+{
+    $time = datetime(time() - config('app.noble_protection_time'));
+    return db('user u')
+        ->join('user_business s', 'u.id = s.id')
+        ->join('level i', 's.level = i.grade', 'left')
+        ->join('user_noble e', "u.id = e.user_id and e.end_time >'{$time}'", 'left')
+        ->join('noble l', 'e.noble_id = l.id', 'left')
+        ->where('u.id', 'in', $user_ids)
+        ->column(
+            'u.id as user_id,u.is_online,u.nickname,u.bio,u.avatar,u.gender,s.level,i.icon as level_icon,e.noble_id,l.name as noble_name,l.badge as noble_badge',
+            'u.id'
+        );
+}

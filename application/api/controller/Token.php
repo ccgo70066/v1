@@ -46,14 +46,4 @@ class Token extends Base
         $tokenInfo = TokenService::get($token);
         $this->success('', ['token' => $tokenInfo['token'], 'expires_in' => $tokenInfo['expires_in']]);
     }
-
-
-    public function clear()
-    {
-        $tag = input('tag');
-        cache($tag, null);
-        $rs = Cache::clear($tag);
-        $this->success($tag, $rs);
-    }
-
 }
