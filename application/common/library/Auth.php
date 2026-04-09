@@ -54,8 +54,8 @@ class Auth
         'role',
         //'is_follow',
         //'area',
-        //'hidden_level',
-        //'hidden_noble',
+        'hidden_level',
+        'hidden_noble',
         //'edit_gender_num',
     ];
 
@@ -457,16 +457,13 @@ class Auth
             $data['is_follow'] = 0;
         } else {
             $data = User::find($userId);
-            if (!$data) {
-                return null;
-            }
+            if (!$data) return null;
+
             $data = $data->toArray();
             $data['is_follow'] = (int)db('user_follow')->where(['user_id' => $this->_user->id, 'to_user_id' => $userId])->find();
-            UserGuest::addGuestLog($this->_user->id, $userId);
         }
         $business = UserBusiness::find($data['id']);
         $data += $business->toArray();
-        //$data['im_token'] = $business['im_token'];
 
         $allowFields = $this->getAllowFields();
         $userinfo = array_intersect_key($data, array_flip($allowFields));

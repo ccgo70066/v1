@@ -44,16 +44,16 @@ class User extends Base
      */
     public function get_info()
     {
-        $userId = input('user_id', 0);
-        in_array((string)$userId, ImService::$KF_IDS) && $this->success();
-        $userId && $userId != $this->auth->id && UserGuest::addGuestLog($this->auth->id, $userId);
-        $user_info = $this->auth->getUserinfo($userId);
+        $user_id = input('user_id', 0);
+        in_array((string)$user_id, ImService::$KF_IDS) && $this->success();
+        $user_id && $user_id != $this->auth->id && UserGuest::addGuestLog($this->auth->id, $user_id);
+        $user_info = $this->auth->getUserinfo($user_id);
         !$user_info && $this->error(__('User does not exist'));
-        if ($userId && $userId != $this->auth->id) {
+        if ($user_id && $user_id != $this->auth->id) {
             $user_info['hidden_noble'] == 1 && $user_info['noble_info'] = '';
             $user_info['hidden_level'] == 1 && $user_info['level_info'] = '';
         }
-        $user_info['wall'] = UserService::getWallInfo($userId ?: $this->auth->id);
+        $user_info['wall'] = UserService::getWallInfo($user_id ?: $this->auth->id);
         $this->success('', $user_info);
     }
 

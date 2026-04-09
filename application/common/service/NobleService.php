@@ -1,13 +1,12 @@
 <?php
 
 namespace app\common\service;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\common\model\NoblePrivilege;
 use app\common\model\ShopItem as ShopModel;
 use app\common\model\UserBusiness as UserBusinessModel;
 use app\common\model\UserNoble;
 
-use function app\api\library\get_expiry_days;
 
 /**
  * 贵族相关类

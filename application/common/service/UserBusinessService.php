@@ -2,13 +2,11 @@
 
 namespace app\common\service;
 
-use app\common\library\ApiException;
 use app\common\model\ShopItem as ShopModel;
 use think\Cache;
 use think\Db;
 use think\Exception;
 
-use function app\api\library\get_new_expiry_days;
 
 /**
  * 用户业务类
@@ -153,7 +151,7 @@ class UserBusinessService
 
     /**
      * 获取用户背包中的礼物数据
-     * @param string $where 查询条件
+     * @param array $where 查询条件
      */
     public static function getBagGifts($where)
     {
@@ -188,7 +186,7 @@ class UserBusinessService
 
     /**
      * 获取用户背包中的头像框数据
-     * @param string $where 查询条件
+     * @param array $where 查询条件
      */
     public static function getBagAdornments($where)
     {
@@ -242,7 +240,7 @@ class UserBusinessService
 
     /**
      * 获取用户背包中的坐骑数据
-     * @param string $where 查询条件
+     * @param array $where 查询条件
      */
     public static function getBagCars($where)
     {
@@ -296,7 +294,7 @@ class UserBusinessService
 
     /**
      * 获取用户背包中的聊天气泡数据
-     * @param string $where 查询条件
+     * @param array $where 查询条件
      */
     public static function getBagBubbles($where)
     {
@@ -352,7 +350,7 @@ class UserBusinessService
 
     /**
      * 获取用户背包中的铭牌数据
-     * @param string $where 查询条件
+     * @param array $where 查询条件
      */
     public static function getBagTails($where)
     {

@@ -403,3 +403,27 @@ function get_users_info($user_ids)
             'u.id'
         );
 }
+
+
+/**
+ * 获取商品截至时间距现在多少天和多少小时
+ * @param     $lockName
+ * @param int $expire
+ * @return object $obj->days $obj->hours
+ */
+function get_expiry_days($expiry_date)
+{
+    $time = strtotime($expiry_date);
+    //计算两个日期之间的时间差
+    $diff = $time - time();
+    $obj = new stdClass();
+    if ($diff < 0) {
+        $obj->days = 0;
+        $obj->hours = 0;
+        return $obj;
+    }
+    //转换时间差的格式
+    $obj->days = floor($diff / (60 * 60 * 24));
+    $obj->hours = ceil(($diff % (60 * 60 * 24)) / 3600);
+    return $obj;
+}

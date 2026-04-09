@@ -2,7 +2,6 @@
 
 namespace app\common\service;
 
-use app\api\library\RedisService;
 use app\common\model\AnchorRecommend as AnchorRecommendModel;
 use app\common\model\Gift as GiftModel;
 use app\common\model\User;
@@ -287,5 +286,6 @@ class UserService
         }
         return $data;
     }
+
 
 }

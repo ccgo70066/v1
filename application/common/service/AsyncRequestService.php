@@ -2,7 +2,8 @@
 
 
 namespace app\common\service;
-use app\common\library\ApiException;
+
+use app\common\exception\ApiException;
 
 /**
  * 异步请求类

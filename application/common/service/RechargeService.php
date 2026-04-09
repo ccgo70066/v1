@@ -2,21 +2,8 @@
 
 namespace app\common\service;
 
-use app\common\library\ApiException;
-use app\common\library\exception\BusinessException;
+use app\common\exception\ApiException;
 use app\common\model\UserBusiness;
-use app\pay\library\AdaPay;
-use app\pay\library\AliPay;
-use app\pay\library\HmPay;
-use app\pay\library\HuifuPay;
-use app\pay\library\LianLianPay;
-use app\pay\library\MihuaPay;
-use app\pay\library\NewPay;
-use app\pay\library\SanderPay;
-use app\pay\library\SuningPay;
-use app\pay\library\TcPay;
-use app\pay\library\WechatPayV3;
-use app\pay\library\XhdPay;
 use fast\Http;
 use think\Collection;
 use think\db\exception\DataNotFoundException;

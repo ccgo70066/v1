@@ -2,11 +2,9 @@
 
 namespace app\common\service;
 
-use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\exception\ApiException;
 use app\common\model\Gift as GiftModel;
 use app\common\model\GiftSendStatistic;
-use think\Db;
 use think\Exception;
 
 /**

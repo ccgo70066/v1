@@ -2,7 +2,6 @@
 
 namespace app\common\service;
 
-use function GuzzleHttp\Psr7\str;
 
 /**
  * 用户业务流水-服务
