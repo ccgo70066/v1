@@ -51,6 +51,7 @@ return array(
     'GatewayClient\\' => array($vendorDir . '/workerman/gatewayclient'),
     'EasyWeChat\\' => array($vendorDir . '/overtrue/wechat/src'),
     'EasyWeChatComposer\\' => array($vendorDir . '/easywechat-composer/easywechat-composer/src'),
+    'DfaFilter\\' => array($vendorDir . '/lustre/php-dfa-sensitive/src/DfaFilter'),
     'Composer\\Pcre\\' => array($vendorDir . '/composer/pcre/src'),
     'Complex\\' => array($vendorDir . '/markbaker/complex/classes/src'),
 );

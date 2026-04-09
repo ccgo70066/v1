@@ -110,6 +110,10 @@ class ComposerStaticInitf3106b6ef3260b6914241eab0bed11c1
             'EasyWeChat\\' => 11,
             'EasyWeChatComposer\\' => 19,
         ),
+        'D' => 
+        array (
+            'DfaFilter\\' => 10,
+        ),
         'C' => 
         array (
             'Composer\\Pcre\\' => 14,
@@ -300,6 +304,10 @@ class ComposerStaticInitf3106b6ef3260b6914241eab0bed11c1
         'EasyWeChatComposer\\' => 
         array (
             0 => __DIR__ . '/..' . '/easywechat-composer/easywechat-composer/src',
+        ),
+        'DfaFilter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lustre/php-dfa-sensitive/src/DfaFilter',
         ),
         'Composer\\Pcre\\' => 
         array (

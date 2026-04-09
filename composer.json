@@ -39,7 +39,8 @@
 	"ext-redis": "*",
 	"ext-gd": "*",
 	"ext-openssl": "*",
-	"ext-posix": "*"
+	"ext-posix": "*",
+    "lustre/php-dfa-sensitive": "^1.4"
   },
   "config": {
 	"preferred-install": "dist",
