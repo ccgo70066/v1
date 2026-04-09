@@ -7,9 +7,9 @@ use app\common\model\ChannelBlacklist;
 use app\common\model\NoblePrivilege;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
+use app\common\service\RedisService;
 use app\common\service\RoomService;
 use think\Db;
-use think\Env;
 use think\Exception;
 use think\Log;
 
@@ -31,33 +31,25 @@ class Room extends Base
 
     /**
      * @ApiTitle    (创建房间申请)
-     * @ApiParams   (name="union_id",    type="int",  required=true, rule="", description="家族ID")
      * @ApiParams   (name="theme_id",    type="int",  required=true, rule="", description="主题类型")
      * @ApiParams   (name="name",    type="string",  required=true, rule="", description="名称")
      * @ApiParams   (name="cover",  type="string",  required=true, rule="require", description="封面")
-     * @ApiParams   (name="welcome_msg",   type="string",  required=false, rule="", description="欢迎语")
+     * @ApiParams   (name="intro",  type="string",  required=true, rule="require", description="简介")
      * @ApiParams   (name="bg_img",   type="string",  required=false, rule="", description="背景图")
      * @ApiParams   (name="welcome_switch",   type="int",  required=false, rule="", description="歡迎語開關:1=開,0=關")
+     * @ApiParams   (name="welcome_msg",   type="string",  required=false, rule="", description="欢迎语")
      */
     public function create_room(RoomModel $roomModel)
     {
-        $union_id = input('union_id');
         if (input('welcome_switch', 0) == 1 && input('welcome_msg') == '') $this->error(__('Please enter welcome message'));
         $user_id = $this->auth->id;
         $this->operate_check('create_room_' . $user_id, 5);
-        db()->startTrans();
-        try {
-            $result = $this->service->createUnionRoom($union_id, input('name'), input('cover'));
-            if (!$result) {
-                throw new ApiException(__('Creation failed, please try again'));
-            }
-            db()->commit();
-        } catch (\Exception $e) {
-            db()->rollback();
-            Log::error($e->getMessage());
-            error_log_out($e);
-            $this->error(show_error_notify($e));
-        }
+        $info = input();
+        $exist = db('room')->where('owner_id', $user_id)->where('status', '>', 0)->find();
+        if ($exist) $this->error(__('You already have a room'));
+        $info['owner_id'] = $user_id;
+        $info['status'] = 1;
+        db('room')->strict(false)->insert($info);
         $this->success();
     }
 
@@ -96,47 +88,31 @@ class Room extends Base
                     $roomModel->add_room_log($room_id, $this->auth->id, "變更房間名稱", ' change room name');
                 }
             }
-
-            if (input('theme_id')) {
-                $arr['theme_id'] = input('theme_id');
-            }
-
+            if (input('theme_id')) $arr['theme_id'] = input('theme_id');
             if (input('notice')) {
                 $arr['notice'] = Shield::sensitive_filter(input('notice'));
                 if ($arr['notice'] <> $room['notice']) {
                     $roomModel->add_room_log($room_id, $this->auth->id, "變更房間公告", ' change room notice');
                 }
             }
-
-            if (input('cover')) {
-                $arr['cover'] = input('cover');
-            }
-            if (input('password')) {
-                $arr['password'] = input('password');
-            }
+            if (input('cover')) $arr['cover'] = input('cover');
+            if (input('password')) $arr['password'] = input('password');
             if (input('bg_img')) {
                 $arr['bg_img'] = input('bg_img');
                 if ($arr['bg_img'] <> $room['bg_img']) {
                     $roomModel->add_room_log($room_id, $this->auth->id, "更換了派對背景", ' change room background');
                 }
             }
-            if (input('label')) {
-                $arr['label'] = input('label');
-            }
+            if (input('label')) $arr['label'] = input('label');
             if (input('way')) {
                 $arr['way'] = input('way');
-                if ($arr['way'] == 1) {
-                    //清空排麦
-                    $this->service->clearMicQueue($room_id);
-                }
-
+                if ($arr['way'] == 1) $this->service->clearMicQueue($room_id); //清空排麦
                 if ($arr['way'] <> $room['way']) {
                     $way = [1 => '更改為自由上麥', 2 => '更改為排麥模式'];
                     $way_en = [1 => ' changed to free Mic', 2 => ' changed to queue Mic mode'];
                     $roomModel->add_room_log($room_id, $this->auth->id, $way[$arr['way']], $way_en[$arr['way']]);
                 }
             }
-
             if (input('welcome_switch') || input('welcome_switch') === 0 || input('welcome_switch') === '0') {
                 $arr['welcome_switch'] = input('welcome_switch');
                 if ($arr['welcome_switch'] <> $room['welcome_switch']) {
@@ -145,11 +121,7 @@ class Room extends Base
                     $roomModel->add_room_log($room_id, $this->auth->id, $t[$arr['welcome_switch']], $t_en[$arr['welcome_switch']]);
                 }
             }
-
-            if (input('status')) {
-                $arr['status'] = input('status');
-            }
-
+            if (input('status')) $arr['status'] = input('status');
             if (input('welcome_msg')) {
                 $arr['welcome_msg'] = Shield::sensitive_filter(input('welcome_msg'));
                 if (strlen($arr['welcome_msg']) > 500) {
@@ -170,10 +142,7 @@ class Room extends Base
                 }
 
                 $arr['is_show'] = input('is_show');
-                if ($arr['is_show'] == 0) {
-                    //清空排麦
-                    $this->service->clearMicQueue($room_id);
-                }
+                if ($arr['is_show'] == 0) $this->service->clearMicQueue($room_id); //清空排麦
                 if ($arr['is_show'] <> $room['is_show']) {
                     $is_show = [1 => '更改房間狀態為開業', 0 => '更改房間狀態為歇業'];
                     $is_show_en = [1 => ' changed to opening', 0 => ' changed to closed'];
@@ -190,14 +159,8 @@ class Room extends Base
             }
 
             if (input('name')) {
-                $res = db('room')->where('name', $arr['name'])->where(
-                    'status',
-                    '<>',
-                    RoomModel::ROOM_STATUS_FORBIDDEN
-                )->where('id', '<>', $room_id)->count();
-                if ($res) {
-                    throw new ApiException(__('Room name already exists'));
-                }
+                $res = db('room')->where('name', $arr['name'])->where('status', '<>', RoomModel::ROOM_STATUS_FORBIDDEN)->where('id', '<>', $room_id)->count();
+                if ($res) throw new ApiException(__('Room name already exists'));
             }
 
             if (input('is_lock')) {

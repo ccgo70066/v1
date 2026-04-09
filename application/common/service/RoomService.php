@@ -184,16 +184,11 @@ class RoomService
      * @ApiInternal
      * @param $room_id int 房间ID
      * @param $user_id int 用户ID
-     * @param $role    array|string 角色要求(多选) 如 [2,3] 1=房主,2=管理,3=3主播
+     * @param $role    array|string 角色要求(多选) 如 [2,3] 角色:1=房主,2=管理,3=主播
      * @return boolean
      */
-    public function checkRoomRole($room_id, $user_id, $role)
+    public function checkRoomRole($room_id, $user_id, $role): bool
     {
-        $room = db('room')->where('id', $room_id)->find();
-        $union = db('union')->where('id', $room['union_id'])->find();
-        if ($union && $union['owner_id'] == $user_id) {
-            return true;
-        }
         $result = db('room_admin')->where([
             'room_id' => $room_id,
             'user_id' => $user_id,
