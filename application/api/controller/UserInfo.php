@@ -3,10 +3,10 @@
 namespace app\api\controller;
 
 
-use app\api\library\MallService;
-use app\api\library\UserService;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\common\model\UserBusiness as UserBusinessModel;
+use app\common\service\MallService;
+use app\common\service\UserService;
 use think\Db;
 use think\Log;
 
@@ -340,7 +340,6 @@ class UserInfo extends Base
             $update['create_time'] = datetime();
         }
         Db::name('user_audit_image')->where('id', $image['id'])->update($update);
-        trace(getLastSql());
         $this->success('ok');
     }
 

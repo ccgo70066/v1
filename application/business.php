@@ -358,3 +358,45 @@ function board_notice_delay($cmd, $data, $msg = '', $delay = 2)
 {
     mq_publish(BoardNoticeMQ::instance(), ['cmd' => $cmd, 'data' => $data, 'msg' => $msg,], $delay * 1000);
 }
+
+
+/**
+ * @param int   $user_id 用户名
+ * @param int   $type    类型:1=新人礼包,2=首充礼包,3=签到奖励,4=任务奖励,5=活动奖励
+ * @param array $data    内容
+ */
+function other_log_add(int $user_id, int $type, array $data)
+{
+    if (empty($data)) {
+        return false;
+    }
+    $content = '';
+    switch ($type) {
+        case '1'://新人礼包
+            $content = '新人礼包 获得: ';
+            break;
+        case '2': //首充礼包
+            $content = '首充礼包 获得: ';
+            break;
+        case '3':  //签到奖励
+            $content = '签到 获得: ';
+            break;
+        case '4': //任务奖励
+            $content = '完成任务 获得: ';
+            break;
+        case '5': //活动奖励
+            $content = '活动 获得: ';
+            break;
+        case '6': //升级奖励
+            $content = '升级 获得: ';
+            break;
+    }
+    foreach ($data as &$v) {
+        $content .= $v['name'] . '×' . $v['count'] . '; ';
+    }
+    db('user_other_log')->insert([
+        'user_id' => $user_id,
+        'type'    => $type,
+        'content' => $content,
+    ]);
+}

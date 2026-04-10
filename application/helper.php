@@ -3,7 +3,7 @@
 use think\Env;
 use think\Log;
 
-function getSql()
+function getLastSql()
 {
     return \think\Db::getLastSql();
 }
