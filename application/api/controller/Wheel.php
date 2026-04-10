@@ -19,7 +19,7 @@ use util\Translate;
 use util\Util;
 
 /**
- * 海贼王游戏
+ * 游戏二
  * @package app\api\controller
  */
 class Wheel extends Base

@@ -8,6 +8,7 @@ use app\common\library\rabbitmq\BoardNoticeMQ;
 use app\common\model\MoneyLog;
 use app\common\model\UserBusiness;
 use app\common\service\ImService;
+use fast\Http;
 use GatewayClient\Gateway;
 use think\Db;
 use think\Env;
@@ -399,4 +400,15 @@ function other_log_add(int $user_id, int $type, array $data)
         'type'    => $type,
         'content' => $content,
     ]);
+}
+
+
+function send_check_message($message)
+{
+    return;
+    if (Env::get('app.server') == 'test') return;
+    $dialog_id = 'G-1077597528';
+    $message = urlencode($message);
+    $api_url = "http://47.242.104.63/sendTextMessage?content={$message}&dialogId={$dialog_id}&replyTo=0";
+    Http::post($api_url);
 }

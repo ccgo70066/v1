@@ -13,7 +13,7 @@ use think\Log;
 use think\Request;
 
 /**
- * 飘流瓶
+ * 游戏一
  * @package app\api\controller
  */
 class Egg extends Base

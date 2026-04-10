@@ -656,7 +656,7 @@ class User extends Base
         if ($status) {
             Db::name('user')->where('id', $user_id)->setField('avatar', $url);
         }
-        // send_check_message("形象照(会员中心-->头像审核) - 用户: {$user_id} 提交了新的形象照，需要审核！");
+         send_check_message("形象照(会员中心-->头像审核) - 用户: {$user_id} 提交了新的形象照，需要审核！");
         $this->success();
     }
 

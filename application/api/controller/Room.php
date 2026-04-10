@@ -61,9 +61,7 @@ class Room extends Base
         $info = input();
         $exist = db('room')->where('owner_id', $user_id)->where('status', '>', 0)->find();
         if ($exist) $this->error(__('You already have a room'));
-        $info['owner_id'] = $user_id;
-        $info['status'] = 1;
-        db('room')->strict(false)->insert($info);
+        $this->service->create($user_id, $info);
         $this->success();
     }
 

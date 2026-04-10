@@ -21,6 +21,23 @@ class RoomService
         $this->model = new RoomModel();
     }
 
+    /**
+     * @param $user_id
+     * @param $info
+     * @return void
+     * @throws
+     */
+    public function create($user_id, $info)
+    {
+        $imService = new ImService();
+        $resultIm = $imService->createRoom();
+        if (!$resultIm) throw new ApiException('创建房间失败');
+        $info['id'] = $resultIm['chatroom']['roomid'];
+        $info['owner_id'] = $user_id;
+        $info['status'] = 1;
+        db('room')->strict(false)->insert($info);
+    }
+
     //获取房间列表
     public function roomList($where = [], $limit = 30)
     {
@@ -95,7 +112,6 @@ class RoomService
             ->column('name,color,image', 'id');
         return $data;
     }
-
 
 
     /**
@@ -555,7 +571,6 @@ class RoomService
             ['type' => ImService::ROOM_USER_ROLE_REFRESH, 'user_id' => $to_user_id, 'role' => $role]
         );
     }
-
 
 
     public function quit_room($user_id, $room_id, $autonomic = 0, $is_kick = 0)
