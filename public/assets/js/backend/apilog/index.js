@@ -7,8 +7,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 extend: {
                     index_url: 'apilog/index' + location.search,
                     del_url: 'apilog/index/del',
+                    del_all_url: 'apilog/index/del_all',
                     multi_url: 'apilog/index/multi',
-                    table: 'wx_apilog',
+                    table: 'apilog',
                 }
             });
 
@@ -18,12 +19,13 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             table.bootstrapTable({
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
-                sortName: 'id',
+                sortName: 'createtime',
                 columns: [
                     [
                         { checkbox: true },
-                        { field: 'id', title: __('Id') },
-                        { field: 'username', title: __('UserName'), formatter: Table.api.formatter.search },
+                        // { field: 'id', title: __('Id'), operate: false },
+                        { field: 'user_id', title: __('UserID'), formatter: Table.api.formatter.search },
+                        // { field: 'username', title: __('UserName'), formatter: Table.api.formatter.search, operate: 'like'},
                         { field: 'url', title: __('Url'), formatter: Table.api.formatter.url },
 
                         {
@@ -49,16 +51,20 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             },
                             events: Controller.api.events.browser
                         },
-                        { field: 'controller', title: __('Controller') },
+                        { field: 'controller', title: __('Controller'), operate: 'like'},
                         { field: 'action', title: __('Action') },
-                        { field: 'time', title: __('Time'), sortable: true },
+                        { field: 'param', title: __('param'), visible: false, operate: 'like', placeholder: '模糊查询'},
+
+                        { field: 'time', title: __('Time'), sortable: true , operate: false},
                         { field: 'code', title: __('Code'), formatter: Table.api.formatter.search },
+                        { field: 'api_code', title: __('接口code') },
                         {
                             field: 'createtime', title: __('Createtime'), operate: 'RANGE', sortable: true, addclass: 'datetimerange',
+                            autocomplete: false,
                             formatter: Table.api.formatter.datetime
                         },
                         {
-                            field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate,
+                            field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate,
                             buttons: [{
                                 name: 'detail',
                                 text: __('Detail'),
@@ -67,6 +73,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 url: 'apilog/index/detail'
                             }
                             ],
+                            formatter: Table.api.formatter.operate
                         }
                     ]
                 ]
@@ -74,11 +81,29 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
 
             // 为表格绑定事件
             Table.api.bindevent(table);
+
+            $(document).on("click", ".btn-del-all", function () {
+                Layer.confirm(
+                    __('Are you sure you want to delete or turncate?'),
+                    {icon: 3, title: __('Warning'), offset: 0, shadeClose: true, btn: [__('OK'), __('Cancel')]},
+                    function (index) {
+                        Backend.api.ajax({url: $.fn.bootstrapTable.defaults.extend.del_all_url,}, function () {
+                            table.bootstrapTable('refresh');
+                            Layer.close(index);
+                        });
+
+                    }
+                );
+            });
+
         },
         add: function () {
             Controller.api.bindevent();
         },
         edit: function () {
+            Controller.api.bindevent();
+        },
+        detail: function () {
             Controller.api.bindevent();
         },
         api: {
