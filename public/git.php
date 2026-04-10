@@ -10,8 +10,8 @@ $token = '123456';
 //  payload为字符串，需要经过解析
 $payload = file_get_contents('php://input');
 if (!$payload) {
-    header('HTTP/1.1 400 Bad Request');
-    die('HTTP HEADER or POST is missing.');
+    //header('HTTP/1.1 400 Bad Request');
+    //die('HTTP HEADER or POST is missing.');
 }
 $content = json_decode($payload, true);
 
