@@ -1,0 +1,53 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">用户ID:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control" type="text" value="{$row.id}" disabled>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">用户:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control" type="text" value="{$row.nickname}" disabled>
+        </div>
+    </div>
+
+<!--    <div class="form-group">-->
+<!--        <label class="control-label col-xs-12 col-sm-2">当前金幣:</label>-->
+<!--        <div class="col-xs-12 col-sm-8">-->
+<!--            <input class="form-control" type="text" value="{$row.business.amount}" disabled>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="form-group">-->
+<!--        <label class="control-label col-xs-12 col-sm-2">当前收益:</label>-->
+<!--        <div class="col-xs-12 col-sm-8">-->
+<!--            <input class="form-control" type="text" value="{$row.business.reward_amount}" disabled>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">清理选项:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:Form::checkboxs('row[clear_type]', ['gift'=>'背包礼物',
+            'adornment'=>'头像框','vip'=>'VIP','car'=>'坐骑','bubble'=>'聊天气泡','tail'=>'铭牌',
+            ], null, ['data-rule'=>'required'])}
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('操作原因')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:Form::textarea('row[comment]', '', ['data-rule'=>'required', 'id'=>'comment', 'placeholder'=>'请输入操作原因', 'rows'=>2])}
+            <button class="btn btn-info" onclick="$('#comment').val($(this).html());return false;">用户违规</button>
+            <button class="btn btn-info" onclick="$('#comment').val($(this).html());return false;">运营使用</button>
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-4">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

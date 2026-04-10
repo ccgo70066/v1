@@ -36,9 +36,10 @@ class User extends Model
             if (isset($changed['password'])) {
                 if ($changed['password']) {
                     $salt = \fast\Random::alnum();
-                    $row->password = \app\common\library\Auth::instance()->getEncryptPassword($changed['password'], $salt);
+                    $row->password = \app\common\library\Auth::instance()->getEncryptPassword($changed['password'],
+                        $salt);
                     $row->salt = $salt;
-                } else {
+                }else {
                     unset($row->password);
                 }
             }
@@ -48,11 +49,24 @@ class User extends Model
         self::beforeUpdate(function ($row) {
             $changedata = $row->getChangedData();
             $origin = $row->getOriginData();
-            if (isset($changedata['money']) && (function_exists('bccomp') ? bccomp($changedata['money'], $origin['money'], 2) !== 0 : (double)$changedata['money'] !== (double)$origin['money'])) {
-                MoneyLog::create(['user_id' => $row['id'], 'money' => $changedata['money'] - $origin['money'], 'before' => $origin['money'], 'after' => $changedata['money'], 'memo' => '管理员变更金额']);
+            if (isset($changedata['money']) && (function_exists('bccomp') ? bccomp($changedata['money'],
+                        $origin['money'], 2) !== 0 : (double)$changedata['money'] !== (double)$origin['money'])) {
+                MoneyLog::create([
+                    'user_id' => $row['id'],
+                    'money'   => $changedata['money'] - $origin['money'],
+                    'before'  => $origin['money'],
+                    'after'   => $changedata['money'],
+                    'memo'    => '管理员变更金额'
+                ]);
             }
             if (isset($changedata['score']) && (int)$changedata['score'] !== (int)$origin['score']) {
-                ScoreLog::create(['user_id' => $row['id'], 'score' => $changedata['score'] - $origin['score'], 'before' => $origin['score'], 'after' => $changedata['score'], 'memo' => '管理员变更积分']);
+                ScoreLog::create([
+                    'user_id' => $row['id'],
+                    'score'   => $changedata['score'] - $origin['score'],
+                    'before'  => $origin['score'],
+                    'after'   => $changedata['score'],
+                    'memo'    => '管理员变更积分'
+                ]);
             }
         });
     }
@@ -64,7 +78,7 @@ class User extends Model
 
     public function getStatusList()
     {
-        return ['normal' => __('Normal'), 'hidden' => __('Hidden')];
+        return ['normal' => __('Normal'), 'hidden' => __('Hidden'), 'death' => __('Death')];
     }
 
 
@@ -109,6 +123,12 @@ class User extends Model
     public function group()
     {
         return $this->belongsTo('UserGroup', 'group_id', 'id', [], 'LEFT')->setEagerlyType(0);
+    }
+
+
+    public function business()
+    {
+        return $this->belongsTo('user_business', 'id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 
 }

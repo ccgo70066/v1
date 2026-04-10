@@ -1,0 +1,37 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <input type="hidden" name="row[user_id]" value="{$row.id}">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('用户ID')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-user_id" data-rule="required" class="form-control" name="row[user_id]" type="text"
+                   value="{$row.id}" disabled/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('nickname')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-nickname" class="form-control" type="text" value="{$row.nickname}" disabled>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('当前靓号')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-beautiful_id" class="form-control" type="text" value="{$row.beautiful_id}" disabled/>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('新靓号')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input  class="form-control" placeholder="请输入要设置的新靓号" name="row[beautiful_id]" type="text" value="" />
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

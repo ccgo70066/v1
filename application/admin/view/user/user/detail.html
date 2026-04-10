@@ -1,0 +1,202 @@
+<div class=" panel panel-default panel-intro">
+    <div class="panel-heading">
+        <ul class="nav nav-tabs" id="myTab">
+            <li class="nav-item active">
+                <a class="active" data-toggle="tab" href="#base">基础信息</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#operator">运营信息</a>
+            </li>
+            <li class="nav-item" >
+                <a class="nav-link"  data-toggle="tab" href="#business">业务信息</a>
+            </li>
+            <li class="nav-item" >
+                <a class="nav-link"  data-toggle="tab" href="#gift">背包礼物</a>
+            </li>
+            <li class="nav-item" >
+                <a class="nav-link"  data-toggle="tab" href="#nickname">曾用名</a>
+            </li>
+<!--            <li class="nav-item" >-->
+<!--                <a class="nav-link"  data-toggle="tab" href="#option">操作</a>-->
+<!--            </li>-->
+<!--            <li class="nav-item" >-->
+<!--                <a class="nav-link"  data-toggle="tab" href="#integral">积分信息</a>-->
+<!--            </li>-->
+        </ul>
+    </div>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane active" id="base">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>{:__('Title')}</th>
+                        <th>{:__('Content')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {volist name="row['base_info']" id="vo" }
+                    {if condition="!strstr($key, '_text')"}
+                    <tr class="form-group">
+                        <td  class="control-label col-xs-2 col-sm-2">{:__($key)}</td>
+                        {if condition="isset($row['base_info'][$key.'_text'])"}
+                        <td class="col-xs-4 col-sm-4">
+                            <input readonly="readonly" class="form-control" type="text" value="{$row['base_info'][$key.'_text']}">
+                        </td>
+                        {else/}
+                        <td class="col-xs-4 col-sm-4" >
+                            <input readonly="readonly" class="form-control" type="text" value="{:__($key.' '.$vo) != $key.' '.$vo ? __($key.' '.$vo): $vo }">
+                        </td>
+                        {/if}
+                    </tr>
+                    {/if}
+                    {/volist}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" id="operator">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>{:__('Title')}</th>
+                        <th>{:__('Content')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {volist name="row['operator_info']" id="vo"}
+                    {if condition="!strstr($key, '_text')"}
+                    <tr class="form-group">
+                        <td  class="control-label col-xs-3 col-sm-3">{:__($key)}</td>
+                        {if condition="isset($row['operator_info'][$key.'_text'])"}
+                        <td>
+                            <input readonly="readonly" class="form-control" type="text" value="{$row['operator_info'][$key.'_text']}">
+                        </td>
+                        {else/}
+                        <td >
+                            <input readonly="readonly" class="form-control" type="text" value="{:__($key.' '.$vo) != $key.' '.$vo ? __($key.' '.$vo): $vo }">
+                        </td>
+                        {/if}
+                    </tr>
+                    {/if}
+                    {/volist}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" id="business">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{:__('Title')}</th>
+                    <th>{:__('Content')}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="row['business_info']" id="vo"}
+                {if condition="!strstr($key, '_text')"}
+                <tr class="form-group">
+                    <td  class="control-label col-xs-3 col-sm-3">{:__($key)}</td>
+                    {if condition="isset($row['business_info'][$key.'_text'])"}
+                    <td>
+                        <input readonly="readonly" class="form-control" type="text" value="{$row['business_info'][$key.'_text']}">
+                    </td>
+                    {else/}
+                    <td >
+                        <input readonly="readonly" class="form-control" type="text" value="{:__($key.' '.$vo) != $key.' '.$vo ? __($key.' '.$vo): $vo }">
+                    </td>
+                    {/if}
+                </tr>
+                {/if}
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" id="gift">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{:__('礼物')}</th>
+                    <th>{:__('价格')}</th>
+                    <th>{:__('数量')}</th>
+                    <th>{:__('价值')}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="row['bag_info']" id="vo"}
+                <tr class="form-group">
+                    <td  class="control-label col-xs-3 col-sm-3">{$vo.name}</td>
+                    <td  class="control-label col-xs-3 col-sm-3">{:$vo['price']??''}</td>
+                    <td  class="control-label col-xs-3 col-sm-3">{:$vo['count']??''}</td>
+                    <td  class="control-label col-xs-3 col-sm-3">{$vo.value}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane" id="nickname">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>{:__('曾用名')}</th>
+                    <th>{:__('截止时间')}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="form-group">
+                    <td  class="control-label col-xs-3 col-sm-3">{$row.base_info.nickname}</td>
+                    <td  class="control-label col-xs-3 col-sm-3">当前昵称</td>
+                </tr>
+                {volist name="row['nickname']" id="vo"}
+                <tr class="form-group">
+                    <td  class="control-label col-xs-3 col-sm-3">{$vo.nickname}</td>
+                    <td  class="control-label col-xs-3 col-sm-3">{$vo.expire_time}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+<!--        <div class="tab-pane" id="option">-->
+<!--            <table class="table table-striped">-->
+<!--                <tbody>-->
+
+<!--                <tr>-->
+<!--                    <td>-->
+<!--                        <a href="user/user/add_noble/ids/{$Request.param.ids}" class="btn btn-dialog btn-success" title="添加"> 添加贵族 </a>-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <a href="user/user/add_reward/ids/{$Request.param.ids}" class="btn btn-dialog btn-success" title="添加"> 添加收益 </a>-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <a href="user/user/add_blacklist/ids/{$Request.param.ids}" class="btn btn-dialog btn-danger"-->
+<!--                           title="封禁用户"> 封禁用户 </a>-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <a href="user/user/set_default_avatar/ids/{$Request.param.ids}" class="btn btn-ajax btn-danger"-->
+<!--                           confirm="确定进行头像违规操作吗?"-->
+<!--                           title="头像违规">头像违规</a>-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <a href="user/user/set_default_nickname/ids/{$Request.param.ids}" class="btn btn-ajax btn-danger"-->
+<!--                           confirm="确定进行昵称违规操作吗?"-->
+<!--                           title="昵称违规">昵称违规</a>-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        <a href="user/user/clear_value/ids/{$Request.param.ids}" class="btn btn-ajax btn-danger"-->
+<!--                           confirm="确定进行清空背包币收益操作吗?"-->
+<!--                           title="清空背包币收益">清空背包币收益</a>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                </tr>-->
+
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+
+    </div>
+</div>
+
+<div class="hide layer-footer">
+    <label class="control-label col-xs-2 col-sm-2"></label>
+    <div class="col-xs-8 col-sm-8">
+        <button type="reset" class="btn btn-primary btn-embossed btn-close" onclick="Layer.closeAll();">关闭</button>
+    </div>
+</div>
