@@ -46,7 +46,7 @@ return [
     // 默认JSONP处理方法
     'var_jsonp_handler'       => 'callback',
     // 默认时区
-    'default_timezone'        => 'PRC',
+    'default_timezone'        => Env::get('app.timezone', 'Asia/Shanghai'),
     // 是否开启多语言
     'lang_switch_on'          => true,
     // 默认全局过滤方法 用逗号分隔多个
