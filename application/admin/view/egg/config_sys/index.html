@@ -1,0 +1,35 @@
+<div class="panel panel-default panel-intro">
+    <span class="text-red" style="font-size: 16px">
+         <b>当前{:__('box_type '.$Request.param.box_type)}系统调控池数量</b>: <b><span id="pool">0</span></b>
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        &nbsp;
+        <b>清零礼物: <span id="clear_gift"></span> </b>
+    </span>
+    <div class="panel-body">
+        <div id="myTabContent" class="tab-content">
+            <div class="tab-pane fade active in" id="one">
+                <div class="widget-body no-padding">
+                    <div id="toolbar" class="toolbar">
+                        <a href="javascript:;" class="btn btn-primary btn-refresh" title="{:__('Refresh')}" ><i class="fa fa-refresh"></i> </a>
+                        <a href="javascript:;" class="btn btn-success btn-add {:$auth->check('egg/config_sys/add')?'':'hide'}" title="{:__('Add')}" ><i class="fa fa-plus"></i> {:__('Add')}</a>
+                        <a href="egg/config_sys/set/type/1/box_type/{$Request.param.box_type}"
+                           class="btn btn-success btn-dialog {:$auth->check('egg/config_sys/set')?'':'hide'}"
+                           title="{:__('调整')}"><i class="fa fa-wrench"></i> {:__('调整调控池')}</a>
+                        <a href="egg/config_sys/set/type/2/box_type/{$Request.param.box_type}/count_type/{$Request.param.count_type}"
+                           class="btn btn-success btn-dialog {:$auth->check('egg/config_sys/set')?'':'hide'}"
+                           title="{:__('调整')}"><i class="fa fa-wrench"></i> {:__('调整清零礼物')}</a>
+                    </div>
+                    <table id="table" class="table table-striped table-bordered table-hover table-nowrap"
+                           data-operate-edit="{:$auth->check('egg/config_sys/edit')}" 
+                           data-operate-del="{:$auth->check('egg/config_sys/del')}" 
+                           width="100%">
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

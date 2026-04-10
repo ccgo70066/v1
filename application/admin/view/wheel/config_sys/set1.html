@@ -1,0 +1,30 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('清零礼物')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gift_id" data-rule="required" data-source="wheel/gift/get_gift" class="form-control selectpage"
+                   name="gift_ids" type="text" value="{$gift_ids|htmlentities}"
+                   data-multiple="true" data-params='{"custom[box_type]":1}'
+            >
+
+            <div class="margin" style="margin-left:0;">
+                <div class="alert alert-dismissable bg-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>调整说明:</strong>   <br>
+                    <br>
+                    请选择获取礼物后清除锤数的礼物
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

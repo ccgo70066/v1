@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'lang_id'         => '语言',
+    'Id'              => 'id',
+    'Type'            => '类型',
+    'Type 1'          => '普通公告',
+    'Type 2'          => '弹窗公告',
+    'Title'           => '标题',
+    'Cover_image'     => '标题图片',
+    'Icon'            => '悬浮图标',
+    'Content'         => '内容',
+    'Action'          => '动作',
+    'Action 0'        => '无',
+    'Action 1'        => '内部H5',
+    'Action 7'        => '外部H5',
+    'Action 5'        => '充值页',
+    'Action 8'        => '首充活动',
+    'Action 11'       => '星球探险',
+    'Action_url'      => 'H5跳转链接',
+    'Status'          => '状态',
+    'Status 1'        => '启用',
+    'Status 0'        => '禁用',
+    'Show_type'       => '悬浮图标展示位置',
+    'Show_type 1'     => '首页',
+    'Show_type 2'     => '房间',
+    'Push_time'       => '推送时间',
+    'Show_start_time' => '开始展示时间',
+    'Show_end_time'   => '结束展示时间',
+    'Create_time'     => '创建时间',
+    'Update_time'     => '更新时间'
+];

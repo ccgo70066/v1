@@ -1,0 +1,23 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>原房主ID</th>
+        <th>原房主昵称</th>
+        <th>新房主ID</th>
+        <th>新房主昵称</th>
+        <th>变更时间</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name='row' id='vo'}
+    <tr>
+        <td>{$vo.user_id}</td>
+        <td>{$vo.nickname}</td>
+        <td>{$vo.to_user_id}</td>
+        <td>{$vo.to_nickname}</td>
+
+        <td>{$vo.create_time}</td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>

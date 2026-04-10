@@ -1,0 +1,29 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('数量')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:Form::input('number', 'row[diff]', $value, ['data-rule'=>'required'])}
+
+            <div class="margin" style="margin-left:0;">
+                <div class="alert alert-dismissable bg-info">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>调整说明:</strong>   <br>
+                    <br>
+                    请输入将要调整的数值 <br>
+                    不调整则留空或输入0即可 <br>
+                    增加大盘则输入正数, 减少大盘则输入负数 <br>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

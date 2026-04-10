@@ -1,0 +1,29 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">房间号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input  data-rule="required"  readonly  class="form-control" name="row[id]" type="text" value="{$row['id']}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">当前房间靓号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input data-rule="required" readonly  class="form-control" name="row[beautiful_id]" type="text" value="{$row['beautiful_id']}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">新房间靓号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-room_id" placeholder="房间靓号为4-5位数" oninput="value=value.replace(/[^\d]/g,'')" data-rule="required,integer" class="form-control" name="row[new_beautiful_id]" type="text" value="">
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,23 @@
+<?php
+
+return [
+    'Box_type'       => '类型',
+    'Box_type 1'     => '普通级',
+    'Box_type 2'     => '屠龍级',
+    'Count_type'     => '数量',
+    'Count_type 1'   => '单次',
+    'Count_type 10'  => '十次',
+    'Count_type 100' => '百次',
+    'Title'          => '标题',
+    'Level_id'       => '用户分级',
+    'Count'          => '连续次数',
+    'Config'         => '概率',
+    'Ignore_1th'     => '初始机率',
+    'Ignore_2th'     => '决策机率',
+    'Weigh'          => '排序',
+    'Status'         => '状态',
+    'Status 1'       => '开启',
+    'Status 0'       => '关闭',
+    'Create_time'    => '创建时间',
+    'Update_time'    => '更新时间'
+];

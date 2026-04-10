@@ -1,0 +1,47 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" class="form-control" name="row[name]" type="text" value="{$row.name|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Medal_image')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-medal_image" data-rule="required" class="form-control" size="50" name="row[medal_image]" type="text" value="{$row.medal_image|htmlentities}">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-medal_image" data-category="guard" class="btn btn-danger faupload" data-input-id="c-medal_image" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/svga,svga,image/webp" data-multiple="false" data-preview-id="p-medal_image"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-medal_image"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-medal_image"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Explain')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-explain" data-rule="required" class="form-control" name="row[explain]" type="text" value="{$row.explain|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pay_need_vital')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pay_need_vital" data-rule="required" class="form-control" name="row[pay_need_vital]" type="number" value="{$row.pay_need_vital|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Weigh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-weigh" data-rule="required" class="form-control" name="row[weigh]" type="number" value="{$row.weigh|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

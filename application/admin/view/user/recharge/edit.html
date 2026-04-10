@@ -1,0 +1,124 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Order_no')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-order_no" data-rule="required" class="form-control" name="row[order_no]" type="text" value="{$row.order_no|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Trade_no')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-trade_no" class="form-control" name="row[trade_no]" type="text" value="{$row.trade_no|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('User_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-user_id" data-rule="required" min="0" data-source="user/user/index" data-field="nickname" class="form-control selectpage" name="row[user_id]" type="text" value="{$row.user_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Card_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-card_id" data-rule="required" min="0" data-source="card/index" class="form-control selectpage" name="row[card_id]" type="text" value="{$row.card_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pay_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pay_amount" data-rule="required" min="0" class="form-control" step="0.01" name="row[pay_amount]" type="number" value="{$row.pay_amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-amount" class="form-control" name="row[amount]" type="number" value="{$row.amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Payway')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-payway" class="form-control" name="row[payway]" type="text" value="{$row.payway|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Currency')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-currency" class="form-control" name="row[currency]" type="text" value="{$row.currency|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="statusList" item="vo"}
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status"}checked{/in} /> {$vo}</label> 
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Ip')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-ip" class="form-control" name="row[ip]" type="text" value="{$row.ip|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Appid')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-appid" class="form-control" name="row[appid]" type="text" value="{$row.appid|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('System')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-system" class="form-control selectpicker" name="row[system]">
+                {foreach name="systemList" item="vo"}
+                    <option value="{$key}" {in name="key" value="$row.system"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Agent_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-agent_id" data-rule="required" data-source="agent/index" class="form-control selectpage" name="row[agent_id]" type="text" value="{$row.agent_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Order_ls_flag')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-order_ls_flag" class="form-control" name="row[order_ls_flag]" type="text" value="{$row.order_ls_flag|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Extend')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-extend" class="form-control " rows="5" name="row[extend]" cols="50">{$row.extend|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Create_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-create_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[create_time]" type="text" value="{$row.create_time}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Update_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-update_time" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[update_time]" type="text" value="{$row.update_time}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

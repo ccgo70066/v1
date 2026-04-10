@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="content-type">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta content="telephone=no" name="format-detection">
+    <meta content="email=no" name="format-detection">
+    <meta content="width=device-width,minimum-scale=1,maximum-scale=1, user-scalable=no,minimal-ui" name="viewport">
+    <meta content="" name="description">
+    <meta content="yes" name="full-screen">
+    <meta content="true" name="x5-fullscreen">
+    <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.css"/>
+    <!-- <title></title> -->
+    <style>
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            /*禁用手机浏览器的用户选择文本(复制)功能 */
+            /*-webkit-user-select: none;*/
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: -webkit-calc(100vw / 19.2);
+            font-size: calc(100vw / 19.2);
+        }
+
+        body {
+            font-size: 13px;
+            min-width: 100vw !important;
+            height: 100%;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        #mobile {
+            /*width: 19.2rem;*/
+            height: 90vh;
+            border-color: #ffffff;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        #mobile>div {
+            width: 50%;
+            height: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* border: 1px solid rgb(119, 119, 119); */
+            box-shadow:1px 1px 1px 1px rgb(241, 238, 238);
+        }
+
+        .form-control {
+            font-size: 13px;
+            display: inline;
+            width: 50%;
+        }
+
+        .top {
+            margin-top: 0.25rem;
+        }
+
+        .search,
+        ul {
+            width: 95%;
+            padding-left: 10%;
+
+        }
+
+        .height {
+            /*height: 75%;*/
+
+            overflow-y: scroll;
+        }
+        .type_name{
+            color: red;
+        }
+
+        .height::-webkit-scrollbar {
+            display: none;
+        }
+
+        button {
+            color: #fff;
+            background-color: #18bc9c;
+            box-shadow: none;
+            border: 1px solid transparent;
+        }
+
+        .lis {
+            width: 100%;
+            display: flex;
+        }
+        .current_imei{
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            overflow: hidden;
+        }
+        .left {
+            width: 1.3rem;
+            min-width: 1.3rem;
+            text-align-last: right;
+        }
+    </style>
+
+</head>
+
+<body>
+<div id="mobile">
+    <div id="user_id" >
+        <div class="search top" >
+            根据<span class="type_name">用户ID</span>查询：<input class="form-control"type="text">
+            <button class="btn btn-success">搜索</button>
+        </div>
+        <ul class="height top">
+            <li class="lis"><span class="left">今日消费：</span><span class="today_use_amount"></span></li>
+            <li class="lis"><span class="left">今日产出：</span><span class="today_amount"></span></li>
+            <li class="lis"><span class="left">今日爆率：</span><span class="today_percent"></span></li>
+            <li class="lis"><span class="left">今日情况：</span><span class="today_reward"></span></li>
+
+            <li class="lis"><span class="left">历史消费：</span><span class="all_use_amount"></span></li>
+            <li class="lis"><span class="left">历史产出：</span><span class="all_amount"></span></li>
+            <li class="lis"><span class="left">历史爆率：</span><span class="all_percent"></span></li>
+            <li class="lis"><span class="left">历史情况：</span><span class="all_reward"></span></li>
+            <li class="lis"><span class="left">当前IP：</span><span class="current_ip"></span></li>
+            <li class="lis"><span class="left">当前IMEI：</span><span class="current_imei"></span></li>
+        </ul>
+    </div>
+
+    <div id="room_id" >
+        <div class="search top">
+            根据<span class="type_name">房间ID</span>查询： <input class="form-control" type="text">
+            <button class="btn btn-success">搜索</button>
+        </div>
+        <ul class="height top">
+            <li class="lis"><span class="left">今日消费：</span><span class="today_use_amount"></span></li>
+            <li class="lis"><span class="left">今日产出：</span><span class="today_amount"></span></li>
+            <li class="lis"><span class="left">今日爆率：</span><span class="today_percent"></span></li>
+            <li class="lis"><span class="left">今日情况：</span><span class="today_reward"></span></li>
+
+            <li class="lis"><span class="left">历史消费：</span><span class="all_use_amount"></span></li>
+            <li class="lis"><span class="left">历史产出：</span><span class="all_amount"></span></li>
+            <li class="lis"><span class="left">历史爆率：</span><span class="all_percent"></span></li>
+            <li class="lis"><span class="left">历史情况：</span><span class="all_reward"></span></li>
+        </ul>
+    </div>
+
+    <div id="imei">
+        <div class="search top">
+            根据<span class="type_name">IMEI</span>查询： <input class="form-control" type="text">
+            <button class="btn btn-success">搜索</button>
+        </div>
+        <ul class="height top">
+            <li class="lis"><span class="left">今日消费：</span><span class="today_use_amount"></span></li>
+            <li class="lis"><span class="left">今日产出：</span><span class="today_amount"></span></li>
+            <li class="lis"><span class="left">今日爆率：</span><span class="today_percent"></span></li>
+            <li class="lis"><span class="left">今日情况：</span><span class="today_reward"></span></li>
+
+            <li class="lis"><span class="left">历史消费：</span><span class="all_use_amount"></span></li>
+            <li class="lis"><span class="left">历史产出：</span><span class="all_amount"></span></li>
+            <li class="lis"><span class="left">历史爆率：</span><span class="all_percent"></span></li>
+            <li class="lis"><span class="left">历史情况：</span><span class="all_reward"></span></li>
+            <li class="lis"><span class="left">IMEI关联数：</span><span class="imei_sum"></span></li>
+
+        </ul>
+    </div>
+
+    <div  id="ip">
+        <div class="search top">
+            根据<span class="type_name">IP</span>查询： <input class="form-control"  type="text">
+            <button class="btn btn-success">搜索</button>
+        </div>
+        <ul class="height top">
+            <li class="lis"><span class="left">今日消费：</span><span class="today_use_amount"></span></li>
+            <li class="lis"><span class="left">今日产出：</span><span class="today_amount"></span></li>
+            <li class="lis"><span class="left">今日爆率：</span><span class="today_percent"></span></li>
+            <li class="lis"><span class="left">今日情况：</span><span class="today_reward"></span></li>
+
+            <li class="lis"><span class="left">历史消费：</span><span class="all_use_amount"></span></li>
+            <li class="lis"><span class="left">历史产出：</span><span class="all_amount"></span></li>
+            <li class="lis"><span class="left">历史爆率：</span><span class="all_percent"></span></li>
+            <li class="lis"><span class="left">历史情况：</span><span class="all_reward"></span></li>
+            <li class="lis"><span class="left">IP关联数：</span><span class="ip_sum"></span></li>
+        </ul>
+    </div>
+
+</div>
+</body>
+<script src="/assets/libs/jquery/dist/jquery.min.js"></script>
+<script>
+    $('button').on('click', function (e) {
+        var _parent_id = $(this).parent().parent().attr('id');
+        var type = _parent_id;
+        let input_value = $('#'+_parent_id + " input").val();
+        console.log(_parent_id);
+        $.ajax({
+            type: 'POST',
+            url: 'wheel/data_query/index',//查询
+            data: {type: type, input_value: input_value},
+            async: false,
+            success: function (data) {
+                if (data.code != 1) {
+                    Layer.msg(data.msg);
+                    return;
+                }
+                console.log(data.data);
+                $('#'+_parent_id + ' .today_amount').text(data.data.today_amount);
+                $('#'+_parent_id + ' .today_use_amount').text(data.data.today_use_amount);
+                $('#'+_parent_id + ' .today_percent').text(data.data.today_percent);
+                $('#'+_parent_id + ' .today_reward').text(data.data.today_reward);
+                $('#'+_parent_id + ' .all_amount').text(data.data.all_amount);
+                $('#'+_parent_id + ' .all_use_amount').text(data.data.all_use_amount);
+                $('#'+_parent_id + ' .all_percent').text(data.data.all_percent);
+                $('#'+_parent_id + ' .all_reward').text(data.data.all_reward);
+                if (data.data.current_imei) {
+                    $('.current_imei').text(data.data.current_imei);
+                }
+                if (data.data.current_ip) {
+                    $('.current_ip').text(data.data.current_ip);
+                }
+                if (data.data.ip_sum) {
+                    $('.ip_sum').text(data.data.ip_sum);
+                }
+                if (data.data.imei_sum) {
+                    $('.imei_sum').text(data.data.imei_sum);
+                }
+
+            },
+            error:function (data) {
+                Layer.msg('请求失败');
+            }
+        });
+    });
+</script>
+
+</html>

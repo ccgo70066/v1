@@ -1,0 +1,27 @@
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .console {
+        text-align: center;
+    }
+
+    .console img {
+        margin: 0 auto;
+    }
+
+</style>
+
+<div class="console">
+    <img src="{:cdnurl('/assets/img/logo.png')}" alt="" width="100px" height="100px">
+    <h2 align="center"><?php echo "欢迎使用".config('site.name')."管理后台"; ?></h2>
+</div>

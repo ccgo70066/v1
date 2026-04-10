@@ -1,0 +1,60 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Account')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-account" class="form-control" name="row[account]" type="text" value="{$row.account|htmlentities}" data-rule="required">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" class="form-control" name="row[name]" data-rule="required" type="text" value="{$row.name|htmlentities}">
+
+            <div class="margin" style="margin-left:0;">
+                <div class="alert alert-dismissable bg-danger">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>说明:</strong>
+                    <p>请仔细确认帐号及真实姓名的准确性</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-amount" class="form-control" step="0.01" name="row[amount]" data-rule="required" type="number" value="{$row.amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Way')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-way" data-rule="required" data-source="channel/transfer/index/option/load_way" class="form-control selectpage" name="row[way]" type="text" value="{$row.way|htmlentities}">
+
+            <div class="margin" style="margin-left:0;">
+                <div class="alert alert-dismissable bg-danger">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>注意:</strong>
+                    <p>选择线上打款方式会进行在线api打款, 请确认资金安全后再进行操作</p>
+                    <p>选择线下打款方式, 仅记录信息, 打款由运营人员线下手工处理</p>
+                </div>
+            </div>
+           
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Comment')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea id="c-comment" data-rule="required" class="form-control " rows="5" name="row[comment]" cols="50">{$row.comment|htmlentities}</textarea>
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

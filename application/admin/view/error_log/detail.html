@@ -1,0 +1,45 @@
+<style>
+    legend{
+        font-size: 16px;
+        color: green;
+    }
+    ul {
+        margin-bottom: 0;
+        padding-left: 15px;
+    }
+</style>
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">项目:</label>
+        <div class="col-xs-10 col-sm-10">
+            <input class="form-control" readonly="readonly"  name="id" type="text" value="{$row.dir}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">错误信息:</label>
+        <div class="col-xs-10 col-sm-10">
+            <input class="form-control" readonly="readonly"  name="id" type="text" value="{$row.error_message}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">文件:</label>
+        <div class="col-xs-10 col-sm-10">
+            <input class="form-control" readonly="readonly"  name="id" type="text" value="{$row.file}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">代码行 :</label>
+        <div class="col-xs-10 col-sm-10">
+            <input class="form-control" readonly="readonly"  name="id" type="text" value="{$row.line}">
+        </div>
+    </div>
+    <legend >详细信息</legend>
+    <fieldset>
+        {$all}
+    </fieldset>
+
+
+
+
+
+</form>

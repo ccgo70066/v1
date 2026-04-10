@@ -1,0 +1,47 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">家族:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-union_id" data-rule="required" placeholder="请选择家族" readonly data-source="union/union/index" class="form-control selectpage" data-params='{"custom[status]":1}' name="row[union_id]" type="text" value="">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">房间靓号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-room_id" placeholder="房间靓号为4到5位数之间" oninput="value=value.replace(/[^\d]/g,'')" data-rule="required,integer" class="form-control" name="row[room_id]" type="text" value="">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Cover')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input class="form-control" id="c-cover" name="row[cover]" readonly size="50" type="text" value="{$row.cover|htmlentities}">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button class="btn btn-danger plupload" data-input-id="c-cover" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-category="room" data-multiple="false" data-preview-id="p-cover" id="plupload-image" type="button"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-cover"></span>
+            </div>
+            <ul class="row list-inline plupload-preview" id="p-cover"></ul>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input class="form-control" id="c-name" data-rule="required"  name="row[name]" type="text" value="">
+        </div>
+    </div>
+
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

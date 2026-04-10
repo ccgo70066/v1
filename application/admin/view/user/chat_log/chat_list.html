@@ -1,0 +1,30 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <table class="table">
+        <caption>历史记录</caption>
+        <thead>
+        <tr>
+            <th>发送人</th>
+            <th>发送人昵称</th>
+            <th>接收人</th>
+            <th>接收人昵称</th>
+            <th>内容</th>
+            <th>发送时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name='row' id='vo'}
+        <tr>
+            <td>{$vo.user_id}</td>
+            <td>{$vo.user.nickname}</td>
+            <td>{$vo.to_user_id}</td>
+            <td>{$vo.touser.nickname}</td>
+            <td>{$vo.content}</td>
+            <td>{$vo.create_time}</td>
+        </tr>
+        </tbody>
+        {/volist}
+
+    </table>
+
+</form>

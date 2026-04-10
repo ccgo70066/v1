@@ -1,0 +1,60 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" class="form-control" name="row[name]" type="text">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Badge')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-badge" class="form-control" size="50" name="row[badge]" type="text">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-badge" data-category="noble" class="btn btn-danger faupload" data-input-id="c-badge" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/svga,svga,image/webp" data-multiple="false" data-preview-id="p-badge"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-badge"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-badge"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Shop_badge')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-shop_badge" class="form-control" size="50" name="row[shop_badge]" type="text">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-shop_badge" data-category="noble" class="btn btn-danger faupload" data-input-id="c-shop_badge" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/svga,svga,image/webp" data-multiple="false" data-preview-id="p-shop_badge"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-shop_badge"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-shop_badge"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Privilege_ids')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-privilege_ids" data-rule="required" data-source="prop/noble_privilege/index" data-multiple="true" class="form-control selectpage" name="row[privilege_ids]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Speedup')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-speedup" class="form-control" step="0.1" name="row[speedup]" type="number">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Weigh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-weigh" class="form-control" name="row[weigh]" type="number" value="0">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

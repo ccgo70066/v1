@@ -1,0 +1,129 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <div class="row">
+        <div class="col-md-9 col-sm-12">
+            <div class="panel panel-default panel-intro">
+                <div class="panel-heading">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#noble" data-toggle="tab">发放VIP</a></li>
+                        <li class=""><a href="#adornment" data-toggle="tab">发放头像框</a></li>
+                        <li class=""><a href="#car" data-toggle="tab">发放坐骑</a></li>
+                        <li class=""><a href="#bubble" data-toggle="tab">发放聊天气泡</a></li>
+                        <li class=""><a href="#nameplate" data-toggle="tab">发放铭牌</a></li>
+
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div id="myTabContent" class="tab-content">
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2">用户ID:</label>
+                            <div class="col-xs-12 col-sm-8">
+                                {:Form::input('number', 'uid', '', ['data-rule'=>'required'])}
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade active in" id="noble">
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">VIP:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::selectpage('row[vip_id]', '', 'general/vip', null, null, ['data-params' => ['custom'=>['grade'=>['eq', 1]]]])}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">VIP时限:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::radios('row[vip_days]', ['30'  => '30天'], '', ['data-rule'=>''])}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="tab-pane fade in" id="adornment">
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">头像框:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::selectpage('row[adornment_id]', '', 'prop/adornment', null, null)}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">头像框时限:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::radios('row[adornment_days]', $date_range, '', ['data-rule'=>''])}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade in" id="car">
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">坐骑:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::selectpage('row[car_id]', '', 'prop/car', null, null)}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">坐骑时限:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::radios('row[car_days]', $date_range, '', ['data-rule'=>''])}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="tab-pane fade in" id="bubble">
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">聊天气泡:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::selectpage('row[bubble_id]', '', 'prop/bubble', null, null)}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">气泡时限:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::radios('row[bubble_days]', $date_range, '', ['data-rule'=>''])}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="tab-pane fade in" id="nameplate">
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">铭牌:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::selectpage('row[tail_id]', '', 'prop/tail', null, null)}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-2">铭牌时限:</label>
+                                <div class="col-xs-12 col-sm-8">
+                                    {:Form::radios('row[tail_days]', $date_range, '', ['data-rule'=>''])}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2">操作备注:</label>
+                            <div class="col-xs-12 col-sm-8">
+                                {:Form::textarea('row[comment]', '活动奖励', ['rows'=>3, 'data-rule'=>'required'])}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-4">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

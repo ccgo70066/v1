@@ -1,0 +1,49 @@
+<?php
+
+namespace app\admin\model;
+
+use think\Model;
+
+
+class Level extends Model
+{
+
+    
+
+    
+
+    // 表名
+    protected $name = 'level';
+    
+    // 自动写入时间戳字段
+    protected $autoWriteTimestamp = false;
+
+    // 定义时间戳字段名
+    protected $createTime = false;
+    protected $updateTime = false;
+    protected $deleteTime = false;
+
+    // 追加属性
+    protected $append = [
+        'broadcast_text'
+    ];
+    
+
+    
+    public function getBroadcastList()
+    {
+        return ['0' => __('Broadcast 0'), '1' => __('Broadcast 1')];
+    }
+
+
+    public function getBroadcastTextAttr($value, $data)
+    {
+        $value = $value ? $value : (isset($data['broadcast']) ? $data['broadcast'] : '');
+        $list = $this->getBroadcastList();
+        return isset($list[$value]) ? $list[$value] : '';
+    }
+
+
+
+
+}

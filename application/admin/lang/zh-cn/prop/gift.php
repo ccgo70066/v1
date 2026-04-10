@@ -1,0 +1,34 @@
+<?php
+
+return [
+    'Type'          => '类别',
+    'Type 1'        => '面板礼物',
+    'Type 2'        => '魔法礼物',  // 盲盒
+    'Type 3'        => '波派的矿井',  // 开箱子游戏名称
+    'Type 4'        => '海贼王',  // 转盘游戏名称
+    'Type 6'        => '其它礼物',
+    'Type 8'        => '能量礼物',
+    'Name'          => '物品名称',
+    'Image'         => 'icon图',
+    'Animate'       => '动画',
+    'Price_type'    => '价格类型',
+    'Price_type 1'  => '金幣',
+    'Price_type 2'  => '红豆',
+    'Price_type 3'  => '能量',
+    'Price'         => '价格',
+    'Note'          => '礼物简介',
+    'Weigh'         => '排序',
+    'Screen_show'   => '送礼飘屏设置',
+    'Screen_show 0' => '不飘屏',
+    'Screen_show 1' => '飘屏',
+    'Screen_show 2' => '价值飘屏',
+    'Notice'        => '广播',
+    'Notice 1'      => '是',
+    'Notice 0'      => '否',
+    'Status'        => '状态',
+    'Status 1'      => '启用',
+    'Status 0'      => '禁用',
+    'Create_time'   => '创建时间',
+    'Update_time'   => '修改时间',
+    'Cate'          => '二级类别',
+];

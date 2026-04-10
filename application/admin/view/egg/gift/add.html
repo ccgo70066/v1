@@ -1,0 +1,124 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Box_type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-box_type" data-rule="required" class="form-control selectpicker" name="row[box_type]">
+                {foreach name="boxTypeList" item="vo"}
+                    <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gift_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gift_id" data-rule="required" data-source="gift/gift/index" class="form-control selectpage" name="row[gift_id]" type="text" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Weigh')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-weigh" data-rule="required" class="form-control" name="row[weigh]" type="text" value="0">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Broadcast')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-broadcast" data-rule="required" class="form-control selectpicker" name="row[broadcast]">
+                {foreach name="broadcastList" item="vo"}
+                    <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Room_notice')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-room_notice" data-rule="required" class="form-control selectpicker" name="row[room_notice]">
+                {foreach name="roomNoticeList" item="vo"}
+                    <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Light_level')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-light_level" data-rule="required" class="form-control selectpicker" name="row[light_level]">
+                {foreach name="lightLevelList" item="vo"}
+                    <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Voice')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-voice" data-rule="required" class="form-control selectpicker" name="row[voice]">
+                {foreach name="voiceList" item="vo"}
+                    <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Show_again')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-show_again" data-rule="required" class="form-control selectpicker" name="row[show_again]">
+                {foreach name="showAgainList" item="vo"}
+                    <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Last_status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="lastStatusList" item="vo"}
+            <label for="row[last_status]-{$key}"><input id="row[last_status]-{$key}" name="row[last_status]" type="radio" value="{$key}" {in name="key" value="1"}checked{/in} /> {$vo}</label> 
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Last_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-last_time" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[last_time]" type="text" value="{:date('Y-m-d H:i:s')}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="statusList" item="vo"}
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="1"}checked{/in} /> {$vo}</label> 
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

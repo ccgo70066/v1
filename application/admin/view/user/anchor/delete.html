@@ -1,0 +1,108 @@
+<style>
+    legend {
+        font-size: 16px;
+        color: green;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        text-align: center;
+    }
+
+    tr,td,th {
+        text-align: center;
+        padding: 2px;
+
+    }
+
+
+    .pure-table caption {
+        color: #000;
+        font: italic 85%/1 arial,sans-serif;
+        padding: 1em 0;
+        text-align: center;
+    }
+
+    .pure-table td,.pure-table th {
+        border-left: 1px solid #cbcbcb;
+        border-width: 0 0 0 1px;
+        font-size: inherit;
+        margin: 0;
+        overflow: visible;
+        padding: .5em 1em;
+    }
+
+    .pure-table thead {
+        background-color: #e0e0e0;
+        color: #000;
+        text-align: left;
+        vertical-align: bottom;
+    }
+
+    .pure-table td {
+        background-color: transparent;
+    }
+</style>
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    <fieldset>
+        <legend>用户信息</legend>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">用户昵称(ID):</label>
+            <div class="col-xs-10 col-sm-8">
+                {:Form::text('', $row['nickname']."(".$row['user_id'].")", ['readonly'=>true])}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">担任房间角色:</label>
+            <div class="col-xs-10 col-sm-8">
+                <table border="1">
+                    <tr>
+                        <th>房间ID</th>
+                        <th>房间名称</th>
+                        <th>房间角色</th>
+                    </tr>
+                    {foreach name="room_admin" item="vo"}
+                    <tr>
+                        <td>{$vo.room_id}</td>
+                        <td>{$vo.name}</td>
+                        <td>{$vo.role}</td>
+                    </tr>
+                    {/foreach}
+                    {if condition="$room_admin == false"}
+                    <tr>
+                        <td>无</td>
+                        <td>无</td>
+                        <td>无</td>
+                    </tr>
+                    {/if}
+                </table>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div>
+
+                <div class="alert alert-dismissable bg-info" style="margin: 0 30px">
+                    <button type="button" class="close" data-dismiss="alert"></button>
+                    <strong class="text-red">注:</strong>
+                    <p>1:取消角色,会将该用户的角色身份重置为普通用户</p>
+                    <p>2:如果该用户是家族成员,将自动退出家族</p>
+                    <p>3:如果该用户拥有房间角色,将自动取消所拥有的房间角色</p>
+                    <br>
+                </div>
+
+            </div>
+        </div>
+        </div>
+
+    </fieldset>
+
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed">确认取消角色</button>
+        </div>
+    </div>
+</form>

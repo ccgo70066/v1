@@ -1,0 +1,28 @@
+<?php
+
+return [
+    'User_id'        => '用户ID',
+    'User.nickname'  => '用户昵称',
+    'Level_id'       => '分级',
+    'Box_type'       => '类型',
+    'Box_type 1'     => '普通级',
+    'Box_type 2'     => '屠龍级',
+    'Pool'           => '个人盘',
+    'Count'          => '次数',
+    'Count_1'        => '单抽次数',
+    'Count_10'       => '十抽次数',
+    'Total_used'     => '总消费',
+    'Total_lucre'    => '总收益',
+    'Today_used'     => '今日消费',
+    'Today_lucre'    => '今日收益',
+    'Hammer_1'       => '单抽锤数',
+    'Hammer_10'      => '十抽锤数',
+    'Update_time'    => '更新时间',
+    'Actor_status'   => '用户标识',
+    'Actor_status 1' => '正常',
+    'Actor_status 2' => '关注',
+    'Actor_status 3' => '演员',
+    'imei_change'    => 'imei变更',
+    'imei_change 0'  => '未变更',
+    'imei_change 1'  => '变更过',
+];

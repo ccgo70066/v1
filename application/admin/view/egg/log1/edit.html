@@ -1,0 +1,220 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('User_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-user_id" data-rule="required" data-source="user/user/index" data-field="nickname" class="form-control selectpage" name="row[user_id]" type="text" value="{$row.user_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Box_type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-box_type" class="form-control selectpicker" name="row[box_type]">
+                {foreach name="boxTypeList" item="vo"}
+                    <option value="{$key}" {in name="key" value="$row.box_type"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Count_type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-count_type" data-rule="required" class="form-control selectpicker" name="row[count_type]">
+                {foreach name="countTypeList" item="vo"}
+                    <option value="{$key}" {in name="key" value="$row.count_type"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Used_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-used_amount" class="form-control" step="0.01" name="row[used_amount]" type="number" value="{$row.used_amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gift_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gift_id" data-rule="required" data-source="gift/gift/index" class="form-control selectpage" name="row[gift_id]" type="text" value="{$row.gift_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-count" data-rule="required" class="form-control" name="row[count]" type="number" value="{$row.count|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Room_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-room_id" data-rule="required" data-source="room/index" class="form-control selectpage" name="row[room_id]" type="text" value="{$row.room_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Weigh_name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-weigh_name" class="form-control" name="row[weigh_name]" type="text" value="{$row.weigh_name|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Jump_status')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            
+            <div class="radio">
+            {foreach name="jumpStatusList" item="vo"}
+            <label for="row[jump_status]-{$key}"><input id="row[jump_status]-{$key}" name="row[jump_status]" type="radio" value="{$key}" {in name="key" value="$row.jump_status"}checked{/in} /> {$vo}</label> 
+            {/foreach}
+            </div>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_sys_before')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_sys_before" class="form-control" step="0.01" name="row[pool_sys_before]" type="number" value="{$row.pool_sys_before|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_sys_after')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_sys_after" class="form-control" step="0.01" name="row[pool_sys_after]" type="number" value="{$row.pool_sys_after|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_sys_diff')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_sys_diff" class="form-control" step="0.01" name="row[pool_sys_diff]" type="number" value="{$row.pool_sys_diff|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_pub_after')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_pub_after" class="form-control" step="0.01" name="row[pool_pub_after]" type="number" value="{$row.pool_pub_after|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_pub_before')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_pub_before" class="form-control" step="0.01" name="row[pool_pub_before]" type="number" value="{$row.pool_pub_before|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_pub_diff')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_pub_diff" class="form-control" step="0.01" name="row[pool_pub_diff]" type="number" value="{$row.pool_pub_diff|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_pubn_after')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_pubn_after" class="form-control" step="0.01" name="row[pool_pubn_after]" type="number" value="{$row.pool_pubn_after|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_pubn_before')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_pubn_before" class="form-control" step="0.01" name="row[pool_pubn_before]" type="number" value="{$row.pool_pubn_before|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_pubn_diff')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_pubn_diff" class="form-control" step="0.01" name="row[pool_pubn_diff]" type="number" value="{$row.pool_pubn_diff|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_per_after')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_per_after" class="form-control" step="0.01" name="row[pool_per_after]" type="number" value="{$row.pool_per_after|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_per_before')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_per_before" class="form-control" step="0.01" name="row[pool_per_before]" type="number" value="{$row.pool_per_before|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Pool_per_diff')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-pool_per_diff" class="form-control" step="0.01" name="row[pool_per_diff]" type="number" value="{$row.pool_per_diff|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Box_index')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-box_index" class="form-control" name="row[box_index]" type="number" value="{$row.box_index|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Level_id')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-level_id" data-rule="required" data-source="level/index" class="form-control selectpage" name="row[level_id]" type="text" value="{$row.level_id|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Reward')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-reward" class="form-control" name="row[reward]" type="number" value="{$row.reward|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Secret')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                        
+            <select  id="c-secret" class="form-control selectpicker" name="row[secret]">
+                {foreach name="secretList" item="vo"}
+                    <option value="{$key}" {in name="key" value="$row.secret"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Ip')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-ip" class="form-control" name="row[ip]" type="text" value="{$row.ip|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Ip_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-ip_count" class="form-control" name="row[ip_count]" type="number" value="{$row.ip_count|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Imei')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-imei" class="form-control" name="row[imei]" type="text" value="{$row.imei|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Imei_count')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-imei_count" class="form-control" name="row[imei_count]" type="number" value="{$row.imei_count|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Create_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-create_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[create_time]" type="text" value="{:$row.create_time?datetime($row.create_time):''}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Update_time')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-update_time" data-rule="required" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm:ss" data-use-current="true" name="row[update_time]" type="text" value="{:$row.update_time?datetime($row.update_time):''}">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

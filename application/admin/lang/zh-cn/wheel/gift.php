@@ -1,0 +1,31 @@
+<?php
+
+return [
+    'Box_type'      => '类型',
+    'Box_type 1'    => '普通级',
+    'Box_type 2'    => '屠龍级',
+    'Gift_id'       => '礼物',
+    'Weigh'         => '排序',
+    'Broadcast'     => '广播',
+    'Broadcast 1'   => '飘屏',
+    'Broadcast 0'   => '无飘屏',
+    'Room_notice'   => '房间公屏',
+    'Room_notice 0' => '无',
+    'Room_notice 1' => '所有房间',
+    'Room_notice 2' => '所在房间',
+    'Light_level'   => '分层点亮',
+    'Light_level 0' => '无',
+    'Light_level 1' => '顶级',
+    'Light_level 2' => '次顶级',
+    'Voice'         => '音效',
+    'Voice 0'       => '无',
+    'Voice 1'       => '顶级',
+    'Voice 2'       => '次顶级',
+    'Show_again'    => '二次弹出',
+    'Show_again 0'  => '否',
+    'Show_again 1'  => '是',
+    'Status'        => '状态',
+    'Status 1'      => '开启',
+    'Status 0'      => '关闭',
+    'Master_gift_id'=> '发放礼物ID'
+];

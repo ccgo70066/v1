@@ -1,0 +1,142 @@
+<form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Date')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-date" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" data-use-current="true" name="row[date]" type="text" value="{:date('Y-m-d')}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Hour')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-hour" class="form-control" name="row[hour]" type="text" value="12">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Recharge_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-recharge_amount" class="form-control" step="0.01" name="row[recharge_amount]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('System_add_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-system_add_amount" class="form-control" step="0.01" name="row[system_add_amount]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Income_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-income_amount" class="form-control" step="0.01" name="row[income_amount]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Union_reward_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-union_reward_amount" class="form-control" step="0.01" name="row[union_reward_amount]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Total_amount')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-total_amount" class="form-control" step="0.01" name="row[total_amount]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Egg')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-egg" class="form-control" step="0.01" name="row[egg]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Wheel')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-wheel" class="form-control" step="0.01" name="row[wheel]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Box_1')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-box_1" class="form-control" step="0.01" name="row[box_1]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Box_2')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-box_2" class="form-control" step="0.01" name="row[box_2]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Gift')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-gift" class="form-control" step="0.01" name="row[gift]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Shop')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-shop" class="form-control" step="0.01" name="row[shop]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Vip')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-vip" class="form-control" step="0.01" name="row[vip]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('System_sub')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-system_sub" class="form-control" step="0.01" name="row[system_sub]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Total_used')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-total_used" class="form-control" step="0.01" name="row[total_used]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Total_balance')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-total_balance" class="form-control" step="0.01" name="row[total_balance]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Total_bag')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-total_bag" class="form-control" step="0.01" name="row[total_bag]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Withdraw')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-withdraw" class="form-control" step="0.01" name="row[withdraw]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Withdrawing')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-withdrawing" class="form-control" step="0.01" name="row[withdrawing]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Redpack')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-redpack" class="form-control" step="0.01" name="row[redpack]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Not_withdraw')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-not_withdraw" class="form-control" step="0.01" name="row[not_withdraw]" type="number" value="0.00">
+        </div>
+    </div>
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

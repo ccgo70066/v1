@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'Name'               => '分级名称',
+    'Box_type'           => '类型',
+    'Box_type 1'         => '普通级',
+    'Box_type 2'         => '屠龍级',
+    'Range_start'        => '范围起',
+    'Range_end'          => '范围止',
+    'Pool_sys_percent'   => '系统盘增长比率',
+    'Pool_pub_percent'   => '小公池增长比率',
+    'Pool_per_percent'   => '个人盘增长比率',
+    'b_pool_sys_percent' => '回血系统盘增长比率',
+    'b_pool_pub_percent' => '回血小公池增长比率',
+    'b_pool_per_percent' => '回血个人盘增长比率',
+    'Or_data'            => '核心调控',
+    'Or_data 1'          => '初始调控',
+    'Or_data 2'          => '个人调控',
+    'Or_data 3'          => '新手初始调控',
+    'Jump_data'          => '辅助调控',
+    'Jump_data 1'        => '系统调控',
+    'Jump_data 2'        => '基础调控',
+    'Jump_data 3'        => '初始调控',
+    'Jump_data 4'        => '个人调控',
+    'Jump_percent_1'     => '系统跳过概率',
+    'Jump_percent_2'     => '基础跳过概率',
+    'Jump_percent_3'     => '初始跳过概率',
+    'Jump_percent_4'     => '个人跳过概率',
+    'Weigh'              => '分级等级',
+    'upgrade_gift_ids'   => '升级礼物',
+    'Create_time'        => '创建',
+    'Update_time'        => '更新'
+];

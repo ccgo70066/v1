@@ -1,0 +1,32 @@
+<?php
+
+return [
+    'User_id'            => '用户ID',
+    'User.nickname'      => '用户昵称',
+    'Box_type'           => '类型',
+    'Box_type 1'         => '初级',
+    'Box_type 2'         => '高级',
+    'Count'              => '次数',
+    'Sys_10_count'       => '系统调控十连阈值',
+    'Sys_100_count'      => '系统调控百连阈值',
+    'Demo_100_count'     => '试玩阈值',
+    'Pool'               => '个人盘',
+    'Last_gift'          => '下一个指定礼物',
+    'Current_room_id'    => '当前所在房间',
+    'Total_used'         => '总消费',
+    'Total_lucre'        => '总收益',
+    'Today_used'         => '今日消费',
+    'Today_lucre'        => '今日收益',
+    'Level_id'           => '等级',
+    'Sys_100_hammer'     => '百连锤数',
+    'Base_100_threshold' => '基础调控阈值',
+    'Update_time'        => '更新时间',
+    'Actor_status'       => '用户标识',
+    'Actor_status 1'     => '正常',
+    'Actor_status 2'     => '关注',
+    'Actor_status 3'     => '演员',
+    'imei_change'        => 'imei变更',
+    'imei_change 0'      => '未变更',
+    'imei_change 1'      => '变更过',
+
+];

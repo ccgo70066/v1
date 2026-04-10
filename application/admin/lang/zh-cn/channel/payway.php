@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'Name'        => '渠道名称',
+    'Company_id'  => '支付公司',
+    'Pay_way'     => '支付方式',
+    'Pay_way ap'  => '支付宝',
+    'Pay_way wc'  => '微信',
+    'Pay_way ae'  => '苹果',
+    'Pay_way gg'  => '谷歌',
+    'Pay_way bk'  => '银行卡',
+    'Pay_way cc'  => '收银台',
+    'Open_way'    => '调用方式',
+    'Open_way 1'  => '外置浏览器(H5)',
+    'Open_way 2'  => '内置浏览器(H5)',
+    'Open_way 3'  => 'SDK调用(SDK)',
+    'Card_ids'    => '充值卡',
+    'Platform'    => '充值卡平台',
+    'Platform Android' => '安卓',
+    'Platform iOS'     => '苹果',
+    'Platform Web'     => 'Web',
+    'Weigh'       => '排序',
+    'Status'      => '状态',
+    'Status 1'    => '启用',
+    'Status 0'    => '禁用',
+    'Create_time' => '创建时间',
+    'Update_time' => '更新时间',
+    'System'         => '充值卡平台',
+    'System ios'     => '苹果',
+    'System android' => '安卓',
+    'System web'     => 'Web',
+    'app_pay_name'  => 'app内展示名称'
+];

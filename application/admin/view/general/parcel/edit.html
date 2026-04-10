@@ -1,0 +1,68 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Type')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+            <select  id="c-type" data-rule="required" class="form-control selectpicker" name="row[type]">
+                {foreach name="typeList" item="vo"}
+                    <option value="{$key}" {in name="key" value="$row.type"}selected{/in}>{$vo}</option>
+                {/foreach}
+            </select>
+
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" class="form-control" name="row[name]" type="text" value="{$row.name|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('首充金额')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" class="form-control" name="row[recharge_amount]" type="text" value="{$row.recharge_amount|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Reward_data')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+            <dl class="fieldlist" data-template="eventtpl" data-name="row[reward_data]">
+                <dd>
+                    <ins>{:__('类型')}</ins>
+                    <ins>{:__('名称')}</ins>
+                    <ins>{:__('数量')}</ins>
+                </dd>
+                <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
+                <textarea name="row[reward_data]" class="form-control hidden" cols="30" rows="5">{$row.reward_data|htmlentities}</textarea>
+            </dl>
+            <script id="eventtpl" type="text/html">
+                <dd class="form-inline">
+                    <ins><input  id="reward-type-ids-<%=index%>" data-rule="" data-source="general/reward_json/type"
+                                 data-params='{"exclude":"vip"}'
+                                 data-multiple="false" data-field="name" data-pagination="true" class="form-control selectpage"
+                                 name="<%=name%>[<%=index%>][type]" type="text" value="<%=row.type%>" placeholder="类型"></ins>
+
+                    <ins><input id="reward-name-ids-<%=index%>" data-rule="" data-source="general/reward_json/index"
+                                data-multiple="false" data-field="name" data-pagination="true" data-page-size="10" class="form-control selectpage"
+                                name="<%=name%>[<%=index%>][id]" type="text" value="<%=row.id%>" placeholder="名称"></ins>
+
+                    <ins><input type="text" name="<%=name%>[<%=index%>][count]" class="form-control" value="<%=row.count%>" placeholder="数量"></ins>
+                    <!--                下面两个按钮必须保留-->
+                    <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>
+                    <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>
+                </dd>
+            </script>
+
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,110 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-name" class="form-control" name="row[name]" type="text" value="{$row.name|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Grade')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-grade" data-rule="required" class="form-control" name="row[grade]" type="number" value="{$row.grade|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Scope')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-scope" data-rule="required" class="form-control" name="row[scope]" type="number" value="{$row.scope|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Icon')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-icon" class="form-control" size="50" name="row[icon]" type="text" value="{$row.icon|htmlentities}">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-icon" data-category="level" class="btn btn-danger faupload" data-input-id="c-icon" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp,image/webp" data-multiple="false" data-preview-id="p-icon"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-icon"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-icon"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Font_color')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-font_color" data-rule="required" class="form-control" name="row[font_color]" type="text" value="{$row.font_color|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Protect_days')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-protect_days" class="form-control" name="row[protect_days]" type="number" value="{$row.protect_days|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Protect_limit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-protect_limit" data-rule="required" class="form-control" name="row[protect_limit]" type="number" value="{$row.protect_limit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Punish_limit')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-punish_limit" class="form-control" name="row[punish_limit]" type="number" value="{$row.punish_limit|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Privilege_ids')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-privilege_ids" data-rule="" data-order-by="weigh asc" data-source="general/vip_privilege" data-multiple="true" class="form-control selectpage" name="row[privilege_ids]" type="text" value="{$row.privilege_ids|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('car')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-car" data-rule="" data-order-by="weigh asc" data-params='{"type":"car"}' data-source="general/reward_json/index" class="form-control selectpage" name="row[car]" type="text" value="{$row.car|htmlentities}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">{:__('Reward_json')}:</label>
+        <div class="col-xs-12 col-sm-8">
+
+            <dl class="fieldlist" data-template="eventtpl" data-name="row[reward_json]">
+                <dd>
+                    <ins>{:__('类型')}</ins>
+                    <ins>{:__('名称')}</ins>
+                    <ins>{:__('数量')}</ins>
+                </dd>
+                <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>
+                <textarea name="row[reward_json]" class="form-control hidden" cols="30" rows="5">{$row.reward_json|htmlentities}</textarea>
+            </dl>
+            <script id="eventtpl" type="text/html">
+                <dd class="form-inline">
+                    <ins><input  id="reward-type-ids-<%=index%>" data-rule="" data-source="general/reward_json/type_sign"
+                                 data-multiple="false" data-field="name" data-pagination="true" class="form-control selectpage"
+                                 name="<%=name%>[<%=index%>][type]" type="text" value="<%=row.type%>" placeholder="类型"></ins>
+
+                    <ins><input id="reward-name-ids-<%=index%>" data-rule="" data-source="general/reward_json/index"
+                                data-multiple="false" data-field="name" data-pagination="true" data-page-size="10" class="form-control selectpage"
+                                name="<%=name%>[<%=index%>][id]" type="text" value="<%=row.id%>" placeholder="名称"></ins>
+
+                    <ins><input type="text" name="<%=name%>[<%=index%>][count]" class="form-control" value="<%=row.count%>" placeholder="数量"></ins>
+                    <!--                下面两个按钮必须保留-->
+                    <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>
+                    <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>
+                </dd>
+            </script>
+
+        </div>
+    </div>
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>
