@@ -27,14 +27,14 @@ class Agora
     }
 
     //获取进入频道的token
-    public function get_token($im_room_id, $user_id)
+    public function get_token($room_id, $user_id)
     {
         $role = RtcTokenBuilder::RolePublisher; //
         $expireTimeInSeconds = 86400;
         // $expireTimeInSeconds = 300;
         $currentTimestamp = (new DateTime("now", new DateTimeZone('UTC')))->getTimestamp();
         $privilegeExpiredTs = $currentTimestamp + $expireTimeInSeconds;
-        $token = RtcTokenBuilder::buildTokenWithUid($this->appID, $this->appCertificate, "$im_room_id", $user_id, $role, $privilegeExpiredTs);
+        $token = RtcTokenBuilder::buildTokenWithUid($this->appID, $this->appCertificate, "$room_id", $user_id, $role, $privilegeExpiredTs);
         return $token;
     }
 

@@ -38,6 +38,20 @@ class RoomService
         db('room')->strict(false)->insert($info);
     }
 
+    /**
+     * @param int $room_id
+     * @param int $result 审核结果:1=通过,0=拒绝
+     * @param int $operator
+     * @return void
+     * @throws
+     */
+    public function audit(int $room_id, int $result, int $operator = 0): void
+    {
+        db('room')->where('id', $room_id)->update(['status' => $result == 1 ? 2 : -3]);
+        $this->add_room_log($room_id, $operator, $result == 1 ? '房间审核通过' : '房间审核被拒绝');
+    }
+
+
     //获取房间列表
     public function roomList($where = [], $limit = 30)
     {
@@ -315,30 +329,6 @@ class RoomService
     }
 
     /**
-     * 创建个人房
-     * @param $room_data
-     * @throws ApiException
-     */
-    public function createPersonRoom($room_data)
-    {
-        $imService = new ImService();
-        $resultIm = $imService->createRoom($room_data['owner_id'], $room_data['name']);
-        $room_data['im_roomid'] = $resultIm['chatroom']['roomid'];
-        $res = $this->model->create($room_data);
-
-        //更新用户个人房间号
-        $result = db('user_business')->where('id', $room_data['owner_id'])->setField('proom_no', $res['id']);
-        if (!$result) {
-            throw new ApiException(__('Creation failed'));
-        }
-        $result = db('room_admin')->insert(['room_id' => $res['id'], 'user_id' => $room_data['owner_id'], 'role' => 1]);
-        if (!$result) {
-            throw new ApiException(__('Creation failed'));
-        }
-        return $res['id'];
-    }
-
-    /**
      * 生成随机房间号
      */
     public function createRoomNumber()
@@ -549,7 +539,7 @@ class RoomService
         if (!in_array($role, [RoomModel::ROOM_ROLE_MANAGE, RoomModel::ROOM_ROLE_ANCHOR])) {
             throw new ApiException(__('Operation failed'));
         }
-        $room = db('room')->where('id', $room_id)->field('im_operator,im_roomid,union_id')->find();
+        $room = db('room')->where('id', $room_id)->field('im_operator,union_id')->find();
         $check_union_role = $roomModel->is_union_user($room['union_id'], $to_user_id, [1, 2]);
         if (!$check_union_role) {
             throw new ApiException(__('This user is not a clan member'));

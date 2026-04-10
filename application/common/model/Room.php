@@ -43,7 +43,7 @@ class Room extends Model
 
     public static function getRoomByImRid($im_room_id, $field = '*')
     {
-        return db('room')->where('im_roomid', $im_room_id)->field($field)->find();
+        return $im_room_id;
     }
 
     /*

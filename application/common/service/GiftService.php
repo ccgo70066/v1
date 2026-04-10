@@ -19,11 +19,11 @@ class GiftService
      * @param  $gift_id
      * @param  $user_id
      * @param  $to_user_ids
-     * @param  $im_room_id
+     * @param  $room_id
      * @return array [$gift, $to_user_ids_arr, $room_id ?? 0]
      * @throws
      */
-    public function checkRoomGiveParam($gift_id, $user_id, $to_user_ids, $im_room_id = 0): array
+    public function checkRoomGiveParam($gift_id, $user_id, $to_user_ids, $room_id = 0): array
     {
         $gift = GiftModel::getGiftById($gift_id, '*', ['type' => ['not in', array_keys(GiftModel::GIFT_CATE_SPECIAL_CATES)]]);
         if (!$gift) throw new ApiException(__('Gift does not exist'));
@@ -32,12 +32,8 @@ class GiftService
         if (in_array($user_id, $to_user_ids_arr)) throw new ApiException(__('Cannot send gifts to yourself'));
         $to_user_count = db('user')->where('id', 'in', $to_user_ids)->column('id');
         if (count($to_user_ids_arr) != count($to_user_count)) throw new ApiException(__('User does not exist'));
-        if ($im_room_id) {
-            $room_id = db('room')
-                ->cache('room:getIdByImid:' . $im_room_id, 0, 'data_room')
-                ->where('im_roomid', $im_room_id)
-                ->value('id') ?: 0;
-            if (!$room_id) throw new ApiException(__('Failed to get room'));
+        if ($room_id) {
+            if (!db('room')->where('id', $room_id)->value('id')) throw new ApiException(__('Failed to get room'));
         }
         return [$gift, $to_user_ids_arr, $room_id ?? 0];
     }
@@ -56,7 +52,7 @@ class GiftService
     public function giveGiftByRoom($giver_id, $to_user_ids_arr, $gift_id, $count, $room_id, $from_type = 0)
     {
         $gift = GiftModel::getGiftById($gift_id);
-        $room = db('room')->where('id', $room_id)->field('im_roomid,name,union_id,pause')->find();
+        $room = db('room')->where('id', $room_id)->field('name,union_id,pause')->find();
         if (!$room) {
             throw new ApiException(__('Failed to retrieve room'));
         }
@@ -66,21 +62,19 @@ class GiftService
             //根据收礼人是否是本房间所属家族成员获取个人提成比例和家族提成比例
             [$user_rate, $union_rate] = $this->receiveGiftsRate($room['union_id'], $receiver_id);
             $gift_log[] = [
-                'user_id'           => $giver_id,
-                'to_user_id'        => $receiver_id,
-                'gift_id'           => $gift_id,
-                'gift_val'          => $gift['price'] * $count,
-                'count'             => $count,
-                'type'              => $from_type,
-                'room_id'           => $room_id,
-                'union_id'          => $room['union_id'],
-                'union_reward_rate' => $union_rate,
-                'create_time'       => datetime()
+                'user_id'     => $giver_id,
+                'to_user_id'  => $receiver_id,
+                'gift_id'     => $gift_id,
+                'gift_val'    => $gift['price'] * $count,
+                'count'       => $count,
+                'type'        => $from_type,
+                'room_id'     => $room_id,
+                'create_time' => datetime()
             ];
             user_business_change($receiver_id, 'reward_amount', $gift['price'] * $count * $user_rate, 'increase', '收获礼物:' . $gift['name'] . '×' . $count, 4);
             //如果收礼人是本房间所属家族成员,家族会获得家族收益
-            $union_reward_val = $union_rate * $gift['price'] * $count;
-            $room['union_id'] && union_profit_statistics($room['union_id'], $gift['price'] * $count, $union_reward_val, $receiver_id);
+            //$union_reward_val = $union_rate * $gift['price'] * $count;
+            //$room['union_id'] && union_profit_statistics($room['union_id'], $gift['price'] * $count, $union_reward_val, $receiver_id);
             //根据送礼人、收礼人、房间做送礼统计
             GiftSendStatistic::count_up($giver_id, $receiver_id, $room_id, $gift['price'] * $count);
         }

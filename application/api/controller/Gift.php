@@ -111,7 +111,7 @@ class Gift extends Base
      * @ApiParams   (name="gift_id",    type="int", required=true,  rule="min:0", description="禮物ID")
      * @ApiParams   (name="gift_count", type="int", required=true,  rule="min:0", description="每个用户禮物數量")
      * @ApiParams   (name="source",     type="int", required=true, rule="", description="送禮來源:-1:背包单个礼物全送,1=背包選擇數量送,2=面板送禮")
-     * @ApiParams   (name="im_roomid",    type="int", required=true, rule="min:0", description="雲信房間ID")
+     * @ApiParams   (name="room_id",    type="int", required=true, rule="min:0", description="房間ID")
      * @throws
      */
     public function room_give_gift()
@@ -121,7 +121,7 @@ class Gift extends Base
         $gift_id = input('gift_id');
         $count = abs((int)input('gift_count'));
 
-        list($gift, $to_user_ids_arr, $room_id) = $this->service->checkRoomGiveParam($gift_id, $user_id, input('to_user_ids'), input('im_roomid'));
+        list($gift, $to_user_ids_arr, $room_id) = $this->service->checkRoomGiveParam($gift_id, $user_id, input('to_user_ids'), input('room_id'));
         $total_amount = $gift['price'] * $count * count($to_user_ids_arr);
         Db::startTrans();
         try {
@@ -210,7 +210,7 @@ class Gift extends Base
     /**
      * @ApiTitle    (一鍵清包)
      * @ApiParams   (name="to_user_id",   type="string", required=true,  rule="min:0", description="收禮人Id")
-     * @ApiParams   (name="im_roomid",    type="int", required=false, rule="min:0", description="雲信房間ID")
+     * @ApiParams   (name="room_id",    type="int", required=false, rule="min:0", description="雲信房間ID")
      * @ApiParams   (name="seat",    type="int", required=false, rule="min:0", description="座位號,1-9,不在座位上則不傳")
      */
     public function give_gift_all()
@@ -231,7 +231,7 @@ class Gift extends Base
         if ($bag_gift_count < 1) {
             throw new ApiException(__('Insufficient gifts in backpack'));
         }
-        $room_id = db('room')->cache(true, 0, 'data_room')->where('im_roomid', input('im_roomid'))->value('id') ?: 0;
+        $room_id = input('room_id', 0);
         $seat_num = input('seat');
         if (!$seat_num) {
             $seat_user = $roomService->getSeatUserId($room_id);

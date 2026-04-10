@@ -61,18 +61,18 @@ class Yunxin
 
     /**
      * 聊天室消息(再次进入聊天室的时候会拉取到历史消息的消息)
-     * @param $im_roomid string IM房间号
+     * @param $room_id string IM房间号
      * @param $data      array
      * @return mixed
      */
-    public function room_send_message($im_roomid, $data = [])
+    public function room_send_message($room_id, $data = [])
     {
         $body = $data;
         $body['type_room_msg'] = $data['type'];
 
         $url = "/chatroom/sendMsg.action";
         $imData = [
-            'roomid'    => $im_roomid,
+            'roomid'    => $room_id,
             'msgId'     => \fast\Random::alnum(10),
             'fromAccid' => $this->account['sys'],//随便哪个号码都行,只要注册过云信
             'msgType'   => '100',//这种消息能拉取到历史消息记录
@@ -83,15 +83,15 @@ class Yunxin
 
     /**
      * 聊天室通知
-     * @param $im_roomid string IM房间号
+     * @param $room_id string IM房间号
      * @param $data      array 数据,'type'=>400X房间信息更新相关,500X=>PK相关
      * @return mixed
      */
-    public function room_send_notice($im_roomid, $data = [])
+    public function room_send_notice($room_id, $data = [])
     {
         $url = "/chatroom/sendMsg.action";
         $imData = [
-            'roomid'    => $im_roomid,
+            'roomid'    => $room_id,
             'msgId'     => \fast\Random::alnum(10),
             'fromAccid' => $this->account['sys'], //随便哪个号码都行,只要注册过云信
             'msgType'   => '10',//这种消息不需要拉取到历史消息记录
@@ -233,17 +233,17 @@ class Yunxin
     }
 
     /**修改聊天室开/关闭状态
-     * @param $im_roomid string IM房间号
+     * @param $room_id string IM房间号
      * @param $creator   int 房间创建者user_id，必须是创建者才可以操作
      * @param $valid     boolean true或false，false:关闭聊天室；true:打开聊天室
      * @return mixed
      */
-    public function room_valid($im_roomid, $creator, $valid)
+    public function room_valid($room_id, $creator, $valid)
     {
         $valid = $valid ? 'true' : 'false';
 
         $url = '/chatroom/toggleCloseStat.action';
-        $data = ['roomid' => $im_roomid, 'operator' => $creator, 'valid' => $valid];
+        $data = ['roomid' => $room_id, 'operator' => $creator, 'valid' => $valid];
         return $this->im($url, $data);
     }
 
@@ -273,17 +273,17 @@ class Yunxin
 
     /**
      * 聊天室云端历史消息查询
-     * @param int    $im_roomid 云信聊天室ID
+     * @param int    $room_id 云信聊天室ID
      * @param int    $time      查询的时间戳锚点。reverse=1时timetag为起始时间戳，reverse=2时timetag为终止时间戳
      * @param string $user_id   发送人
      * @param int    $limit     条数
      * @return mixed
      */
-    public function queryChatroomMsg($im_roomid, $time, $user_id)
+    public function queryChatroomMsg($room_id, $time, $user_id)
     {
         $url = "/history/queryChatroomMsg.action";
         $imData = [
-            "roomid"  => $im_roomid,
+            "roomid"  => $room_id,
             'accid'   => 20,
             'timetag' => $time * 1000,    //微妙
             'limit'   => 100,
@@ -306,11 +306,11 @@ class Yunxin
      *                            -2:设为禁言用户，operator必须是创建者或管理员
      *
      */
-    public function set_room_role($operator, $to_user_id, $im_roomid, $type = 'true', $opt = 1)
+    public function set_room_role($operator, $to_user_id, $room_id, $type = 'true', $opt = 1)
     {
         $url = "/chatroom/setMemberRole.action";
         $imData = [
-            "roomid"   => $im_roomid,
+            "roomid"   => $room_id,
             'operator' => $operator,
             'target'   => $to_user_id,
             'opt'      => $opt,
@@ -323,15 +323,15 @@ class Yunxin
 
     /**
      * 批量获取在线成员信息
-     * @param string $im_roomid 房间号
+     * @param string $room_id 房间号
      * @param array  $user_ids  用户数组
      * @return mixed
      */
-    public function queryMembers($im_roomid, $user_ids)
+    public function queryMembers($room_id, $user_ids)
     {
         $url = "/chatroom/queryMembers.action";
         $imData = [
-            "roomid" => $im_roomid,
+            "roomid" => $room_id,
             'accids' => json_encode($user_ids),
         ];
 
@@ -340,14 +340,14 @@ class Yunxin
 
     /**
      * 排序列出队列中所有元素
-     * @param string $im_roomid 房间号
+     * @param string $room_id 房间号
      * @return mixed
      */
-    public function queueList($im_roomid)
+    public function queueList($room_id)
     {
         $url = "/chatroom/queueList.action";
         $imData = [
-            "roomid" => $im_roomid,
+            "roomid" => $room_id,
         ];
         return $this->im($url, $imData);
     }
@@ -357,11 +357,11 @@ class Yunxin
      * 查询聊天室信息
      * @param int $operator 云信房间 创建者,创建者不一定等于业务上的房主
      */
-    public function room_info($im_roomid, $onlineUser = false)
+    public function room_info($room_id, $onlineUser = false)
     {
         $url = "/chatroom/get.action";
         $imData = [
-            "roomid"              => $im_roomid,
+            "roomid"              => $room_id,
             'needOnlineUserCount' => "$onlineUser",
         ];
 
@@ -489,22 +489,22 @@ class Yunxin
     }
 
 
-    public function set_room_role_ext($user_id, $im_roomid, $ext)
+    public function set_room_role_ext($user_id, $room_id, $ext)
     {
         $url = "/chatroom/updateMyRoomRole.action";
         $imData = [
-            "roomid" => $im_roomid,
+            "roomid" => $room_id,
             'accid'  => $user_id,
             'ext'    => $ext,
         ];
         return $this->im($url, $imData);
     }
 
-    public function kickMember($operator, $to_user_id, $im_roomid, $ext = '')
+    public function kickMember($operator, $to_user_id, $room_id, $ext = '')
     {
         $url = "/chatroom/kickMember.action";
         $imData = [
-            "roomid"      => $im_roomid,
+            "roomid"      => $room_id,
             'accid'       => $operator,
             'targetAccid' => $to_user_id,
             'notifyExt'   => $ext,

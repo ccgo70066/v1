@@ -394,10 +394,10 @@ class Room extends Base
         $data['blacklist'] = ChannelBlacklist::get_blacklist($this->appid, $this->system, $this->version);
         //声网token
         $agora = new Agora();
-        $data['agora_token'] = $agora->get_token($room['im_roomid'], $user_id);
+        $data['agora_token'] = $agora->get_token($room_id, $user_id);
 
         $data['room'] = db('room')->where('id', $room_id)
-            ->field('welcome_msg,welcome_switch,way,id,beautiful_id,name,type,owner_id,screen_clear_time, im_roomid,theme_id,cover,notice,hot,bg_img,is_lock,is_show')
+            ->field('welcome_msg,welcome_switch,way,id,beautiful_id,name,type,owner_id,screen_clear_time,theme_id,cover,notice,hot,bg_img,is_lock,is_show')
             ->find();
         $theme = db('room_theme_cate')->where('id', $data['room']['theme_id'])->field('name,image')->find();;
         $data['room']['theme_cate_name'] = $theme['name'] ?: '';
@@ -662,7 +662,7 @@ class Room extends Base
         if ($to_user_id == $this->auth->id) $this->error(__('Unable to kick self from party'));
         if (!($this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]))) $this->error(__('No permissions'));
         $nickname = db('user')->where('id', $to_user_id)->value('nickname');
-        $room = db('room')->where('id', $room_id)->field('im_roomid,im_operator,owner_id,beautiful_id')->find();
+        $room = db('room')->where('id', $room_id)->field('im_operator,owner_id,beautiful_id')->find();
         if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
         if (user_vip_switch($to_user_id, 5)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
         send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s');
@@ -685,7 +685,7 @@ class Room extends Base
         if ($to_user_id == $this->auth->id) $this->error(__('Unable to kick self from party'));
         if (!($this->service->checkRoomRole($room_id, $this->auth->id, [1, 2]))) $this->error(__('No permissions'));
         $nickname = RedisService::getUserCache($to_user_id, 'nickname');
-        $room = db('room')->where('id', $room_id)->field('im_roomid,im_operator,owner_id,beautiful_id')->find();
+        $room = db('room')->where('id', $room_id)->field('im_operator,owner_id,beautiful_id')->find();
         if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
         if ($type == 1) {
             $noble = db('user_noble u')
@@ -772,8 +772,6 @@ class Room extends Base
         if (!in_array($role, [0, RoomModel::ROOM_ROLE_MANAGE, RoomModel::ROOM_ROLE_ANCHOR])) {
             throw new ApiException(__('Operation failed'));
         }
-
-        $room = db('room')->where('id', $room_id)->field('im_operator,im_roomid')->find();
 
         //房主或者族长才能设置身份
         $check_auth = $this->service->checkRoomRole($room_id, $user_id, [1]);
@@ -989,11 +987,8 @@ class Room extends Base
         $room = db('room r')
             ->where('r.id', $room_id)
             ->join('room_theme_cate cate', 'r.theme_id = cate.id')
-            ->field('r.welcome_switch,r.password,r.welcome_msg,r.way,r.id,r.beautiful_id')
-            ->field('r.name,r.type,r.owner_id,r.im_roomid,r.r.theme_id')
-            ->field("r . cover,notice,r . hot,r . bg_img,r . is_lock,r . is_show,cate . name as theme_cate_name")
-            ->find();
-        $room['theme_cate_name'] = RedisService::loadLang($room['theme_cate_name']);
+            ->field('welcome_switch,password,welcome_msg,way,id,beautiful_id,name,type,owner_id,theme_id,cover,notice,hot,bg_img,is_lock,is_show', false, 'r')
+            ->field("cate.name as theme_cate_name")->find();
 
         $data = [];
 
@@ -1006,7 +1001,7 @@ class Room extends Base
 
         //声网token
         $agora = new Agora();
-        $data['agora_token'] = $agora->get_token($room['im_roomid'], $user_id);
+        $data['agora_token'] = $agora->get_token($room_id, $user_id);
         $data['room'] = $room;
         $data['room']['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $this->success('', $data);
@@ -1015,15 +1010,15 @@ class Room extends Base
 
     /**
      * @ApiTitle    (获取声网token)
-     * @ApiParams   (name="im_roomid",    type="int",  required=true, rule="require", description="云信房间号")
+     * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="云信房间号")
      * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="用户ID")
      **/
     public function get_agora_token()
     {
-        $im_room_id = input('im_roomid');
+        $room_id = input('room_id');
         $user_id = input('user_id');
         $agora = new Agora();
-        $token = $agora->get_token($im_room_id, $user_id);
+        $token = $agora->get_token($room_id, $user_id);
         $this->success('', $token);
     }
 
