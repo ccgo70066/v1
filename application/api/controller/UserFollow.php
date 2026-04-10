@@ -3,13 +3,10 @@
 
 namespace app\api\controller;
 
-use app\api\library\ImService;
-use app\api\library\RedisService;
-use app\api\library\UserBusinessService;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\common\model\UserBusiness;
 use app\common\model\UserFollow as UserFollowModel;
-use app\api\library\UserBaseStatisticsService;
+use app\common\service\RedisService;
 use think\Cache;
 use think\Db;
 use think\Log;

@@ -2,12 +2,10 @@
 
 namespace app\api\controller;
 
-use app\api\library\RedisService;
-use app\common\library\ApiException;
-use \app\common\model\UserBusiness;
-use app\api\library\MallService;
 use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\model\ShopItem as ShopItemModel;
+use app\common\model\UserBusiness;
+use app\common\service\RedisService;
 use think\Db;
 use think\Exception;
 use think\Log;

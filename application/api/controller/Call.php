@@ -4,19 +4,14 @@ namespace app\api\controller;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\controller\Api;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\pay\library\AdaPay;
 use app\pay\library\HuifuPay;
 use app\pay\library\NewPay;
 use app\pay\library\UMFPay;
 use app\pay\library\WechatPay;
 use app\pay\library\wechatpay_sdk\WechatAppPay;
-use Exception;
 use think\Cache;
-use think\Controller;
-use think\exception\HttpResponseException;
-use think\Log;
-use think\Response;
 
 /**
  * 支付回

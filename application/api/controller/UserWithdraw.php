@@ -3,13 +3,9 @@
 
 namespace app\api\controller;
 
-use app\api\library\RedisService;
-use app\api\library\UserWithdrawService;
-use app\common\library\ApiException;
+use app\common\service\RedisService;
 use think\Db;
-use think\Exception;
 use think\Log;
-use util\Enigma;
 
 /**
  * 会员提现申请

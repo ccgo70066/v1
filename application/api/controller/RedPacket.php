@@ -3,12 +3,9 @@
 namespace app\api\controller;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
+use app\common\exception\ApiException;
 use app\common\model\Shield;
-use app\api\library\ImService;
-use app\common\library\ApiException;
 use think\Db;
-use think\Exception;
-use think\Log;
 
 /**
  * IM红包

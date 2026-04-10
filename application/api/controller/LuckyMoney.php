@@ -2,9 +2,7 @@
 
 namespace app\api\controller;
 
-use app\common\library\ApiException;
-use think\Db;
-use think\Exception;
+use app\common\exception\ApiException;
 
 /**
  * 红包雨

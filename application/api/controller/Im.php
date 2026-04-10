@@ -2,8 +2,8 @@
 
 namespace app\api\controller;
 
-use app\api\library\ImService;
-use app\api\library\RedisService;
+use app\common\service\ImService;
+use app\common\service\RedisService;
 
 /**
  * IM聊天

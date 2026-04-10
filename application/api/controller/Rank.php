@@ -2,11 +2,8 @@
 
 namespace app\api\controller;
 
-use app\api\library\RankService;
-use app\api\library\RedisService;
-use app\api\library\UserBusinessService;
-use app\common\library\token\driver\Redis;
 use app\common\model\GiftSendStatistic;
+use app\common\service\RedisService;
 
 /**
  * 榜单

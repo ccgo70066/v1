@@ -4,18 +4,15 @@ namespace app\api\controller;
 
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\api\library\MallService;
-use app\api\library\MongoService;
-use app\api\library\RedisService;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
+use app\common\service\MongoService;
+use app\common\service\RedisService;
 use fast\Http;
 use think\Cache;
 use think\Db;
 use think\Env;
 use think\Exception;
-use think\Lang;
 use think\Log;
-use util\Translate;
 use util\Util;
 
 /**

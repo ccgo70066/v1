@@ -53,7 +53,7 @@ class RedisService
     public static function getUserCache($id, $field)
     {
         $table = 'user';
-        $data = db($table)->cache(cacheFlag(), 3600, $table)->field('id,nickname,avatar,appid')->find($id);
+        $data = db($table)->cache(cacheFlag(), 3600, $table)->field('id,nickname,avatar')->find($id);
         return self::returnDataField($data, $field);
     }
 

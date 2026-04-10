@@ -2,14 +2,8 @@
 
 namespace app\api\controller;
 
-use app\common\controller\Api;
-use app\common\library\Sms as Smslib;
-use app\common\model\User;
-use fast\Random;
-use think\Hook;
-
 /**
- * 房间成员
+ * 厅
  * @ApiWeigh    (901)
  */
 class Member extends Base
@@ -86,5 +80,10 @@ class Member extends Base
         ])->setField('status', $status);
 
         $this->success();
+    }
+
+    public function statistic()
+    {
+
     }
 }

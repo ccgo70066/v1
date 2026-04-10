@@ -3,23 +3,17 @@
 
 namespace app\api\controller;
 
-use app\api\library\RedisService;
-use app\common\library\ApiException;
 use app\common\model\Moment as MomentModel;
 use app\common\model\MomentComment;
 use app\common\model\MomentLike;
+use app\common\model\Shield;
 use app\common\model\UserFollow as UserFollowModel;
 use app\common\model\UserGuest as UserGuestModel;
-use app\common\model\Shield;
 use think\Cache;
 use think\Db;
 use think\Exception;
 use think\Log;
 use util\Date;
-
-use util\Enigma;
-
-use function request;
 
 /**
  * 动态

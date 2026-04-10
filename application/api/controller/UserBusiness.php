@@ -2,20 +2,15 @@
 
 namespace app\api\controller;
 
-use app\api\library\NobleService;
-use app\api\library\RedisService;
-use app\api\library\UserBusinessLogService;
+use app\common\exception\ApiException;
+use app\common\library\Sms;
 use app\common\model\ShopItem as ShopModel;
 use app\common\model\UserBusiness as UserBusinessModel;
 use app\common\model\UserBusinessLog;
-use app\common\library\ApiException;
+use app\common\service\RedisService;
 use think\Db;
-use think\Env;
 use think\Exception;
 use think\Log;
-use app\common\library\Sms;
-use app\api\library\UserBusinessService;
-use util\Str;
 
 /**
  * 会员业务

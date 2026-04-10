@@ -3,9 +3,7 @@
 
 namespace app\api\controller;
 
-use app\common\library\ApiException;
 use think\Log;
-use util\Enigma;
 
 /**
  * 举报与反馈
