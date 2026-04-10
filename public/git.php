@@ -31,4 +31,6 @@ if ($content['commits'][0]['author']['name'] == 'handsomeTaoTao') {
 echo shell_exec("cd {$local} && sudo  git pull");
 var_dump('test');
 var_dump('t1');
+var_dump('t2');
+
 die("done " . date('Y-m-d H:i:s', time()));
