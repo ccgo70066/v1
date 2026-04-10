@@ -1172,6 +1172,7 @@ class Room extends Base
      * @ApiParams   (name="keyword", type="string",  required=false, rule="", description="搜索关键字")
      * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
      * @ApiParams   (name="size", type="int",  required=false, rule="", description="页码大小")
+     * @ApiReturnParams   (name="my.status", type="int", description="状态:0=申请加入,1=已通过,-1=驳回,2=申请退出,-2=已退出")
      * @throws
      */
     public function get_list(): void

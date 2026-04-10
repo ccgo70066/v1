@@ -185,6 +185,7 @@ class App extends Base
 
         $minio = new Minio();
         $upload = $minio->putObject($fileInfo['tmp_name'], $uploadDir . $fileName);
+        str_contains($upload, 'error') && trace($upload, 'error');
         if ($fileInfo['type'] == 'video/mp4') {
             $ffmpeeg = new Ffmpeeg();
             $cover_url = $uploadDir . $fileName . '.jpg';
