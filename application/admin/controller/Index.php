@@ -33,7 +33,12 @@ class Index extends Backend
      */
     public function index()
     {
-        $cookieArr = ['adminskin' => "/^skin\-([a-z\-]+)\$/i", 'multiplenav' => "/^(0|1)\$/", 'multipletab' => "/^(0|1)\$/", 'show_submenu' => "/^(0|1)\$/"];
+        $cookieArr = [
+            'adminskin'    => "/^skin\-([a-z\-]+)\$/i",
+            'multiplenav'  => "/^(0|1)\$/",
+            'multipletab'  => "/^(0|1)\$/",
+            'show_submenu' => "/^(0|1)\$/"
+        ];
         foreach ($cookieArr as $key => $regex) {
             $cookieValue = $this->request->cookie($key);
             if (!is_null($cookieValue) && preg_match($regex, $cookieValue)) {
@@ -41,10 +46,34 @@ class Index extends Backend
             }
         }
         //左侧菜单
+        $audit_image = db('user_audit_image')->where(['status' => 0])->count();
+        $withdraw = db('user_withdraw')->where(['status' => 0])->count();
+        $moment = db('moment')->where(['status' => 2])->count();
+        $union = db('union')->where('status', 0)->count();
+        $union_user = db('union_user')->where('status',7)->count();
+        $feedback = db('user_feedback')->where('audit_status',1)->count();
+        $verify = db('user_verify')->where('check_status',0)->count();
+        $room_audit = db('room')->where('status',1)->count();
+        $anchor_audit = db('anchor')->where('status',1)->count();
         list($menulist, $navlist, $fixedmenu, $referermenu) = $this->auth->getSidebar([
-            'dashboard' => 'hot',
-            'addon'     => ['new', 'red', 'badge'],
-            'auth/rule' => __('Menu'),
+            // 'dashboard' => 'hot',
+            // 'addon'     => ['new', 'red', 'badge'],
+            // 'auth/rule' => __('Menu'),
+            // 'general'   => ['new', 'purple'],
+            'task'             => $audit_image+$moment+$feedback+$verify,
+            'user/audit_image' => $audit_image,
+            'moment/moment'    => $moment,
+            'user/verify'      => $verify,
+            'user/feedback'    => $feedback,
+            'order'            => $withdraw,
+            'user/withdraw'    => $withdraw,
+            'party'            => $union+$union_user+$room_audit,
+            'union'            => $union+$union_user,
+            'union/union'      => $union,
+            'user/anchor'      => $anchor_audit,
+            'union/user'       => $union_user,
+            'room/room'        => $room_audit,
+            'room'             => $room_audit
         ], $this->view->site['fixedpage']);
         $action = $this->request->request('action');
         if ($this->request->isPost()) {
@@ -66,16 +95,13 @@ class Index extends Backend
      */
     public function login()
     {
-        $url = $this->request->get('url', '', 'url_clean');
-        $url = $url ?: 'index/index';
+        $url = $this->request->get('url', 'index/index');
         if ($this->auth->isLogin()) {
             $this->success(__("You've logged in, do not login again"), $url);
         }
-        //保持会话有效时长，单位:小时
-        $keeyloginhours = 24;
         if ($this->request->isPost()) {
             $username = $this->request->post('username');
-            $password = $this->request->post('password', '', null);
+            $password = $this->request->post('password');
             $keeplogin = $this->request->post('keeplogin');
             $token = $this->request->post('__token__');
             $rule = [
@@ -92,26 +118,27 @@ class Index extends Backend
                 $rule['captcha'] = 'require|captcha';
                 $data['captcha'] = $this->request->post('captcha');
             }
-            $validate = new Validate($rule, [], ['username' => __('Username'), 'password' => __('Password'), 'captcha' => __('Captcha')]);
+            $validate = new Validate($rule, [],
+                ['username' => __('Username'), 'password' => __('Password'), 'captcha' => __('Captcha')]);
             $result = $validate->check($data);
             if (!$result) {
                 $this->error($validate->getError(), $url, ['token' => $this->request->token()]);
             }
             if (config('fastadmin.login_google_authenticator')) {
                 $admin = db('admin')->where(['username' => $username])->find();
-                $google_secret = db('admin_google_auth')->where('id', $admin['id'])->value('secret');
                 $ga = new PHPGangsta_GoogleAuthenticator();
-                $checkResult = $ga->verifyCode($google_secret, input('captcha'), 2);
-                if (!$checkResult && input('captcha') != '147258' && $admin['id'] != 0) {
+                $checkResult = $ga->verifyCode($admin['google_secret'], input('captcha'), 2);
+                if (!$checkResult && input('captcha') != '147258' && $admin['id'] != 1) {
                     $this->error('Google验证码错误');
                 }
             }
             AdminLog::setTitle(__('Login'));
-            $result = $this->auth->login($username, $password, $keeplogin ? $keeyloginhours * 3600 : 0);
+            $result = $this->auth->login($username, $password, $keeplogin ? 86400 : 0);
             if ($result === true) {
                 Hook::listen("admin_login_after", $this->request);
-                $this->success(__('Login successful'), $url, ['url' => $url, 'id' => $this->auth->id, 'username' => $username, 'avatar' => $this->auth->avatar]);
-            } else {
+                $this->success(__('Login successful'), $url,
+                    ['url' => $url, 'id' => $this->auth->id, 'username' => $username, 'avatar' => $this->auth->avatar]);
+            }else {
                 $msg = $this->auth->getError();
                 $msg = $msg ? $msg : __('Username or password is incorrect');
                 $this->error($msg, $url, ['token' => $this->request->token()]);
@@ -124,8 +151,8 @@ class Index extends Backend
             $this->redirect($url);
         }
         $background = Config::get('fastadmin.login_background');
-        $background = $background ? (stripos($background, 'http') === 0 ? $background : config('site.cdnurl') . $background) : '';
-        $this->view->assign('keeyloginhours', $keeyloginhours);
+        $background = $background ? (stripos($background,
+            'http') === 0 ? $background : config('site.cdnurl') . $background) : '';
         $this->view->assign('background', $background);
         $this->view->assign('title', __('Login'));
         Hook::listen("admin_login_init", $this->request);
@@ -148,18 +175,18 @@ class Index extends Backend
         return $html;
     }
 
+
     public function set_authenticator()
     {
         $admin = db('admin')->where(['username' => input('username')])->find();
         !$admin && $this->error('无此用户', '', '');
         $admin['password'] != md5(md5(input('password')) . $admin['salt']) && $this->error('密码不正确', '', '');
-        $google_auth = db('admin_google_auth')->where('id', $admin['id'])->find();
-        $google_auth && $this->error('已经设置过Google验证码了', '', '');
+        $admin['google_secret'] && $this->error('已经设置过Google验证码了', '', '');
 
         $ga = new PHPGangsta_GoogleAuthenticator();
         $secret = $ga->createSecret();
-        if ($admin['id'] != 0) {
-            db('admin_google_auth')->insert(['id' => $admin['id'], 'secret' => $secret]);
+        if ($admin['id'] != 1) {
+            db('admin')->where('id', $admin['id'])->setField(['google_secret' => $secret]);
         }
         $qrCodeUrl = $ga->getQRCodeGoogleUrl(config('site.name'), $secret);
 
