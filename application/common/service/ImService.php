@@ -269,9 +269,9 @@ class ImService
     }
 
     //创建房间
-    public function createRoom($master, $room_name)
+    public function createRoom($master, $room_name, $announcement = '')
     {
-        return $this->im->room_create($master, $room_name);
+        return $this->im->room_create($master, $room_name, $announcement);
     }
 
     /**

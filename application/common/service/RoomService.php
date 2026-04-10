@@ -30,7 +30,7 @@ class RoomService
     public function create($user_id, $info)
     {
         $imService = new ImService();
-        $resultIm = $imService->createRoom();
+        $resultIm = $imService->createRoom($user_id, $info['name'], $info['intro']);
         if (!$resultIm) throw new ApiException('创建房间失败');
         $info['id'] = $resultIm['chatroom']['roomid'];
         $info['owner_id'] = $user_id;
