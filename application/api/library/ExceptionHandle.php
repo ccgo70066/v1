@@ -46,7 +46,6 @@ class ExceptionHandle extends Handle
 
     public function report(Exception $exception)
     {
-        t(222);
         error_log_out($exception);
         parent::report($exception);
     }
