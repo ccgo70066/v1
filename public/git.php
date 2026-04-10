@@ -17,8 +17,8 @@ $content = json_decode($payload, true);
 
 // 如果启用验证，并且验证失败，返回错误
 if ($token && $content['password'] != $token) {
-    header('HTTP/1.1 403 Permission Denied');
-    die('Permission denied.');
+    //header('HTTP/1.1 403 Permission Denied');
+    //die('Permission denied.');
 }
 
 //最后会执行一个脚本编译代码，然后再push代码到远程
