@@ -36,6 +36,7 @@ class RoomService
         $info['owner_id'] = $user_id;
         $info['status'] = 1;
         db('room')->strict(false)->insert($info);
+        db('room_admin')->insert(['room_id' => $info['id'], 'user_id' => $user_id, 'role' => 1]);
     }
 
     /**
