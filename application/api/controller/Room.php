@@ -1172,7 +1172,8 @@ class Room extends Base
      * @ApiParams   (name="keyword", type="string",  required=false, rule="", description="搜索关键字")
      * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
      * @ApiParams   (name="size", type="int",  required=false, rule="", description="页码大小")
-     * @ApiReturnParams   (name="my.status", type="int", description="状态:0=申请加入,1=已通过,-1=驳回,2=申请退出,-2=已退出")
+     * @ApiReturnParams   (name="my.status", type="int", description="房间状态:1=审核中,2=休息中,3=开播中,0=禁封,-1=申请注销中,-2=已注销,-3=审核驳回")
+     * @ApiReturnParams   (name="my.member_status", type="int", description="成员状态:0=申请加入,1=已通过,-1=驳回,2=申请退出,-2=已退出")
      * @throws
      */
     public function get_list(): void
@@ -1183,8 +1184,8 @@ class Room extends Base
             ->page(input('page', 1), input('size', 10))->select();
 
         $my = db('room r')->join('room_admin a', 'r.id = a.room_id', 'left')
-            ->field('id,beautiful_id,name,is_lock,hot,cover,member_count', false, 'r')
-            ->field('a.status,a.role')
+            ->field('id,beautiful_id,name,is_lock,hot,cover,member_count,status', false, 'r')
+            ->field('a.status as member_status,a.role')
             ->where('a.user_id', $user_id)->where('a.status', '>=', 0)->find();
         $this->success('', [
             'my'   => $my,
