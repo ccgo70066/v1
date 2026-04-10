@@ -2,11 +2,10 @@
 
 namespace app\admin\controller\room;
 
-use app\api\library\ImService;
 use app\common\service\RedisService;
-use app\api\library\RoomService;
 use app\common\controller\Backend;
 use app\common\model\Room as RoomModel;
+use app\common\service\RoomService;
 use Exception;
 use fast\Random;
 use think\Db;
@@ -69,18 +68,16 @@ class Room extends Backend
 
 
             $total = $this->model
-                ->with(['union', 'roomthemecate'])
+                ->with(['roomthemecate'])
                 ->where('room.status', '<>', 0)
                 ->where($where)
-                ->where('room.type', 1)
                 ->order($sort, $order)
                 ->count();
 
             $list = $this->model
-                ->with(['union', 'roomthemecate'])
+                ->with(['roomthemecate'])
                 ->where('room.status', '<>', 0)
                 ->where($where)
-                ->where('room.type', 1)
                 ->orderRaw('case room.status when 1 then 1 when 3 then 2 when 2 then 3 when 0 then 4 else 5 end')
                 ->order($sort, $order)
                 ->limit($offset, $limit)
@@ -89,8 +86,6 @@ class Room extends Backend
                 $row->visible([
                     'beautiful_id',
                     'id',
-                    'union_id',
-                    'im_roomid',
                     'name',
                     'theme_id',
                     'owner_id',
@@ -108,8 +103,6 @@ class Room extends Backend
                     'show_sort',
                     'audit_admin'
                 ]);
-                $row->visible(['union']);
-                $row->getRelation('union')->visible(['name']);
                 $row->visible(['roomthemecate']);
                 $row->getRelation('roomthemecate')->visible(['name', 'type']);
             }
@@ -135,21 +128,15 @@ class Room extends Backend
         if ($this->request->isPost()) {
             try {
                 $params = $this->request->post("row/a");
-                $union_id = $params['union_id'];
                 $beautiful_id = $params['room_id'];
                 if (!$params['name'] || !$params['cover']) {
                     throw new \think\Exception('房间名称和封面不能为空');
                 }
                 $name = $params['name'];
                 $cover = $params['cover'];
-                $count = db('room')->where(['union_id' => $union_id, 'status' => ['in', '1,2,3']])->count();
-                $union_info = db('union')->field('id,name,room_max_num')->find($union_id);
-                if ($count >= $union_info['room_max_num']) {
-                    throw new \think\Exception('该家族房间数量已达上限');
-                }
+                $count = db('room')->where(['status' => ['in', '1,2,3']])->count();
                 $roomService = new RoomService();
                 db()->startTrans();
-                $roomService->createUnionRoom($union_id, $name, $cover, $beautiful_id);
                 db()->commit();
             } catch (\Exception $e) {
                 db()->rollback();

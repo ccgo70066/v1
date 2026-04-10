@@ -256,17 +256,6 @@ class Room extends Model
     }
 
 
-    public function union()
-    {
-        return $this->belongsTo('app\admin\model\Union', 'union_id', 'id', [], 'LEFT')->setEagerlyType(0);
-    }
-
-    public function union1()
-    {
-        return $this->belongsTo('union');
-    }
-
-
     public function roomthemecate()
     {
         return $this->belongsTo('app\admin\model\RoomThemeCate', 'theme_id', 'id', [], 'LEFT')->setEagerlyType(0);

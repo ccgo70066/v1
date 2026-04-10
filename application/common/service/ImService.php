@@ -264,7 +264,7 @@ class ImService
     {
         $roomModel = new Room();
         $im_room_id = $roomModel->getImRoomId($room_id);
-        $operator = db('room')->where('id', $room_id)->value('im_operator');
+        $operator = db('room')->where('id', $room_id)->value('owner_id');
         return $this->im->set_room_role($operator, $user_id, $im_room_id, $type);
     }
 
@@ -283,7 +283,7 @@ class ImService
     {
         $roomModel = new Room();
         $im_room_id = $roomModel->getImRoomId($room_id);
-        $operator = db('room')->where('id', $room_id)->value('im_operator');
+        $operator = db('room')->where('id', $room_id)->value('owner_id');
         return $this->im->room_valid($im_room_id, $operator, $valid);
     }
 
@@ -338,7 +338,7 @@ class ImService
     {
         $roomModel = new Room();
         $im_room_id = $roomModel->getImRoomId($room_id);
-        $operator = db('room')->where('id', $room_id)->value('im_operator');
+        $operator = db('room')->where('id', $room_id)->value('owner_id');
         return $this->im->kickMember($operator, $im_room_id, $to_user_id, $extend);
     }
 

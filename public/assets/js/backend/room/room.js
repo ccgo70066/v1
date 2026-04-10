@@ -35,7 +35,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'cover', title: __('Cover'),formatter: Table.api.formatter.image,events: Table.api.events.image, operate: false},
                         {field: 'name', title: __('Name'), operate: 'like'},
                         {field: 'owner_id', title: __('厅主ID')},
-                        {field: 'im_roomid', title: __('IM房间号'),operate: false},
                         {field: 'theme_id', title: __('Roomthemecate.name'),visible:false, searchList: $.getJSON('prop/room_theme_cate/get_cate_list'), formatter: Table.api.formatter.status},
                         {field: 'roomthemecate.name', title: __('Roomthemecate.name'), operate: false},
                         {field: 'hot', title: __('Hot'), operate: false},
