@@ -142,9 +142,7 @@ function error_log_out(Throwable $e, $data = [])
         $e instanceof ApiException ||
         $e instanceof \think\exception\HttpResponseException ||
         $e instanceof \think\exception\HttpException
-    ) {
-        return;
-    }
+    ) return;
     try {
         $ext = [];
         if (!request()->isCli()) {
@@ -164,9 +162,12 @@ function error_log_out(Throwable $e, $data = [])
         $errorData['line'] = $e->getLine();
         $errorData['create_time'] = datetime();
         $LogData = array_merge($errorData, $data, $ext);
-        Db::connect('mongodb')->table('fa_error_log')->insert($LogData);
+        //Db::connect('mongodb')->table('fa_error_log')->insert($LogData);
+        $LogData['error_trace'] = json_encode($LogData['error_trace']);
+        $LogData['param'] = json_encode($LogData['param']);
+        Db::name('error_log')->insert($LogData);
     } catch (Throwable $e) {
-        Log::error('mongodb写错误日志报错' . $e->getMessage());
+        Log::error('错误日志写入报错: ' . $e->getMessage());
     }
 }
 

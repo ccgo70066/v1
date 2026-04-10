@@ -23,6 +23,7 @@ class ExceptionHandle extends Handle
                 'data' => Env::get('app_debug', false) ? $e->getFile() . ':' . $e->getLine() : [],
             ]);
         }
+        //error_log_out($e);
         // 在生产环境下返回code信息
         if (!\think\Config::get('app_debug')) {
             $statuscode = $code = 500;
