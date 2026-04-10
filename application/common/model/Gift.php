@@ -83,11 +83,5 @@ class Gift extends Model
         return $result;
     }
 
-    public static function getGiftBoxIds()
-    {
-        $box_ids = [get_site_config('gift_box_1'), get_site_config('gift_box_2'), get_site_config('gift_box_3')];
-        return $box_ids;
-    }
-
 
 }

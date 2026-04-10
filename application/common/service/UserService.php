@@ -222,14 +222,9 @@ class UserService
             $where['id'] = ['in', $giftIds];
         }
 
-        $box_ids = GiftModel::getGiftBoxIds();
-        $box_ids = array_filter($box_ids, function ($value) {
-            return $value !== 0 && $value !== null;
-        });
         $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
         $query = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
-            ->where('id', 'not in', $box_ids)
             ->order('price desc');
 
         $data = [];

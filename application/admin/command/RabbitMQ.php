@@ -59,7 +59,7 @@ class RabbitMQ extends Command
         if (!$input->getOption('args')) {
             $output->writeln('参数args必传,如果开启或重启全部队列消费者请输入命令 php think rabbitmq -m restart -a all');
             $output->writeln('如果开启或重启某个队列消费者请输入命令php think rabbitmq -m restart -a 类名');
-            $output->writeln('例如: php think rabbitmq -m restart -a giftboxMQ');
+            $output->writeln('例如: php think rabbitmq -m restart -a GiftMQ');
             return;
         }
         $datetime = datetime();

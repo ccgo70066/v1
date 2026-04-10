@@ -157,14 +157,9 @@ class GiftService
     public static function getGiftsWall($where, $page = 1, $size = 15)
     {
         $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
-        $box_ids = GiftModel::getGiftBoxIds();
-        $box_ids = array_filter($box_ids, function ($value) {
-            return $value !== 0 && $value !== null;
-        });
         $data = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
             ->where($where)
-            ->where('id', 'not in', $box_ids)
             ->field('id,name,image,price_type,price')
             ->order('price desc')
             ->page($page, $size)
@@ -180,19 +175,13 @@ class GiftService
     {
         $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
 
-        $box_ids = GiftModel::getGiftBoxIds();
-        $box_ids = array_filter($box_ids, function ($value) {
-            return $value !== 0 && $value !== null;
-        });
         $gift_count = db('gift g')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
-            ->where('id', 'not in', $box_ids)
             ->count();
 
         $gain_count = db('gift_wall l')
             ->join('gift g', 'g.id=l.gift_id', 'left')
             ->whereIn('g.type', $typeArr)
-            ->where('g.id', 'not in', $box_ids)
             ->where('l.user_id', $user_id)
             ->count();
         return [$gift_count, $gain_count];
