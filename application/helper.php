@@ -13,6 +13,7 @@ function traceInDB($content)
     db('test')->insert(['content' => json_encode($content)]);
 }
 
+/** trace log */
 function t($log = '[think]', $level = 'log')
 {
     if ('[think]' === $log) {
@@ -99,7 +100,6 @@ function locked($lockName, $expire = 10)
 /**
  * 释放锁
  * @param     $lockName
- * @param int $expire
  * @return bool
  */
 function lock_remove($lockName)
@@ -107,11 +107,7 @@ function lock_remove($lockName)
     $redis = redis();
     $key = 'LOCK:' . $lockName;
     $re = $redis->del($key);
-    if (!$re) {
-        return false;
-    } else {
-        return true;
-    }
+    return (bool)$re;
 }
 
 /**
