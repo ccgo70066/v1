@@ -3,12 +3,11 @@
 namespace app\api\controller;
 
 use app\common\exception\ApiException;
-use app\common\library\Agora;
+use app\common\library\agora\Agora;
 use app\common\model\ChannelBlacklist;
 use app\common\model\NoblePrivilege;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
-use app\common\service\HomeService;
 use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
@@ -987,12 +986,11 @@ class Room extends Base
         $room = db('room r')
             ->where('r.id', $room_id)
             ->join('room_theme_cate cate', 'r.theme_id = cate.id')
-            ->field('welcome_switch,password,welcome_msg,way,id,beautiful_id,name,type,owner_id,theme_id,cover,notice,hot,bg_img,is_lock,is_show', false, 'r')
+            ->field('welcome_switch,password,welcome_msg,way,id,beautiful_id,name,owner_id,theme_id,cover,notice,hot,bg_img,is_lock,is_show', false, 'r')
             ->field("cate.name as theme_cate_name")->find();
 
         $data = [];
 
-        $data['hiding'] = $room['type'] == RoomModel::ROOM_TYPE_NUION ? user_vip_switch($user_id, 9) : 0;
         $data['is_collect'] = db('room_collect')->where(['room_id' => $room_id, 'user_id' => $this->auth->id])->count();
         $blacklist = ChannelBlacklist::get_blacklist($this->appid, $this->system, $this->version);
         foreach ($blacklist as $item) {
