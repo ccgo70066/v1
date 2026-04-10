@@ -3,10 +3,13 @@
 namespace app\admin\controller;
 
 use app\admin\model\Admin;
+use app\admin\model\Order;
+use app\admin\model\Product;
 use app\admin\model\User;
 use app\common\controller\Backend;
 use app\common\model\Attachment;
 use fast\Date;
+use think\Cache;
 use think\Db;
 
 /**
@@ -18,6 +21,8 @@ use think\Db;
 class Dashboard extends Backend
 {
 
+    protected $noNeedRight = [''];
+
     /**
      * 查看
      */
@@ -26,57 +31,93 @@ class Dashboard extends Backend
         try {
             \think\Db::execute("SET @@sql_mode='';");
         } catch (\Exception $e) {
+        }
+        $chart = Cache::remember('dashboard:chart', function () {
+            $column = [];
+            $starttime = Date::unixtime('day', -7);
+            $endtime = Date::unixtime('day', -1, 'end');
 
-        }
-        $column = [];
-        $starttime = Date::unixtime('day', -6);
-        $endtime = Date::unixtime('day', 0, 'end');
-        $joinlist = Db("user")->where('jointime', 'between time', [$starttime, $endtime])
-            ->field('jointime, status, COUNT(*) AS nums, DATE_FORMAT(FROM_UNIXTIME(jointime), "%Y-%m-%d") AS join_date')
-            ->group('join_date')
-            ->select();
-        for ($time = $starttime; $time <= $endtime;) {
-            $column[] = date("Y-m-d", $time);
-            $time += 86400;
-        }
-        $userlist = array_fill_keys($column, 0);
-        foreach ($joinlist as $k => $v) {
-            $userlist[$v['join_date']] = $v['nums'];
-        }
-
-        $dbTableList = Db::query("SHOW TABLE STATUS");
-        $addonList = get_addon_list();
-        $totalworkingaddon = 0;
-        $totaladdon = count($addonList);
-        foreach ($addonList as $index => $item) {
-            if ($item['state']) {
-                $totalworkingaddon += 1;
+            for ($time = $starttime; $time <= $endtime;) {
+                $column[] = date("Y-m-d", $time);
+                $time += 86400;
             }
-        }
+            $chart = array_fill_keys($column, []);
+
+            $temp = [];
+            $user_reg = Db("user")->where('jointime', 'between time', [$starttime, $endtime])
+                ->field('COUNT(*) AS nums, DATE_FORMAT(FROM_UNIXTIME(jointime), "%Y-%m-%d") AS join_date')
+                ->group('join_date')
+                ->select();
+            foreach ($user_reg as $k => $v) {
+                $temp[$v['join_date']]['user_reg'] = $v['nums'];
+            }
+
+            $user_login = Db("user")->where('logintime', 'between time', [$starttime, $endtime])
+                ->field('COUNT(*) AS nums, DATE_FORMAT(FROM_UNIXTIME(logintime), "%Y-%m-%d") AS join_date')
+                ->group('join_date')
+                ->select();
+            foreach ($user_login as $k => $v) {
+                $temp[$v['join_date']]['user_login'] = $v['nums'];
+            }
+
+            $recharge_usd = Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')
+                ->where('r.create_time', 'between time', [datetime($starttime), datetime($endtime)])
+                ->where('r.status', 1)
+                ->where('c.unit', 1)
+                ->field('sum(pay_amount) as amount, DATE_FORMAT(r.create_time, "%Y-%m-%d") AS join_date')
+                ->group('join_date')
+                ->select();
+            foreach ($recharge_usd as $k => $v) {
+                $temp[$v['join_date']]['recharge_usd'] = ($v['amount']);
+            }
+            $recharge_twd = Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')
+                ->where('r.create_time', 'between time', [datetime($starttime), datetime($endtime)])
+                ->where('r.status', 1)
+                ->where('c.unit', 2)
+                ->field('sum(pay_amount) as amount, DATE_FORMAT(r.create_time, "%Y-%m-%d") AS join_date')
+                ->group('join_date')
+                ->select();
+            foreach ($recharge_twd as $k => $v) {
+                $temp[$v['join_date']]['recharge_twd'] = ($v['amount']);
+            }
+
+            $withdraw = Db("user_withdraw")
+                ->where('create_time', 'between time', [datetime($starttime), datetime($endtime)])
+                ->where('status', 2)
+                ->field('sum(payment_amount) as amount, DATE_FORMAT(create_time, "%Y-%m-%d") AS join_date')
+                ->group('join_date')
+                ->select();
+            foreach ($withdraw as $k => $v) {
+                $temp[$v['join_date']]['withdraw'] = ($v['amount']);
+            }
+
+            foreach ($chart as $k => $v) {
+                $chart[$k]['user_reg'] = $temp[$k]['user_reg'] ?? 0;
+                $chart[$k]['user_login'] = $temp[$k]['user_login'] ?? 0;
+                $chart[$k]['recharge_usd'] = $temp[$k]['recharge_usd'] ?? 0;
+                $chart[$k]['recharge_twd'] = $temp[$k]['recharge_twd'] ?? 0;
+                $chart[$k]['withdraw'] = $temp[$k]['withdraw'] ?? 0;
+            }
+
+            return $chart;
+        }, 1);
+
         $this->view->assign([
-            'totaluser'         => User::count(),
-            'totaladdon'        => $totaladdon,
-            'totaladmin'        => Admin::count(),
-            'totalcategory'     => \app\common\model\Category::count(),
-            'todayusersignup'   => User::whereTime('jointime', 'today')->count(),
-            'todayuserlogin'    => User::whereTime('logintime', 'today')->count(),
-            'sevendau'          => User::whereTime('jointime|logintime|prevtime', '-7 days')->count(),
-            'thirtydau'         => User::whereTime('jointime|logintime|prevtime', '-30 days')->count(),
-            'threednu'          => User::whereTime('jointime', '-3 days')->count(),
-            'sevendnu'          => User::whereTime('jointime', '-7 days')->count(),
-            'dbtablenums'       => count($dbTableList),
-            'dbsize'            => array_sum(array_map(function ($item) {
-                return $item['Data_length'] + $item['Index_length'];
-            }, $dbTableList)),
-            'totalworkingaddon' => $totalworkingaddon,
-            'attachmentnums'    => Attachment::count(),
-            'attachmentsize'    => Attachment::sum('filesize'),
-            'picturenums'       => Attachment::where('mimetype', 'like', 'image/%')->count(),
-            'picturesize'       => Attachment::where('mimetype', 'like', 'image/%')->sum('filesize'),
+            'totaluser'          => User::count(),
+            'today_user_reg'     => User::where(['jointime' => ['>=', strtotime(date('Y-m-d'))]])->count(),
+            'total_recharge_usd' => (Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')->where('r.status', 1)->where('c.unit', 1)->sum('pay_amount')),
+            'total_recharge_twd' => (Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')->where('r.status', 1)->where('c.unit', 2)->sum('pay_amount')),
+            'total_withdraw'     => (Db("user_withdraw")->where('status', 2)->sum('payment_amount')),
         ]);
 
-        $this->assignconfig('column', array_keys($userlist));
-        $this->assignconfig('userdata', array_values($userlist));
+        $this->assignconfig('chart', [
+            'column'       => array_keys($chart),
+            'user_reg'     => array_column($chart, 'user_reg'),
+            'user_login'   => array_column($chart, 'user_login'),
+            'recharge_usd' => array_column($chart, 'recharge_usd'),
+            'recharge_twd' => array_column($chart, 'recharge_twd'),
+            'withdraw'     => array_column($chart, 'withdraw'),
+        ]);
 
         return $this->view->fetch();
     }

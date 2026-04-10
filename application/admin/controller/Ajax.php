@@ -11,9 +11,9 @@ use think\Cache;
 use think\Config;
 use think\Db;
 use think\Lang;
-use think\Loader;
 use think\Response;
 use think\Validate;
+use util\Minio;
 
 /**
  * Ajax异步请求接口
@@ -21,6 +21,7 @@ use think\Validate;
  */
 class Ajax extends Backend
 {
+
     protected $noNeedLogin = ['lang'];
     protected $noNeedRight = ['*'];
     protected $layout = '';
@@ -47,21 +48,108 @@ class Ajax extends Backend
             $header['Expires'] = gmdate("D, d M Y H:i:s", time() + $offset) . " GMT";
         }
 
-        $controllername = $this->request->get('controllername');
-        $lang = $this->request->get('lang');
-        if (!$lang || !in_array($lang, config('allow_lang_list')) || !$controllername || !preg_match("/^[a-z0-9_\.]+$/i", $controllername)) {
-            return jsonp(['errmsg' => '参数错误'], 200, [], ['json_encode_param' => JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE]);
-        }
-
         $controllername = input("controllername");
-        $className = Loader::parseClass($this->request->module(), 'controller', $controllername, false);
+        //默认只加载了控制器对应的语言名，你还根据控制器名来加载额外的语言包
+        $this->loadlang($controllername);
+        return jsonp(Lang::get(), 200, $header, ['json_encode_param' => JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE]);
+    }
 
-        //存在对应的类才加载
-        if (class_exists($className)) {
-            $this->loadlang($controllername);
+    /**
+     * 上传文件到minio[后台用]
+     * @ApiMethod (POST)
+     * @ApiParams   (name="file", type="file", required=false, rule="", description="文件")
+     */
+    public function upload_to_minio()
+    {
+        $file = $this->request->file('file');
+        if (empty($file)) {
+            $this->error(__('No file upload or server upload limit exceeded'));
         }
 
-        return jsonp(Lang::get(), 200, $header, ['json_encode_param' => JSON_FORCE_OBJECT | JSON_UNESCAPED_UNICODE]);
+        $upload = Config::get('upload');
+        preg_match('/(\d+)(\w+)/', $upload['maxsize'], $matches);
+        $fileInfo = $file->getInfo();
+
+
+        $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
+
+        $suffix = $suffix && preg_match("/^[a-zA-Z0-9]+$/", $suffix) ? $suffix : 'file';
+
+        $mimetypeArr = explode(',', strtolower($upload['mimetype']));
+        $typeArr = explode('/', $fileInfo['type']);
+
+        //禁止上传PHP和HTML文件
+        if (in_array($fileInfo['type'], ['text/x-php', 'text/html']) || in_array($suffix, ['php', 'html', 'htm'])) {
+            $this->error(__('Uploaded file format is limited'));
+        }
+        //验证文件后缀
+        if ($upload['mimetype'] !== '*' &&
+            (
+                !in_array($suffix, $mimetypeArr)
+                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array(
+                            $fileInfo['type'],
+                            $mimetypeArr
+                        ) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
+            )
+        ) {
+            $this->error("上传文件格式不在{$upload['mimetype']}范围内");
+            $this->error(__('Uploaded file format is limited'));
+        }
+        //验证是否为图片文件
+        if (in_array(
+                $fileInfo['type'],
+                ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']
+            ) || in_array(
+                $suffix,
+                ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']
+            )) {
+            $imgInfo = getimagesize($fileInfo['tmp_name']);
+            if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
+                $this->error(__('Uploaded file is not a valid image'));
+            }
+        }
+
+        $fileName = date('YmdH') . rand(1, 99999) . '.' . $suffix;
+        // =====================start==============================
+        if (input('category')) {
+            switch (input('category')) {
+                case 'app':
+                    $fileName = $fileInfo['name'];
+                    $uploadDir = $suffix == 'apk' ? "app/android/" : "app/ios/";
+                    break;
+                case 'plist':
+                    $fileName = $fileInfo['name'];
+                    $uploadDir = "apk/ios/";
+                    break;
+                case 'gift':
+                    $fileName = md5_file($fileInfo['tmp_name']) . '.' . $suffix;
+                    $uploadDir = input('category') . '/';
+                    break;
+                default:
+                    $uploadDir = input('category') . '/';
+            }
+        } else {
+            $uploadDir = 'other/';
+        }
+        switch ($suffix) {
+            case 'apk':
+                $contentType = 'application/vnd.android.package-archive';
+                break;
+            case 'ipa':
+                $contentType = 'application/iphone';
+                break;
+            default:
+                $contentType = '';
+        }
+        $minio = new Minio();
+        $url = '/' . trim(trim($uploadDir), '/') . '/' . $fileName;
+        $res_url = $minio->putObject($fileInfo['tmp_name'], $url, $contentType);
+        echo json_encode([
+            'code' => 1,
+            'msg'  => __('Operation completed'),
+            'data' => ['url' => $url],
+        ]);
+        //$this->success('', ['url' => $uploadDir . $fileName]);
     }
 
     /**
@@ -70,10 +158,8 @@ class Ajax extends Backend
     public function upload()
     {
         Config::set('default_return_type', 'json');
-
-        //必须还原upload配置,否则分片及cdnurl函数计算错误
-        Config::load(APP_PATH . 'extra/upload.php', 'upload');
-
+        //必须设定cdnurl为空,否则cdnurl函数计算错误
+        Config::set('upload.cdnurl', '');
         $chunkid = $this->request->post("chunkid");
         if ($chunkid) {
             if (!Config::get('upload.chunking')) {
@@ -174,18 +260,18 @@ class Ajax extends Backend
             $weighdata[$v[$prikey]] = $v[$field];
         }
         $position = array_search($changeid, $ids);
-        $desc_id = $sour[$position] ?? end($sour);    //移动到目标的ID值,取出所处改变前位置的值
+        $desc_id = isset($sour[$position]) ? $sour[$position] : end($sour);    //移动到目标的ID值,取出所处改变前位置的值
         $sour_id = $changeid;
-        $weighids = [];
+        $weighids = array();
         $temp = array_values(array_diff_assoc($ids, $sour));
         foreach ($temp as $m => $n) {
             if ($n == $sour_id) {
                 $offset = $desc_id;
             } else {
                 if ($sour_id == $temp[0]) {
-                    $offset = $temp[$m + 1] ?? $sour_id;
+                    $offset = isset($temp[$m + 1]) ? $temp[$m + 1] : $sour_id;
                 } else {
-                    $offset = $temp[$m - 1] ?? $sour_id;
+                    $offset = isset($temp[$m - 1]) ? $temp[$m - 1] : $sour_id;
                 }
             }
             if (!isset($weighdata[$offset])) {
@@ -197,6 +283,22 @@ class Ajax extends Backend
         $this->success();
     }
 
+    public function get_yes_or_no()
+    {
+        $list = [
+            ['id' => 1, 'name' => '是'],
+            ['id' => 0, 'name' => '否']
+        ];
+        if (input('?keyValue')) {
+            foreach ($list as $item) {
+                if ($item['id'] == input('keyValue')) {
+                    return json(['list' => [$item]]);
+                }
+            }
+        }
+        return json(['list' => $list]);
+    }
+
     /**
      * 清空系统缓存
      */
@@ -206,6 +308,7 @@ class Ajax extends Backend
             $type = $this->request->request("type");
             switch ($type) {
                 case 'all':
+                    // no break
                 case 'content':
                     //内容缓存
                     rmdirs(CACHE_PATH, false);
@@ -213,21 +316,18 @@ class Ajax extends Backend
                     if ($type == 'content') {
                         break;
                     }
-                    // no break
                 case 'template':
                     // 模板缓存
                     rmdirs(TEMP_PATH, false);
                     if ($type == 'template') {
                         break;
                     }
-                    // no break
                 case 'addons':
                     // 插件缓存
                     Service::refresh();
                     if ($type == 'addons') {
                         break;
                     }
-                    // no break
                 case 'browser':
                     // 浏览器缓存
                     // 只有生产环境下才修改
@@ -326,104 +426,59 @@ class Ajax extends Backend
     }
 
 
-    /**
-     * 上传文件到minio[后台用]
-     * @ApiMethod (POST)
-     * @ApiParams   (name="file", type="file", required=false, rule="", description="文件")
-     */
-    public function upload_to_minio()
+    public function channel()
     {
-        $file = $this->request->file('file');
-        if (empty($file)) {
-            $this->error(__('No file upload or server upload limit exceeded'));
-        }
-
-        $upload = Config::get('upload');
-        preg_match('/(\d+)(\w+)/', $upload['maxsize'], $matches);
-        $fileInfo = $file->getInfo();
-
-
-        $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
-
-        $suffix = $suffix && preg_match("/^[a-zA-Z0-9]+$/", $suffix) ? $suffix : 'file';
-
-        $mimetypeArr = explode(',', strtolower($upload['mimetype']));
-        $typeArr = explode('/', $fileInfo['type']);
-
-        //禁止上传PHP和HTML文件
-        if (in_array($fileInfo['type'], ['text/x-php', 'text/html']) || in_array($suffix, ['php', 'html', 'htm'])) {
-            $this->error(__('Uploaded file format is limited'));
-        }
-        //验证文件后缀
-        if ($upload['mimetype'] !== '*' &&
-            (
-                !in_array($suffix, $mimetypeArr)
-                || (stripos($typeArr[0] . '/', $upload['mimetype']) !== false && (!in_array(
-                            $fileInfo['type'],
-                            $mimetypeArr
-                        ) && !in_array($typeArr[0] . '/*', $mimetypeArr)))
-            )
-        ) {
-            $this->error(__('Uploaded file format is limited'));
-        }
-        //验证是否为图片文件
-        if (in_array(
-                $fileInfo['type'],
-                ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']
-            ) || in_array(
-                $suffix,
-                ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']
-            )) {
-            $imgInfo = getimagesize($fileInfo['tmp_name']);
-            if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
-                $this->error(__('Uploaded file is not a valid image'));
+        $where = [];
+        if (input('?q_word')) {
+            $map = [['neq', ''], ['neq', '1']];
+            foreach (input('q_word/a') as $item) {
+                $item && $map[] = ['like', '%' . $item . '%'];
             }
+            $where[input('showField')] = $map;
         }
+        $channel = db('channel')->where($where)->field('appid,name')->select();
 
-        $fileName = date('YmdH') . rand(1, 99999) . '.' . $suffix;
-        // =====================start==============================
-        if (input('category')) {
-            switch (input('category')) {
-                case 'app':
-                    $fileName = $fileInfo['name'];
-                    $uploadDir = $suffix == 'apk' ? "app/android/" : "app/ios/";
-                    break;
-                case 'plist':
-                    $fileName = $fileInfo['name'];
-                    $uploadDir = "apk/ios/";
-                    break;
-                case 'gift':
-                    $fileName = md5_file($fileInfo['tmp_name']) . '.' . $suffix;
-                    $uploadDir = input('category') . '/';
-                    break;
-                default:
-                    $uploadDir = input('category') . '/';
-            }
-        } else {
-            $uploadDir = 'other/';
-        }
-        switch ($suffix) {
-            case 'apk':
-                $contentType = 'application/vnd.android.package-archive';
-                break;
-            case 'ipa':
-                $contentType = 'application/iphone';
-                break;
-            default:
-                $contentType = '';
-        }
-        $minio = new Minio();
-        $url = '/' . trim(trim($uploadDir), '/') . '/' . $fileName;
-        $res_url = $minio->putObject($fileInfo['tmp_name'], $url, $contentType);
-        echo json_encode([
-            'code' => 1,
-            'msg'  => __('Operation completed'),
-            'data' => ['url' => $url],
-        ]);
-        //$this->success('', ['url' => $uploadDir . $fileName]);
+        return json(['list' => $channel, 'total' => count($channel)]);
     }
 
+
+    public function card_group()
+    {
+        //主键值
+        $primaryvalue = $this->request->request("keyValue");
+        $data = [];
+        $list = explode(',', get_site_config('card_group'));
+        foreach ($list as $item) {
+            if ($primaryvalue == $item) {
+                $data['cate'] = $item;
+                break;
+            } else {
+                $data[]['cate'] = $item;
+            }
+        }
+        return json(['list' => $data, 'total' => count($data)]);
+    }
+
+
+    public function get_gift()
+    {
+        $where = input('custom/a');
+        $where_name = input('name') ? ['g.name' => ['like', '%' . input('name') . '%']] : [];
+        $where_key = input('keyValue') ? ['g.id' => ['in', input('keyValue')]] : [];
+        $list = db('egg_gift eg')
+            ->join('gift g', 'eg.gift_id=g.id', 'left')
+            ->where($where)
+            ->where($where_name)
+            ->where($where_key)
+            ->field('g.id,concat(g.name,"[",g.price,"]") as name')
+            ->select();
+        return json(['list' => $list, 'total' => count($list)]);
+    }
+
+
+    public function search_list($table, $value = 'name', $key = 'id', $order = 'id', $sort = 'asc', $limit = 100)
+    {
+        $list = db($table)->field("$key as id,$value as name")->order($order, $sort)->limit($limit)->select();
+        return json($list);
+    }
 }
-
-
-

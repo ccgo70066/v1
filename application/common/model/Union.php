@@ -3,7 +3,7 @@
 namespace app\common\model;
 
 use app\common\model\Shield;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use think\Model;
 
 class Union extends Model

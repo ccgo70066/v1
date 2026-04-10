@@ -36,14 +36,15 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form', 'jstree'], function (
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
+                search: false,
                 columns: [
                     [
-                        {checkbox: true},
-                        {field: 'id', title: __('Id')},
+                       /* {checkbox: true},
+                        {field: 'id', title: __('Id')},*/
                         {field: 'name', title: __('Name')},
+                        {field: 'code', title: __('Code')},
+                        {field: 'status', title: __('Status'), formatter: Table.api.formatter.status,operate: false},
                         {field: 'createtime', title: __('Createtime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                        {field: 'updatetime', title: __('Updatetime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                        {field: 'status', title: __('Status'), formatter: Table.api.formatter.status},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]

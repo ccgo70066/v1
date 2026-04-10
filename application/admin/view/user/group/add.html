@@ -8,12 +8,9 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Permission')}:</label>
+        <label for="c-name" class="control-label col-xs-12 col-sm-2">{:__('Code')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <span class="text-muted"><input type="checkbox" name="" id="checkall" /> <label for="checkall"><small>{:__('Check all')}</small></label></span>
-            <span class="text-muted"><input type="checkbox" name="" id="expandall" /> <label for="expandall"><small>{:__('Expand all')}</small></label></span>
-
-            <div id="treeview"></div>
+            <input id="c-code" class="form-control" name="row[code]" type="text" value="">
         </div>
     </div>
     <div class="form-group">
@@ -22,7 +19,7 @@
 
             <div class="radio">
                 {foreach name="statusList" item="vo"}
-                <label for="row[status]-{$key|htmlentities}"><input id="row[status]-{$key|htmlentities}" name="row[status]" type="radio" value="{$key|htmlentities}" {in name="key" value="normal"}checked{/in} /> {$vo|htmlentities}</label>
+                <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="normal"}checked{/in} /> {$vo}</label>
                 {/foreach}
             </div>
 

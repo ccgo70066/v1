@@ -9,7 +9,7 @@
         {volist name="row" id="vo"  }
             <tr>
                 <td>{:__($key)}</td>
-                <td>{if $key=='createtime'}{$vo|datetime}{else/}{$vo|htmlentities}{/if}</td>
+                <td style="max-width: 600px;overflow:auto">{if $key=='createtime'}{$vo|datetime}{else/}{$vo|htmlentities}{/if}</td>
             </tr>
         {/volist}
     </tbody>
@@ -17,6 +17,6 @@
 <div class="hide layer-footer">
     <label class="control-label col-xs-12 col-sm-2"></label>
     <div class="col-xs-12 col-sm-8">
-        <button class="btn btn-primary btn-embossed btn-close" onclick="Layer.closeAll();" type="reset">{:__('Close')}</button>
+        <button type="reset" class="btn btn-primary btn-embossed btn-close" onclick="Layer.closeAll();">{:__('Close')}</button>
     </div>
 </div>

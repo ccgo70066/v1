@@ -2,6 +2,7 @@
 
 return [
     'Name'            => '组名',
+    'Code'       => '代码',
     'Rules'           => '权限节点',
     'Change password' => '修改密码',
     'Createtime'      => '添加时间',

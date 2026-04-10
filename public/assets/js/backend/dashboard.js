@@ -5,6 +5,7 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
             // 基于准备好的dom，初始化echarts实例
             var myChart = Echarts.init(document.getElementById('echart'), 'walden');
 
+
             // 指定图表的配置项和数据
             var option = {
                 title: {
@@ -23,7 +24,7 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
                     trigger: 'axis'
                 },
                 legend: {
-                    data: [__('Register user')]
+                    // data: [__('Register user')]
                 },
                 toolbox: {
                     show: false,
@@ -35,7 +36,7 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
                 xAxis: {
                     type: 'category',
                     boundaryGap: false,
-                    data: Config.column
+                    data: Config.chart.column
                 },
                 yAxis: {},
                 grid: [{
@@ -44,20 +45,48 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
                     right: '10',
                     bottom: 30
                 }],
-                series: [{
-                    name: __('Register user'),
-                    type: 'line',
-                    smooth: true,
-                    areaStyle: {
-                        normal: {}
+                series: [
+                    {
+                        name: __('Register user'),
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {normal: {}},
+                        lineStyle: {normal: {width: 1.5}},
+                        data: Config.chart.user_reg
                     },
-                    lineStyle: {
-                        normal: {
-                            width: 1.5
-                        }
+                    {
+                        name: __('登陆用户数'),
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {normal: {}},
+                        lineStyle: {normal: {width: 1.5}},
+                        data: Config.chart.user_login
                     },
-                    data: Config.userdata
-                }]
+                    {
+                        name: __('美金充值'),
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {normal: {}},
+                        lineStyle: {normal: {width: 1.5}},
+                        data: Config.chart.recharge_usd
+                    },
+                    {
+                        name: __('台币充值'),
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {normal: {}},
+                        lineStyle: {normal: {width: 1.5}},
+                        data: Config.chart.recharge_twd
+                    },
+                    {
+                        name: __('提现'),
+                        type: 'line',
+                        smooth: true,
+                        areaStyle: {normal: {}},
+                        lineStyle: {normal: {width: 1.5}},
+                        data: Config.chart.withdraw
+                    },
+                ]
             };
 
             // 使用刚指定的配置项和数据显示图表。

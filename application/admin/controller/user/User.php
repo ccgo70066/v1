@@ -6,7 +6,7 @@ use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\api\library\ImService;
 use app\api\library\RoomService;
 use app\common\controller\Backend;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\library\Yunxin;
 use fast\Random;

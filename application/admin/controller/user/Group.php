@@ -16,6 +16,7 @@ class Group extends Backend
      * @var \app\admin\model\UserGroup
      */
     protected $model = null;
+    protected $noNeedRight = ['searchList'];
 
     public function _initialize()
     {
@@ -29,8 +30,8 @@ class Group extends Backend
         if ($this->request->isPost()) {
             $this->token();
         }
-        $nodeList = \app\admin\model\UserRule::getTreeList();
-        $this->assign("nodeList", $nodeList);
+        //$nodeList = \app\admin\model\UserRule::getTreeList();
+        $this->assign("nodeList", null);
         return parent::add();
     }
 
@@ -43,10 +44,17 @@ class Group extends Backend
         if (!$row) {
             $this->error(__('No Results were found'));
         }
-        $rules = explode(',', $row['rules']);
-        $nodeList = \app\admin\model\UserRule::getTreeList($rules);
-        $this->assign("nodeList", $nodeList);
+        //$rules = explode(',', $row['rules']);
+        //$nodeList = \app\admin\model\UserRule::getTreeList($rules);
+        $this->assign("nodeList", null);
         return parent::edit($ids);
+    }
+
+    public function searchList()
+    {
+        $key = input('key') ?? 'id';
+        $name = input('name') ?? 'name';
+        return json($this->model->where('status', 'normal')->column($name, $key));
     }
 
 }

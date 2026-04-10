@@ -4,7 +4,7 @@ namespace controller;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\controller\Api;
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\pay\library\AdaPay;
 use app\pay\library\HuifuPay;
 use app\pay\library\NewPay;

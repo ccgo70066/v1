@@ -35,17 +35,17 @@
 </style>
 <div class="panel" style="background-color: transparent;">
     <div class="panel-body">
-        <div aria-label="..." class="btn-group datefilter" role="group" style="padding-bottom: 10px;">
-            <button class="btn btn-default" data-type="1" type="button">15分钟</button>
-            <button class="btn btn-default" data-type="2" type="button">30分钟</button>
-            <button class="btn btn-default" data-type="3" type="button">1小时</button>
-            <button class="btn btn-default" data-type="4" type="button">4小时</button>
-            <button class="btn btn-default" data-type="5" type="button">12小时</button>
-            <button class="btn btn-default btn-24hours" data-type="6" type="button">24小时</button>
+        <div class="btn-group datefilter" role="group" aria-label="..." style="padding-bottom: 10px;">
+            <button type="button" data-type="1" class="btn btn-default">15分钟</button>
+            <button type="button" data-type="2" class="btn btn-default">30分钟</button>
+            <button type="button" data-type="3" class="btn btn-default">1小时</button>
+            <button type="button" data-type="4" class="btn btn-default">4小时</button>
+            <button type="button" data-type="5" class="btn btn-default">12小时</button>
+            <button type="button" data-type="6" class="btn btn-default btn-24hours">24小时</button>
 
             <div class="input-group " style="padding-left: 10px; width: 340px;">
                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                <input class="form-control input-inline datetimerange" id="createtime" placeholder="指定日期" type="text">
+                <input type="text" class="form-control input-inline datetimerange" id="createtime" placeholder="指定日期">
             </div>
         </div>
     </div>
@@ -53,7 +53,7 @@
 
 <div class="panel" style="background-color: transparent;">
     <div class="panel-body">
-        <div class="tab-content" id="myTabContent">
+        <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade active in" id="one">
 
                 <div class="row">
@@ -100,7 +100,7 @@
 </div>
 <div class="panel">
     <div class="panel-body">
-        <div class="tab-content" id="myTabContent">
+        <div id="myTabContent" class="tab-content">
             <div class="tab-pane fade active in">
                 <div class="row">
                     <div class="col-md-6 nav-tabs-custom charts-custom">

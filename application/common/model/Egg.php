@@ -2,7 +2,7 @@
 
 namespace app\common\model;
 
-use app\common\library\ApiException;
+use app\common\exception\ApiException;
 use app\common\service\MongoService;
 use fast\Http;
 use think\Cache;

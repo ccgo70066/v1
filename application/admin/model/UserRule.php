@@ -23,10 +23,8 @@ class UserRule extends Model
     protected static function init()
     {
         self::afterInsert(function ($row) {
-            if (!$row['weigh']) {
-                $pk = $row->getPk();
-                $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
-            }
+            $pk = $row->getPk();
+            $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
         });
     }
 
@@ -44,7 +42,7 @@ class UserRule extends Model
     {
         $value = $value ? $value : $data['status'];
         $list = $this->getStatusList();
-        return $list[$value] ?? '';
+        return isset($list[$value]) ? $list[$value] : '';
     }
 
     public static function getTreeList($selected = [])
