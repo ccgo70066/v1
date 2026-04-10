@@ -1,17 +1,15 @@
 <?php
 
-namespace app\api\library;
+namespace app\common\exception;
 
-use app\common\exception\ApiException;
 use Exception;
 use think\Env;
 use think\exception\Handle;
-use app\common\library;
 
 /**
  * 自定义API模块的错误显示
  */
-class ExceptionHandle extends Handle
+class ApiExceptionHandle extends Handle
 {
 
     public function render(Exception $e)
