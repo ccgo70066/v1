@@ -640,7 +640,7 @@ class User extends Base
      * @ApiParams   (name="url", type="string", required=true, rule="", description="图片URL")
      * @ApiMethod   (get)
      */
-    public function updateAvatar()
+    public function update_avatar()
     {
         $user_id = $this->auth->id;
         $url = input('url');
@@ -665,7 +665,7 @@ class User extends Base
      * @ApiMethod   (post)
      * @ApiParams   (name="url", type="string", required=true, rule="", description="图片 URL")
      */
-    public function updateImage()
+    public function update_image()
     {
         // todo optimize
         $user_id = $this->auth->id;

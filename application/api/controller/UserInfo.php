@@ -25,7 +25,7 @@ class UserInfo extends Base
      * @ApiMethod   (get)
      * @ApiParams   (name="user_id", type="int", required=false, rule="", description="用户id--当前登录用户不用传")
      */
-    public function getBaseInfo()
+    public function get_base_info()
     {
         try {
             $userId = input('user_id') ?: $this->auth->id;
@@ -41,7 +41,7 @@ class UserInfo extends Base
      * @ApiMethod   (get)
      * @ApiParams   (name="user_id", type="int", required=false, rule="", description="用户id--当前登录用户不用传")
      */
-    public function getRoomUserInfo()
+    public function get_roomuser_info()
     {
         try {
             $userId = input('user_id') ?: $this->auth->id;
@@ -150,7 +150,7 @@ class UserInfo extends Base
     /**
      * @ApiTitle (用户领取升级奖励,待删除)
      */
-    public function receiveVipReward()
+    public function receive_vip_reward()
     {
         try {
             $userId = $this->auth->id;
@@ -257,7 +257,7 @@ class UserInfo extends Base
      * @ApiReturnParams   (name="url", type="string", description="图片地址")
      * @ApiReturnParams   (name="status", type="string", description="审核状态：1通过、0审核中")
      */
-    public function getAuditImage()
+    public function get_audit_image()
     {
         try {
             $userId = $this->auth->id;
@@ -298,7 +298,7 @@ class UserInfo extends Base
      * @ApiMethod   (post)
      * @ApiParams   (name="id", type="string", required=true, rule="", description="图片ID")
      */
-    public function delImage()
+    public function del_image()
     {
         $images = Db::name('user_audit_image')
             ->field('id,img_type,url,status')
@@ -319,7 +319,7 @@ class UserInfo extends Base
      * @ApiParams   (name="id", type="string", required=true, description="需替换的图片ID")
      * @ApiParams   (name="new_image", type="string", required=true, description="新的形象照url")
      */
-    public function updateImage()
+    public function update_image()
     {
         $image = Db::name('user_audit_image')
             ->field('id,img_type,url,status')
