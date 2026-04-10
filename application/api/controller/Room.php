@@ -1183,7 +1183,7 @@ class Room extends Base
     {
         $user_id = $this->auth->id;
         $list = db('room')->field('id,beautiful_id,name,is_lock,hot,cover,member_count')
-            ->where(['name|id|beautiful_id' => ['like', '%' . input('keyword') . '%']])
+            ->where(['name|id|beautiful_id' => ['like', '%' . input('keyword') . '%'], 'status' => ['in', [2, 3]]])
             ->page(input('page', 1), input('size', 10))->select();
 
         $my = db('room r')->join('room_admin a', 'r.id = a.room_id', 'left')
