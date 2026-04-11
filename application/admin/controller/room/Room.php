@@ -248,8 +248,8 @@ class Room extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
                     }
-                    if (!$params['beautiful_id']) unset($params['beautiful_id']);
-                    if ($params['beautiful_id']) {
+                    if (!isset($params['beautiful_id']) || $params['beautiful_id'] == '') unset($params['beautiful_id']);
+                    if (isset($params['beautiful_id'])) {
                         $new_beautiful_id = $params['beautiful_id'];
                         $exist = db('room')->where('beautiful_id', $new_beautiful_id)->find();
                         if ($exist) {
