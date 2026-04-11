@@ -54,9 +54,6 @@ class Log extends Backend
                 ->select();
 
             $list = collection($list)->toArray();
-            foreach ($list as &$v) {
-                $v['action'] = __($v['action'], explode(',', $v['lang_var']));
-            }
             $result = array("total" => $total, "rows" => $list);
 
             return json($result);
