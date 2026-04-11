@@ -21,7 +21,7 @@ class Egg extends Base
     protected $noNeedLogin = ['notice', 'explain',];
     protected $noNeedRight = ['*'];
 
-    public function __construct(Request $request = null)
+    public function __construct(Request $request)
     {
         parent::__construct($request);
     }
