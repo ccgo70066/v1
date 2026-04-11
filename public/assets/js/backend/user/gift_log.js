@@ -27,7 +27,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     [
                         // {checkbox: true},
                         {field: 'id', title: __('Id'), visible: false, operate: false},
-                        {field: 'union_id', title: __('家族ID')},
                         {
                             field: 'room_id', title: __('Room_id'), formatter: function (value) {
                                 if (value == 0) return '-';

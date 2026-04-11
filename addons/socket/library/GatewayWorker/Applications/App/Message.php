@@ -24,7 +24,7 @@ class Message
     const CMD_EXIT_ROOM = 2004; // @var int 退出房间
     const CMD_LOSS_NOTICE = 2006; // @var int 用户掉线推送给房间
     /**
-     * 头像,形像照,vip升级,加入联盟,踢出联盟
+     * 头像,形像照,vip升级,
      */
     const CMD_REFRESH_USER = 2010; // 用户信息更新推送
     const CMD_GIFT_PUSH = 2015; // 资源推送

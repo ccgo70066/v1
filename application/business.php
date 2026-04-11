@@ -55,10 +55,9 @@ function user_business_change($user_id, $type, $amount, $flow = 'increase', $not
     $diff_amount = $flow == 'decrease' ? -$amount : $amount;
     $later_amount = $origin_amount + $diff_amount;
     if ($later_amount < 0) throw new ApiException(__('Insufficient balance'));
-    $row = db('user_business')->where(['id' => $user_id, 'version' => $business['version']])->inc('version')->inc($type, $diff_amount)->update();
-    if ($row > 0) {
-        business_log_add($user_id, $type, $flow, $origin_amount, $later_amount, $amount, $note, $from);
-    }
+    $row = db('user_business')->where(['id' => $user_id, 'version' => $business['version']])
+        ->inc('version')->inc($type, $diff_amount)->update();
+    if ($row > 0) business_log_add($user_id, $type, $flow, $origin_amount, $later_amount, $amount, $note, $from);
 }
 
 /**
@@ -176,27 +175,34 @@ function show_error_notify($e)
     return $e->getMessage();
 }
 
-
-function union_profit_statistics($union_id, $gift_val, $union_reward_val, $receiver)
+function update_seat_gift_val($room_id, $seat, $user_id, $gift_val)
 {
-    if (!$union_id) {
-        return;
-    }
-    // 用户在自己家族房间收礼, 自己家族族长分15%收益
-    $union_user = db('union_user')->where('user_id', $receiver)->where('status', 'in', [2, 3, 6])->find();
-    if ($union_user && $union_user['union_id'] == $union_id) {
-        $union = db('union')->where(['id' => $union_id])->find();
-        $owner_rate = config('app.gift_union_owner');
-        user_business_change($union['owner_id'], 'reward_amount', $gift_val * $owner_rate, 'increase', '联盟派对收获礼物', 4);
+    $sql = db('room_seat_gift_info')->fetchSql()->insert([
+        'room_id'  => $room_id,
+        'seat'     => $seat,
+        'user_id'  => $user_id,
+        'gift_val' => $gift_val,
+    ]);
+    return db::execute($sql . "ON DUPLICATE KEY UPDATE gift_val=gift_val+$gift_val");
+}
+
+
+function room_profit_statistics($room_id, $gift_val, $room_reward_val, $receiver)
+{
+    // 用户在自己所在房间收礼, 自己家族族长分15%收益
+    $room_admin = db('room_admin')->where('user_id', $receiver)->where('room_id', $room_id)->where('status', 'in', [1, 2])->find();
+    if ($room_admin) {
+        $room = db('room')->where(['id' => $room_id])->find();
+        $owner_rate = config('app.gift_room_owner');
+        user_business_change($room['owner_id'], 'reward_amount', $gift_val * $owner_rate, 'increase', '联盟派对收获礼物', 4);
     }
 
     // 用户在家族房间收礼, 流水5%进家族收益
-    $exist = db('union_profit')->where(['union_id' => $union_id])->find();
+    $exist = db('room_profit')->where(['room_id' => $room_id])->find();
     if (!$exist) {
-        db('union_profit')->insert(['union_id' => $union_id, 'val' => $gift_val, 'reward_val' => $union_reward_val]);
+        db('room_profit')->insert(['room_id' => $room_id, 'val' => $gift_val, 'reward_val' => $room_reward_val]);
     } else {
-        db('union_profit')->where(['union_id' => $union_id])->setInc('val', $gift_val);
-        db('union_profit')->where(['union_id' => $union_id])->setInc('reward_val', $union_reward_val);
+        db('room_profit')->where(['room_id' => $room_id])->inc('val', $gift_val)->inc('reward_val', $room_reward_val)->update();
     }
 }
 

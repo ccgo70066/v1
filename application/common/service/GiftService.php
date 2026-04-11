@@ -130,21 +130,9 @@ class GiftService
         // 在本派对下送礼的，家族都有2%周流水奖励
         return [
             config('app.union_receive_gifts'),
-            config('app.gift_union_profit'),
-            config('app.gift_union_owner'),
+            config('app.gift_room_profit'),
+            config('app.gift_room_owner'),
         ];
-
-        //收礼人是否属于本房间家族成员
-        // $exist = db('union_user')->where([
-        //     'user_id'  => $user_id,
-        //     'union_id' => $union_id,
-        //     'status'   => ['in', UnionModel::STATUS_JOINED_RANGE]
-        // ])->count();
-        // if ($exist) {
-        //     return [config('app.union_receive_gifts'), config('app.gift_union_owner')];
-        // }else {
-        //     return [config('app.receive_gifts'), 0];
-        // }
     }
 
     /**

@@ -210,7 +210,7 @@ class Gift extends Base
     /**
      * @ApiTitle    (一鍵清包)
      * @ApiParams   (name="to_user_id",   type="string", required=true,  rule="min:0", description="收禮人Id")
-     * @ApiParams   (name="room_id",    type="int", required=false, rule="min:0", description="雲信房間ID")
+     * @ApiParams   (name="room_id",    type="int", required=false, rule="min:0", description="房間ID")
      * @ApiParams   (name="seat",    type="int", required=false, rule="min:0", description="座位號,1-9,不在座位上則不傳")
      */
     public function give_gift_all()
@@ -280,7 +280,7 @@ class Gift extends Base
                     'type'              => GiftModel::GIVE_TYPE_BAG_ALL,
                     'room_id'           => (int)$room_id,
                     'union_id'          => (int)($room['union_id']),
-                    'union_reward_rate' => config('app.gift_union_owner'),
+                    'union_reward_rate' => config('app.gift_room_owner'),
                     'create_time'       => datetime()
                 ];
                 $item['price'] = (int)$item['price'];
@@ -302,8 +302,8 @@ class Gift extends Base
                     unset($msg_gift_info[$key]['gift_id']);
                 }
 
-                $union_reward_val = $union_rate * $sum_gift_val;
-                $room['union_id'] && union_profit_statistics($room['union_id'], $sum_gift_val, $union_reward_val, $receiver);
+                $room_reward_val = $union_rate * $sum_gift_val;
+                room_profit_statistics($room_id, $sum_gift_val, $room_reward_val, $receiver);
 
                 GiftSendStatistic::count_up($user_id, $receiver, $room_id, $sum_gift_val);
 

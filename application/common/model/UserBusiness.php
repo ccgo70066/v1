@@ -328,7 +328,7 @@ class UserBusiness extends Model
 
     /**
      * 获取红包权限
-     * @info  红包白名单, 联盟成员、VIP用户
+     * @info  红包白名单, VIP用户
      * @param $user_id
      */
     public static function getRedPacketAuth($user_id)
