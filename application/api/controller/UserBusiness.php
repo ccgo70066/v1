@@ -134,7 +134,7 @@ class UserBusiness extends Base
      * 获取用户装饰
      * @ApiSector (商城)
      * @ApiMethod   (get)
-     * @ApiSummary   (data="类型:2=頭像框,3=坐騎,6=氣泡,8=铭牌")
+     * @ApiSummary   ("data=类型:2=頭像框,3=坐騎,6=氣泡,8=铭牌")
      * @ApiParams   (name="system", type="string", required=false, rule="in:1,2", description="平台:1=IOS,2=ANDROID")
      *
      * @ApiReturnParams (name="list.adornment", type="array", description="头像-数组")
@@ -329,7 +329,7 @@ class UserBusiness extends Base
     /**
      * 获取会员背包礼物
      * @ApiSector (商城)
-     * @ApiSummary   (type類型:1=普通禮物)
+     * @ApiSummary   ("type類型:1=普通禮物")
      * @ApiParams   (name="system", type="string", required=false, rule="in:1,2", description="平台:1=IOS,2=ANDROID")
      * @ApiMethod   (get)
      */

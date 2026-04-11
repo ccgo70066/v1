@@ -2,7 +2,7 @@
 
 namespace app\api\controller;
 
-use app\api\library\NobleService;
+use app\common\service\NobleService;
 use Exception;
 use think\Db;
 use think\Log;
@@ -17,7 +17,7 @@ class Noble extends Base
 
     /**
      * @ApiTitle    (获取贵族信息)
-     * @ApiSummary  (privilege权限[1=拥有权限,0无此权限])
+     * @ApiSummary  ("privilege权限:1=拥有权限,0无此权限")
      * @throws
      */
     public function get()
@@ -34,7 +34,7 @@ class Noble extends Base
     }
 
     /**
-     * 贵族权限x打开或关闭
+     * 贵族权限打开或关闭
      * @ApiParams   (name="switch", type="int",  required=true, rule="", description="分类:1=开,2=关")
      * @ApiParams   (name="privilege_id", type="int",  required=true, rule="", description="权限Id")
      */

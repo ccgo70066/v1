@@ -75,7 +75,7 @@ class Shop extends Base
 
     /**
      * 商城购买下单
-     * @ApiSummary  (code 410=跳充值頁面,411=跳支付鏈接)
+     * @ApiSummary  ("code 410=跳充值頁面,411=跳支付鏈接")
      * @ApiParams   (name="item_id", type="int",  required=true, rule="", description="物品")
      * @ApiParams   (name="count", type="int",  required=true, rule="", description="數量")
      * @ApiParams   (name="room_id", type="int",  required=false, rule="", description="房間id")
