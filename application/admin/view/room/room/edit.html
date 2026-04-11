@@ -1,17 +1,32 @@
 <form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
 
     <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">房间号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input data-rule="required" disabled class="form-control" name="row[id]" type="text" value="{$row['id']}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">房间名称:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input data-rule="required" disabled class="form-control" name="row[id]" type="text" value="{$row['name']}">
+        </div>
+    </div>
+
+
+    <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
-            <div class="radio">
-                <label><input id="row[status]-1" name="row[status]" type="radio" value="1" {if condition="$row.status==1"}checked{/if} /> 审核中</label>
-                <label><input id="row[status]-2" name="row[status]" type="radio" value="2" {if condition="in_array($row.status,[2,3])"}checked{/if} /> 审核通过</label>
 
+            <div class="radio">
+                {foreach name="statusList" item="vo"}
+                <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status"}checked{/in} /> {$vo}</label>
+                {/foreach}
             </div>
 
         </div>
     </div>
+
 
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Show_sort')}:</label>
@@ -24,6 +39,20 @@
         <label class="control-label col-xs-12 col-sm-2">{:__('is_show')}:</label>
         <div class="col-xs-12 col-sm-8">
             {:Form::selectpicker('row[is_show]', $isShowList, $row['is_show'], ['data-rule'=>'required'])}
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">当前房间靓号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input data-rule="required" disabled  class="form-control" name="row[beautiful_id]" type="text" value="{$row['beautiful_id']}">
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-xs-12 col-sm-2">新房间靓号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input id="c-room_id" placeholder="房间靓号为4-5位数, 不填则不更新" oninput="value=value.replace(/[^\d]/g,'')" data-rule="integer" class="form-control" name="row[beautiful_id]" type="text" value="">
         </div>
     </div>
 

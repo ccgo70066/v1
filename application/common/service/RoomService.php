@@ -6,6 +6,11 @@ use app\common\exception\ApiException;
 use app\common\model\Room;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
+use think\Exception;
+use think\exception\DbException;
+use think\exception\PDOException;
 use think\Log;
 
 /**
@@ -32,11 +37,13 @@ class RoomService
         $imService = new ImService();
         $resultIm = $imService->createRoom($user_id, $info['name'], $info['intro']);
         if (!$resultIm) throw new ApiException('创建房间失败');
-        $info['id'] = $resultIm['chatroom']['roomid'];
+        $room_id = $resultIm['chatroom']['roomid'];
+        $info['id'] = $room_id;
         $info['owner_id'] = $user_id;
         $info['status'] = 1;
         db('room')->strict(false)->insert($info);
         db('room_admin')->insert(['room_id' => $info['id'], 'user_id' => $user_id, 'role' => 1, 'status' => 1]);
+        $this->add_room_log($room_id, $user_id, '申请创建房间');
     }
 
     /**
@@ -46,10 +53,20 @@ class RoomService
      * @return void
      * @throws
      */
-    public function audit(int $room_id, int $result, int $operator = 0): void
+    public function check(int $room_id, int $result, int $operator = 0): void
     {
-        db('room')->where('id', $room_id)->update(['status' => $result == 1 ? 2 : -3]);
+        db('room')->where('id', $room_id)->update([
+            'status'      => $result == 1 ? 2 : -3,
+            'audit_admin' => $operator,
+            'audit_time'  => datetime()
+        ]);
         $this->add_room_log($room_id, $operator, $result == 1 ? '房间审核通过' : '房间审核被拒绝');
+
+        $row = db('room')->find($room_id);
+        send_im_msg_by_system($row['owner_id'], sprintf($result == 1 ? '您的派对%s已审核通过!' : '您的派对%s审核拒绝!', $row['name']));
+        if ($result == 0) {
+            $this->closeRoom($room_id);
+        }
     }
 
 
@@ -603,6 +620,23 @@ class RoomService
         if ($is_kick) {
             $imService->room_kick_user($room_id, $user_id);
         }
+    }
+
+    /**
+     * 成员审核
+     * @param $room_id
+     * @param $user_id
+     * @param $status
+     * @return void
+     * @throws
+     */
+    public function member_check($room_id, $user_id, $status): void
+    {
+        $role = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->find();
+        if (!$role) throw new ApiException(__('Row does not exist'));
+        db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->update(['status' => $status]);
+        // todo notice user
+
     }
 
 

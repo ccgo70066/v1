@@ -6,9 +6,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Table.api.init({
                 extend: {
                     index_url: 'room/admin/index' + location.search,
-                    add_url: 'room/admin/add',
-                    edit_url: 'room/admin/edit',
-                    del_url: 'room/admin/del',
+                    // add_url: 'room/admin/add',
+                    // edit_url: 'room/admin/edit',
+                    // del_url: 'room/admin/del',
                     multi_url: 'room/admin/multi',
                     import_url: 'room/admin/import',
                     table: 'room_admin',
@@ -33,7 +33,60 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'reason', title: __('Reason'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         // {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
-                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate,
+                        buttons:[
+                            {
+                                name: 'check_join',
+                                text: '同意',
+                                icon: 'fa fa-check',
+                                classname: 'btn btn-xs btn-success btn-magic btn-ajax',
+                                url: 'room/admin/check_join?agree=1&ids={id}',
+                                confirm: '确定同意吗?',
+                                refresh: true,
+                                visible: function (row) {
+                                    return row.status == 0;
+                                }
+                            },
+                            {
+                                name: 'check_join',
+                                text: '拒绝',
+                                icon: 'fa fa-check',
+                                classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
+                                url: 'room/admin/check_join?agree=0&ids={id}',
+                                confirm: '确定拒绝吗?',
+                                refresh: true,
+                                visible: function (row) {
+                                    return row.status == 0;
+                                }
+                            },
+                            {
+                                name: 'check_leave',
+                                text: '同意',
+                                icon: 'fa fa-check',
+                                classname: 'btn btn-xs btn-success btn-magic btn-ajax',
+                                url: 'room/admin/check_leave?agree=1&ids={id}',
+                                confirm: '确定同意吗?',
+                                refresh: true,
+                                visible: function (row) {
+                                    return row.status == 2;
+                                }
+                            },
+                            {
+                                name: 'check_leave',
+                                text: '拒绝',
+                                icon: 'fa fa-check',
+                                classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
+                                url: 'room/admin/check_leave?agree=0&ids={id}',
+                                confirm: '确定拒绝吗?',
+                                refresh: true,
+                                visible: function (row) {
+                                    return row.status == 2;
+                                }
+                            }
+
+
+
+                        ]}
                     ]
                 ]
             });

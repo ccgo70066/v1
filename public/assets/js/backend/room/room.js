@@ -8,6 +8,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     index_url: 'room/room/index' + location.search,
                     // add_url: 'room/room/add',
                     edit_url: 'room/room/edit',
+                    del_url: 'room/room/del',
                     // multi_url: 'room/room/multi',
                     detail_url: 'room/room/index',
                     table: 'room',
@@ -40,7 +41,10 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'hot', title: __('Hot'), operate: false},
                         {field: 'is_lock', title: __('Is_lock'), searchList: {"1": __('Is_lock 1'), "0": __('Is_lock 0')}, formatter: Table.api.formatter.normal, operate: false},
                         // {field: 'is_commend', title: __('Is_commend'), searchList: {"1":__('Is_commend 1'),"0":__('Is_commend 0')}, formatter: Table.api.formatter.normal, operate: false},
-                        {field: 'status', title: __('Status'), searchList: {"1": __('Status 1'), "2": __('Status 2'), "3": __('Status 3'), "-1": __('Status -1')}, formatter: Table.api.formatter.status},
+                        {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2'),"3":__('Status 3'),"0":__('Status 0'),"-1":__('Status -1'),"-2":__('Status -2'),"-3":__('Status -3')}, formatter: Table.api.formatter.status,
+                            custom: {"2": 'success', "3": 'success', "0": 'gray', "1": 'danger'}},
+
+                        // {field: 'status', title: __('Status'), searchList: {"1": __('Status 1'), "2": __('Status 2'), "3": __('Status 3'), "-1": __('Status -1')}, formatter: Table.api.formatter.status},
                         {field: 'admin_name', title: __('审核人'), operate: false},
                         {field: 'is_show', title: __('Is_show'), searchList: {"1": __('Is_show 1'), "0": __('Is_show 0')}, formatter: Table.api.formatter.normal},
                         {field: 'show_sort', title: __('Show_sort'), operate: false},
@@ -51,14 +55,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 {
                                     name: 'member',
                                     text: '成员',
-                                    title: function (v) {
-                                        return v.name + '成员列表';
+                                    title: function (row) {
+                                        return row.name + '成员列表';
                                     },
                                     classname: 'btn btn-xs btn-info btn-dialog',
                                     icon: 'fa fa-list',
                                     extend: 'data-area=\'["90%", "90%"]\'',
                                     url: function (row) {
                                         return 'room/admin?room_id=' + row.id;
+                                    },
+                                    visible: function (row) {
+                                        return row.status > 1;
                                     },
                                 },
                                 {
@@ -73,6 +80,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     url: function (row) {
                                         return 'room/log?room_id=' + row.id;
                                     },
+                                    // visible: function (row) {
+                                    //     return row.status > 1;
+                                    // },
                                 },
                                 {
                                     name: 'reject_delete',
@@ -85,42 +95,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     confirm: '确定驳回删除吗?',
                                     visible: function (row) {
                                         return row.status == -1;
-                                    },
-                                    success: function () {
-                                        $(".btn-refresh").trigger("click");
-                                    }
-                                },
-                                // {
-                                //
-                                //     name: 'master_log',
-                                //     text: '厅主变更记录',
-                                //     title: '厅主变更记录',
-                                //     icon: 'fa',
-                                //     classname: 'btn btn-xs btn-default btn-magic btn-dialog',
-                                //     // extend: 'data-area=\'["40%", "65%"]\'',
-                                //     url: 'room/room/master_log',
-                                // },
-                                {
-                                    name: 'update_beautiful',
-                                    text: '更改靓号',
-                                    title: '更改靓号',
-                                    icon: 'fa',
-                                    classname: 'btn btn-xs btn-warning btn-magic btn-dialog',
-                                    // extend: 'data-area=\'["40%", "65%"]\'',
-                                    url: 'room/room/update_beautiful',
-                                },
-                                {
-                                    name: 'delete',
-                                    text: '',
-                                    title: '删除房间',
-                                    icon: 'fa fa-remove',
-                                    classname: 'btn btn-xs btn-danger btn-magic btn-ajax',
-                                    // extend: 'data-area=\'["40%", "65%"]\'',
-                                    extend: 'data-toggle="tooltip" ',
-                                    url: 'room/room/delete',
-                                    confirm: '删除后APP和后台不再展示且无法再找回,确定删除吗?',
-                                    visible: function (row) {
-                                        return row.status != -1;
                                     },
                                     success: function () {
                                         $(".btn-refresh").trigger("click");

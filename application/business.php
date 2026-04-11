@@ -281,9 +281,10 @@ function get_user_info($userIds, array $extend = []): array
 
 function send_im_msg_by_system($user_id, $text)
 {
-    if (Env::get('app.server') != 'test') {
+    if (Env::get('app.server') != 'dev') {
         $imService = new ImService();
-        return $imService->sendChatMessageByUser($imService::SYS_ID, $user_id, $imService::CHAT_MESSAGE_TEXT, $text);
+        $result = $imService->sendChatMessageByUser($imService::SYS_ID, $user_id, $imService::CHAT_MESSAGE_TEXT, $text);
+        return $result;
     }
 }
 

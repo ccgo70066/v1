@@ -21,5 +21,5 @@ return [
     'Set status to -2'=> '设为已退出',
     'Reason'      => '原因',
     'Create_time' => '创建',
-    'Update_time' => '更新'
+    'Update_time' => '更新',
 ];

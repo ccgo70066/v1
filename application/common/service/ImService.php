@@ -7,6 +7,9 @@ use app\common\library\Yunxin;
 use app\common\model\ChannelBlacklist;
 use app\common\model\Room;
 use app\common\model\Union;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
+use think\exception\DbException;
 
 
 /**
@@ -76,10 +79,11 @@ class ImService
      */
     public function checkChatAuth($user_id, $to_user_id, $type)
     {
+        t(func_get_args());
         //发送人为系统账号
         if (in_array($user_id, self::$KF_IDS) || $user_id === self::SYS_ID) {
             $to_user = db('user')->where('id', $to_user_id)->field('avatar,nickname')->find();
-            return ['', '', $to_user['nickname'], $to_user['avatar']];
+            return ['', '', $to_user['nickname'] ?? '', $to_user['avatar'] ?? ''];
         }
         //接收人为系统账号
         if (in_array($to_user_id, self::$KF_IDS, true) || $to_user_id === self::SYS_ID) {

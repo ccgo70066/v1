@@ -2,6 +2,8 @@
 
 namespace app\api\controller;
 
+use app\common\service\RoomService;
+
 /**
  * 厅
  * @ApiWeigh    (901)
@@ -74,10 +76,8 @@ class Member extends Base
     {
         $status = input('status', 0);
         $status == -3 && $status = 1;
-        db('room_admin')->where([
-            'room_id' => input('room_id'),
-            'user_id' => input('user_id'),
-        ])->setField('status', $status);
+        $roomServer = new RoomService();
+        $roomServer->audit_member(input('room_id'), input('user_id'), $status);
 
         $this->success();
     }
