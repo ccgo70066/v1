@@ -190,7 +190,6 @@ class Room extends Base
         $room_id = input('room_id') ?: 0;
         $result = db('room r')
             ->join('room_theme_cate t', 't.id=r.theme_id')
-            ->where('type', RoomModel::ROOM_TYPE_NUION)
             ->where('r.status', 'in', [3, 2])
             ->where('r.is_show', 1)
             ->where($where)

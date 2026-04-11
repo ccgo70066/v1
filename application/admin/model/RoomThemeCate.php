@@ -25,32 +25,14 @@ class RoomThemeCate extends Model
 
     // 追加属性
     protected $append = [
-        'room_type_text',
         'create_time_text',
         'status_text'
     ];
-
-
-
-    public function getRoomTypeList()
-    {
-        return ['1' => __('Room_type 1'), '2' => __('Room_type 2')];
-
-    }
 
     public function getStatusList()
     {
         return ['1' => __('Status 1'), '0' => __('Status 0')];
     }
-
-
-    public function getRoomTypeTextAttr($value, $data)
-    {
-        $value = $value ? $value : ($data['room_type'] ?? '');
-        $list = $this->getRoomTypeList();
-        return $list[$value] ?? '';
-    }
-
 
     public function getCreateTimeTextAttr($value, $data)
     {

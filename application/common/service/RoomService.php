@@ -484,7 +484,6 @@ class RoomService
         $room_data = [
             'beautiful_id'   => $beautiful_id,
             'union_id'       => $union_id,
-            'type'           => RoomModel::ROOM_TYPE_NUION,
             'name'           => $room_name,
             'im_operator'    => $union_master,
             'owner_id'       => $union_master,
@@ -492,7 +491,7 @@ class RoomService
             'im_roomid'      => $resultIm['chatroom']['roomid'],
             'status'         => 1,
             'is_show'        => 0,
-            'theme_id'       => input('theme_id') ?: db('room_theme_cate')->where('room_type', 1)->value('id'),
+            'theme_id'       => input('theme_id') ?: db('room_theme_cate')->value('id'),
             'way'            => input('way') ?: 1,
             'bg_img'         => input('bg_img') ?: db('room_img')->where('type', 1)->order('weigh')->value('image'),
             'welcome_msg'    => Shield::sensitive_filter(input('welcome_msg')),

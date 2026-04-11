@@ -43,19 +43,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2'),"3":__('Status 3'),"-1":__('Status -1')}, formatter: Table.api.formatter.status},
                         {field: 'admin_name', title: __('审核人'),operate: false},
                         {field: 'is_show', title: __('Is_show'), searchList: {"1":__('Is_show 1'),"0":__('Is_show 0')}, formatter: Table.api.formatter.normal},
-                        {field: 'union_id', title: __('Union_id')},
-                        {field: 'union.name', title: __('Union.name'), operate: false},
                         {field: 'show_sort', title: __('Show_sort'),operate: false},
                         // {field: 'create_time', title: __('Create_time'), addclass:'datetimerange', formatter: Table.api.formatter.datetime, operate: false},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate,
                             buttons: [
                                 {
                                     name: 'delete',
-                                    text: '删除房间',
+                                    text: '',
                                     title: '删除房间',
-                                    icon: 'fa',
+                                    icon: 'fa fa-remove',
                                     classname: 'btn btn-xs btn-success btn-magic btn-ajax',
                                     // extend: 'data-area=\'["40%", "65%"]\'',
+                                    extend: 'data-toggle="tooltip" ',
                                     url: 'room/room/delete',
                                     confirm: '删除后APP和后台不再展示且无法再找回,确定删除吗?',
                                     visible: function (row) {
@@ -97,16 +96,16 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                         $(".btn-refresh").trigger("click");
                                     }
                                 },
-                                {
-
-                                    name: 'master_log',
-                                    text: '厅主变更记录',
-                                    title: '厅主变更记录',
-                                    icon: 'fa',
-                                    classname: 'btn btn-xs btn-default btn-magic btn-dialog',
-                                    // extend: 'data-area=\'["40%", "65%"]\'',
-                                    url: 'room/room/master_log',
-                                },
+                                // {
+                                //
+                                //     name: 'master_log',
+                                //     text: '厅主变更记录',
+                                //     title: '厅主变更记录',
+                                //     icon: 'fa',
+                                //     classname: 'btn btn-xs btn-default btn-magic btn-dialog',
+                                //     // extend: 'data-area=\'["40%", "65%"]\'',
+                                //     url: 'room/room/master_log',
+                                // },
                                 {
                                     name: 'update_beautiful',
                                     text: '更改靓号',

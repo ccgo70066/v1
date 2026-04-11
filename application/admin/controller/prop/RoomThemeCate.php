@@ -27,7 +27,6 @@ class RoomThemeCate extends Backend
     {
         parent::_initialize();
         $this->model = new \app\admin\model\RoomThemeCate;
-        $this->view->assign("roomTypeList", $this->model->getRoomTypeList());
         $this->view->assign("statusList", $this->model->getStatusList());
     }
 
@@ -84,8 +83,6 @@ class RoomThemeCate extends Backend
      */
     public function get_top_cate()
     {
-//        $room_type = input('room_type') ?: 1;
-
         if ($this->request->request("keyValue")) {
             return ['total' => 1, 'list' => [
                 db('room_theme_cate')

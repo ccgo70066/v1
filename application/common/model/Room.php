@@ -21,9 +21,6 @@ class Room extends Model
     //PK功能:1=开启,0=关闭
     const RoomPkStatusOn = 1;
     const RoomPkStatusOff = 0;
-    //房间类型:家族房,个人房
-    const ROOM_TYPE_NUION = 1;
-    const ROOM_TYPE_PERSON = 2;
     //房间状态:0=封禁 1=审核中2=休息中(无人在房)3=开播中(有人在房)
     const ROOM_STATUS_CANCEL = -1;  // 申请注销中
     const ROOM_STATUS_FORBIDDEN = 0;
@@ -46,25 +43,17 @@ class Room extends Model
         return $im_room_id;
     }
 
-    /*
-     * @param $room_type int 房间类型:类型:1=家族房,2=个人房'
-     */
-    public static function getThemeList($room_type = 0)
+    public static function getThemeList()
     {
         $query = db('room_theme_cate');
-        if ($room_type) {
-            $query->where('room_type', $room_type);
-        }
         $list = $query->where('status', 1)->field('id,name,image,intro')
-            ->order('room_type', 'asc')->order('weigh', 'desc')->select();
+            ->order('id', 'asc')->order('weigh', 'desc')->select();
         return $list;
     }
 
 
     /**
      * 获取可展示的房间列表
-     * @param $room_type
-     * @param $theme_id
      */
     public static function getRoomList($where = [], $limit = 0)
     {
