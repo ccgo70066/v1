@@ -252,12 +252,8 @@ class Room extends Backend
                     if (isset($params['beautiful_id'])) {
                         $new_beautiful_id = $params['beautiful_id'];
                         $exist = db('room')->where('beautiful_id', $new_beautiful_id)->find();
-                        if ($exist) {
-                            throw new \think\Exception('靓号已存在');
-                        }
-                        if (!preg_match('/^[0-9]{4,5}$/i', $new_beautiful_id)) {
-                            throw new \think\Exception('房间靓号为4~5位');
-                        }
+                        if ($exist) throw new \think\Exception('靓号已存在');
+                        if (!preg_match('/^[0-9]{4,5}$/i', $new_beautiful_id)) throw new \think\Exception('房间靓号为4~5位');
                     }
 
                     $result = $row->allowField(true)->save($params);
