@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\room;
 
+use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\controller\Backend;
 use app\common\model\Room as RoomModel;
@@ -284,13 +285,6 @@ class Room extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
                     }
-                    if ($params['is_show'] == 1) {
-                        $union = db('union')->where('id', $row['union_id'])->find();
-                        if ($union['status'] == 2) {
-                            throw new \think\Exception('家族状态为禁用');
-                        }
-                    }
-
                     if ($update_before['status'] == RoomModel::ROOM_STATUS_AUDIT &&
                         in_array($params['status'], [RoomModel::ROOM_STATUS_IDLE, RoomModel::ROOM_STATUS_PLAYING])) {
                         //审核通过

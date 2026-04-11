@@ -23,7 +23,7 @@ return [
     'Status'             => '房间状态',
     'Status -1'           => '申请注销中',
     'Status 1'           => '审核中',
-    'Status 2'           => '无人',
+    'Status 2'           => '休息中',
     'Status 3'           => '开播中',
     'Status 0'           => '禁封',
     'Way'                => '排麦方式',
