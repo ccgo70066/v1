@@ -49,31 +49,27 @@ class Index extends Backend
         $audit_image = db('user_audit_image')->where(['status' => 0])->count();
         $withdraw = db('user_withdraw')->where(['status' => 0])->count();
         $moment = db('moment')->where(['status' => 2])->count();
-        $union = db('union')->where('status', 0)->count();
-        $union_user = db('union_user')->where('status',7)->count();
-        $feedback = db('user_feedback')->where('audit_status',1)->count();
-        $verify = db('user_verify')->where('check_status',0)->count();
-        $room_audit = db('room')->where('status',1)->count();
-        $anchor_audit = db('anchor')->where('status',1)->count();
+        $room_user = db('room_admin')->where('status', 'in', [0, 2])->count();
+        $feedback = db('user_feedback')->where('audit_status', 1)->count();
+        $verify = db('user_verify')->where('check_status', 0)->count();
+        $room_audit = db('room')->where('status', 1)->count();
+        $anchor_audit = db('anchor')->where('status', 1)->count();
         list($menulist, $navlist, $fixedmenu, $referermenu) = $this->auth->getSidebar([
             // 'dashboard' => 'hot',
-            // 'addon'     => ['new', 'red', 'badge'],
+            // 'dashboard/index'     => ['new', 'red', 'badge'],
             // 'auth/rule' => __('Menu'),
             // 'general'   => ['new', 'purple'],
-            'task'             => $audit_image+$moment+$feedback+$verify,
+            'task'             => $audit_image + $moment + $feedback + $verify,
             'user/audit_image' => $audit_image,
             'moment/moment'    => $moment,
             'user/verify'      => $verify,
             'user/feedback'    => $feedback,
             'order'            => $withdraw,
             'user/withdraw'    => $withdraw,
-            'party'            => $union+$union_user+$room_audit,
-            'union'            => $union+$union_user,
-            'union/union'      => $union,
             'user/anchor'      => $anchor_audit,
-            'union/user'       => $union_user,
+            'room'             => $room_audit + $room_user,
             'room/room'        => $room_audit,
-            'room'             => $room_audit
+            'room/admin'       => $room_user,
         ], $this->view->site['fixedpage']);
         $action = $this->request->request('action');
         if ($this->request->isPost()) {
@@ -136,9 +132,12 @@ class Index extends Backend
             $result = $this->auth->login($username, $password, $keeplogin ? 86400 : 0);
             if ($result === true) {
                 Hook::listen("admin_login_after", $this->request);
-                $this->success(__('Login successful'), $url,
-                    ['url' => $url, 'id' => $this->auth->id, 'username' => $username, 'avatar' => $this->auth->avatar]);
-            }else {
+                $this->success(
+                    __('Login successful'),
+                    $url,
+                    ['url' => $url, 'id' => $this->auth->id, 'username' => $username, 'avatar' => $this->auth->avatar]
+                );
+            } else {
                 $msg = $this->auth->getError();
                 $msg = $msg ? $msg : __('Username or password is incorrect');
                 $this->error($msg, $url, ['token' => $this->request->token()]);
@@ -151,8 +150,10 @@ class Index extends Backend
             $this->redirect($url);
         }
         $background = Config::get('fastadmin.login_background');
-        $background = $background ? (stripos($background,
-            'http') === 0 ? $background : config('site.cdnurl') . $background) : '';
+        $background = $background ? (stripos(
+            $background,
+            'http'
+        ) === 0 ? $background : config('site.cdnurl') . $background) : '';
         $this->view->assign('background', $background);
         $this->view->assign('title', __('Login'));
         Hook::listen("admin_login_init", $this->request);

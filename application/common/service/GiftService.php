@@ -129,7 +129,7 @@ class GiftService
         //9-16 任何人在房间中送礼族长都有18%收益
         // 在本派对下送礼的，家族都有2%周流水奖励
         return [
-            config('app.union_receive_gifts'),
+            config('app.room_receive_gifts'),
             config('app.gift_room_profit'),
             config('app.gift_room_owner'),
         ];
