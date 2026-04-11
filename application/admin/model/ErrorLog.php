@@ -10,7 +10,7 @@ class ErrorLog extends Model
 {
 
     protected $connection = 'mongodb';
-    protected $table = 'aa_error_log';
+    protected $table = 'fa_error_log';
     protected $autoWriteTimestamp = 'datetime';
 
     protected $createTime = 'create_time';

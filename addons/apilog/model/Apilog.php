@@ -8,8 +8,8 @@ use think\Model;
 class Apilog extends Model
 {
 
-    // protected $connection = 'database_mongodb';
-    //protected $table = 'aa_apilog';
+     protected $connection = 'mongodb';
+    protected $table = 'fa_apilog';
     protected $name = 'apilog';
 
     protected $autoWriteTimestamp = 'int';

@@ -8,7 +8,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                     index_url: 'error_log/index' + location.search,
                     del_url: 'error_log/del',
                     del_all_url: 'error_log/del_all',
-                    table: 'aa_error_log',
+                    table: 'fa_error_log',
                 }
             });
 
@@ -17,8 +17,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 初始化表格
             table.bootstrapTable({
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
-                pk: '_id',
-                sortName: '_id',
+                pk: 'id',
+                sortName: 'id',
                 columns: [
                     [
                         {checkbox: true},

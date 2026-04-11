@@ -36,13 +36,10 @@ class ErrorLog extends Backend
 
             $list = $this->model
                 ->where($where)
-                ->order('_id', 'desc')
+                ->order('create_time', 'desc')
                 ->limit($offset, $limit)
                 ->select();
 
-            foreach ($list as $k => &$v) {
-                $v['_id'] = (string)$v['_id'];
-            }
             $list = collection($list)->toArray();
 
             $result = array("total" => $total, "rows" => $list);
