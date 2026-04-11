@@ -11,22 +11,21 @@ class RankService
 {
     /**
      * 判断用户是否是家族成员
-     * @param int $roomId 房间ID
-     * @param int $userId 会员ID
+     * @param int $room_id 房间ID
+     * @param int $user_id 会员ID
      * @return bool
      */
-    public static function checkIsUnionUser($roomId, $userId)
+    public static function checkIsUnionUser($room_id, $user_id)
     {
-        if (!$roomId) {
+        if (!$room_id) {
             return true;
         }
-        $unionId = db('room')->where('id', $roomId)->value('union_id');
-        $isExist = db('union_user')
-            ->whereIn('status', UnionModel::STATUS_JOINED_RANGE)
-            ->where('union_id', $unionId)
-            ->where('user_id', $userId)
+        $isExist = db('room_admin')
+            ->where('room_id', $room_id)
+            ->where('user_id', $user_id)
+            ->whereIn('status', [1, 2])
             ->count();
-        if ($isExist){
+        if ($isExist) {
             return true;
         }
         return false;

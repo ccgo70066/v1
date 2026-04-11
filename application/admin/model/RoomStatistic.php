@@ -2,20 +2,19 @@
 
 namespace app\admin\model;
 
-use app\union\model\Room;
 use think\Model;
 
 
 class RoomStatistic extends Model
 {
 
-    
 
-    
+
+
 
     // 表名
     protected $name = 'room_statistic';
-    
+
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 
@@ -28,9 +27,9 @@ class RoomStatistic extends Model
     protected $append = [
         'active_text'
     ];
-    
 
-    
+
+
     public function getActiveList()
     {
         return ['1' => __('Active 1'), '0' => __('Active 0')];

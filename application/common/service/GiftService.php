@@ -52,7 +52,7 @@ class GiftService
     public function giveGiftByRoom($giver_id, $to_user_ids_arr, $gift_id, $count, $room_id, $from_type = 0)
     {
         $gift = GiftModel::getGiftById($gift_id);
-        $room = db('room')->where('id', $room_id)->field('name,union_id,pause')->find();
+        $room = db('room')->where('id', $room_id)->field('name,pause')->find();
         if (!$room) {
             throw new ApiException(__('Failed to retrieve room'));
         }
@@ -60,7 +60,7 @@ class GiftService
 
         foreach ($to_user_ids_arr as $receiver_id) {
             //根据收礼人是否是本房间所属家族成员获取个人提成比例和家族提成比例
-            [$user_rate, $union_rate] = $this->receiveGiftsRate($room['union_id'], $receiver_id);
+            [$user_rate, $union_rate] = $this->receiveGiftsRate($room['id'], $receiver_id);
             $gift_log[] = [
                 'user_id'     => $giver_id,
                 'to_user_id'  => $receiver_id,
@@ -116,14 +116,14 @@ class GiftService
 
     /**
      * 根据收礼人和房间所属家族ID获取家族收益提成和个人收益提成
-     * @param $union_id int 房间的家族id
+     * @param $room_id int 房间id
      * @param $user_id  int 用户id
      * @return array ['个人收益比例','家族收益比例', '族长直接分成']
      * @throws Exception
      */
-    public function receiveGiftsRate($union_id, $user_id)
+    public function receiveGiftsRate($room_id, $user_id)
     {
-        if (!$union_id) {
+        if (!$room_id) {
             return [config('app.receive_gifts'), 0, 0];
         }
         //9-16 任何人在房间中送礼族长都有18%收益

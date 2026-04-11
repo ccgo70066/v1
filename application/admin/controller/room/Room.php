@@ -263,7 +263,8 @@ class Room extends Backend
                         $roomService->check($row['id'], $params['status'] == -3 ? 0 : 1, session('admin.id'));
                     }
                     if ($params['status'] == 0) $roomService->closeRoom($ids);
-
+                    $message = ['type' => 'room_op', 'type_op' => 'room_change_state', 'type_op_content' => $params['is_show']];
+                    $im = new ImService();
                     if (isset($params['is_show']) && $params['is_show'] == 0) {
                         $redis = redis();
                         //运营设置为歇业的房间,app内无法操作为营业
@@ -271,29 +272,13 @@ class Room extends Backend
                         } else {
                             $redis->hset(RedisService::ADMIN_SET_ROOM_NOT_SHOW, $ids, 1);
                         }
-                        $im = new ImService();
-                        $im->roomSendNotice(
-                            $row['id'],
-                            [
-                                'type'            => 'room_op',
-                                'type_op'         => 'room_change_state',
-                                'type_op_content' => $params['is_show']
-                            ]
-                        );
+                        $im->roomSendNotice($row['id'], $message);
                     }
                     if (isset($params['is_show']) && $params['is_show'] == 1) {
                         $redis = redis();
                         //运营设置为歇业的房间,app内无法操作为营业
                         $redis->hdel(RedisService::ADMIN_SET_ROOM_NOT_SHOW, $ids);
-                        $im = new ImService();
-                        $im->roomSendNotice(
-                            $row['id'],
-                            [
-                                'type'            => 'room_op',
-                                'type_op'         => 'room_change_state',
-                                'type_op_content' => $params['is_show']
-                            ]
-                        );
+                        $im->roomSendNotice($row['id'], $message);
                     }
                 } catch (Exception $e) {
                     Db::rollback();

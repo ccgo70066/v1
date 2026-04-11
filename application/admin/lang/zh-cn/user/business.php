@@ -14,7 +14,6 @@ return [
     'Safe_code'       => '安全码',
     'Shred'           => '能量',
     'Proom_no'        => '个人房间号',
-    'Union_id'        => '所属家族',
     'Create_time'     => '创建时间',
     'Update_time'     => '修改时间',
     'Role'  => '身份',

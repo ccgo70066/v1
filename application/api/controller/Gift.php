@@ -286,7 +286,7 @@ class Gift extends Base
                 $item['price'] = (int)$item['price'];
                 $send_text .= $item['name'] . '(' . $item['price'] . ')×' . $item['count'];
             }
-            [$user_rate, $union_rate] = $this->service->receiveGiftsRate($room['union_id'], $receiver);
+            [$user_rate, $union_rate] = $this->service->receiveGiftsRate($room['id'], $receiver);
             user_business_change($receiver, 'reward_amount', $sum_gift_val * $user_rate, 'increase', '收获礼物:' . $send_text, 4);
             db('gift_log')->insertAll($gift_log);
 

@@ -2,20 +2,19 @@
 
 namespace app\admin\model;
 
-use app\union\model\Room;
 use think\Model;
 
 
 class WheelUserIndex extends Model
 {
 
-    
 
-    
+
+
 
     // 表名
     protected $name = 'wheel_user_index';
-    
+
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 
@@ -28,9 +27,9 @@ class WheelUserIndex extends Model
     protected $append = [
         'box_type_text'
     ];
-    
 
-    
+
+
     public function getBoxTypeList()
     {
         return ['1' => __('Box_type 1'), '2' => __('Box_type 2')];

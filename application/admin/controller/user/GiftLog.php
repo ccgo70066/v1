@@ -105,7 +105,7 @@ class GiftLog extends Backend
 
             return json($result);
         }
-        if (input('?param.ids') && !input('?param.union_id')) {
+        if (input('?param.ids')) {
             $row = $this->model->get(input('ids'))->toArray();
             return $this->view->fetch('common/detail', ['row' => $row]);
         }

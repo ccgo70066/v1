@@ -556,12 +556,6 @@ class RoomService
         if (!in_array($role, [RoomModel::ROOM_ROLE_MANAGE, RoomModel::ROOM_ROLE_ANCHOR])) {
             throw new ApiException(__('Operation failed'));
         }
-        $room = db('room')->where('id', $room_id)->field('im_operator,union_id')->find();
-        $check_union_role = $roomModel->is_union_user($room['union_id'], $to_user_id, [1, 2]);
-        if (!$check_union_role) {
-            throw new ApiException(__('This user is not a clan member'));
-        }
-
         $sel = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $to_user_id])->value('role');
         if ($sel) {
             if ($sel == 1) {

@@ -13,7 +13,6 @@ return [
     'Type 4'       => '一键清包',
     'Type 5'       => 'IM送礼',
     'Room_id'       => '房间ID',
-    'Union_id'      => '家族',
     'Price_type'    => '价格类型',
     'Price_type 1'  => '金幣',
     'Price_type 2'  => '豆',
