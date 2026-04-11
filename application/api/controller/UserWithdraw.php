@@ -99,7 +99,7 @@ class UserWithdraw extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
 
         $this->success(__('Operation completed'), ['id' => $data['id']]);
@@ -245,7 +245,7 @@ class UserWithdraw extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success(__('Operation completed'));
     }
@@ -283,7 +283,7 @@ class UserWithdraw extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success(__('Operation completed'));
     }

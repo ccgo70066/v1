@@ -290,7 +290,7 @@ class Moment extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success(__('success'));
     }
@@ -325,7 +325,7 @@ class Moment extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success('Success');
     }
@@ -368,7 +368,7 @@ class Moment extends Base
             dump($e->getFile());
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success();
     }
@@ -405,7 +405,7 @@ class Moment extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success();
     }
@@ -447,7 +447,7 @@ class Moment extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success();
     }

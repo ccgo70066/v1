@@ -170,11 +170,6 @@ function error_log_out(Throwable $e, $data = [])
     }
 }
 
-function show_error_notify($e)
-{
-    return $e->getMessage();
-}
-
 function update_seat_gift_val($room_id, $seat, $user_id, $gift_val)
 {
     $sql = db('room_seat_gift_info')->fetchSql()->insert([

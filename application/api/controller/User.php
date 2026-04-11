@@ -334,7 +334,7 @@ class User extends Base
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
 
         $this->success(__('Password set successfully'));
@@ -538,7 +538,7 @@ class User extends Base
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
 
         $this->success(__('Operation completed'));

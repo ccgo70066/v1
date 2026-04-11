@@ -141,7 +141,7 @@ class UserInfo extends Base
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success(__('Operation completed'), $data ?: []);
     }
@@ -161,7 +161,7 @@ class UserInfo extends Base
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success(__('Operation completed'), $reward_info ?: []);
     }
@@ -288,7 +288,7 @@ class UserInfo extends Base
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success('ok', $data);
     }

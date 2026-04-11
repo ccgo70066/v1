@@ -2,7 +2,9 @@
 
 namespace app\api\controller;
 
+use app\common\exception\ApiException;
 use app\common\service\RoomService;
+use think\Db;
 
 /**
  * 厅
@@ -84,6 +86,63 @@ class Member extends Base
 
     public function statistic()
     {
-
     }
+
+
+    /**
+     * @ApiTitle    (流水奖励兑换)
+     * @ApiParams   (name="reward_val",   type="int",     required=true,rule="between:1,9999999", description="申请兑换的流水奖励值")
+     * @ApiParams   (name="type",         type="int",     required=true,rule="in:1,2", description="兑换类型:1=转为收益,2=转为金幣")
+     **/
+    public function withdraw()
+    {
+        $user_id = $this->auth->id;
+        $room = db('room')->where('owner_id', $user_id)->find();
+        if ($room['status'] == 1) {
+            throw new ApiException(__('Please be patient while the room is being reviewed'));
+        } elseif ($room['status'] == 0) {
+            throw new ApiException(__('Room banned, operation unavailable'));
+        }
+        $this->operate_check('union_apply_withdraw' . $room['id'], 2);
+        $reward_val = (int)input('reward_val');
+        $type = input('type');
+        //现有未兑换奖励
+        $profit = db('room_profit')->where('room_id', $room['id'])->find();
+        $sum_reward_val = $profit['reward_val'];
+        $used_reward_val = $profit['used_reward_val'];
+        $sur_reward_val = bcsub($sum_reward_val, $used_reward_val, 2);
+        if ($sum_reward_val < 1 || $reward_val > $sur_reward_val) {
+            $this->error(__('Insufficient balance of flow reward'));
+        }
+        try {
+            Db::startTrans();
+            $exec1 = db('room_profit')->where('room_id', $room['id'])
+                ->whereRaw("reward_val-used_reward_val >= $reward_val")
+                ->setInc('used_reward_val', $reward_val);
+            $exec2 = db('room_withdraw')->insert([
+                'room_id'    => $room['id'],
+                'amount'     => $reward_val,
+                'type'       => $type,
+                'profit_val' => $reward_val,
+                'user_id'    => $user_id,
+                'status'     => 2
+            ]);
+            if (!$exec1 || !$exec2) {
+                throw new ApiException(__('Operation failed'));
+            }
+            if ($type == 1) {
+                user_business_change($user_id, 'reward_amount', $reward_val, 'increase', '家族流水奖励兑换收益', 11);
+            } else {
+                user_business_change($user_id, 'amount', $reward_val, 'increase', '家族收益提领', 11);
+            }
+
+            Db::commit();
+        } catch (\Throwable $e) {
+            Db::rollback();
+            error_log_out($e);
+            $this->error($e->getMessage());
+        }
+        $this->success();
+    }
+
 }

@@ -329,7 +329,7 @@ class Gift extends Base
             Log::error($e->getMessage());
             Db::rollback();
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
 
         $this->success();

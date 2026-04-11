@@ -124,7 +124,7 @@ class Room extends Base
             Db::rollback();
             Log::error($e->getMessage());
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success('', $data ?? '');
     }
@@ -162,7 +162,7 @@ class Room extends Base
         } catch (\Exception $e) {
             Db::rollback();
             error_log_out($e);
-            $this->error(show_error_notify($e));
+            $this->error($e->getMessage());
         }
         $this->success();
     }
