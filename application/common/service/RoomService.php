@@ -66,6 +66,8 @@ class RoomService
         send_im_msg_by_system($row['owner_id'], sprintf($result == 1 ? '您的派对%s已审核通过!' : '您的派对%s审核拒绝!', $row['name']));
         if ($result == 0) {
             $this->closeRoom($room_id);
+        } else {
+            UserBusinessService::set_user_role($row['owner_id'], 2);
         }
     }
 

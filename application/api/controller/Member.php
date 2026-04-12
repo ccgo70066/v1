@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\exception\ApiException;
 use app\common\service\RoomService;
+use app\common\service\UserBusinessService;
 use think\Db;
 
 /**
@@ -49,6 +50,7 @@ class Member extends Base
         $type = input('type', 1);
         $room_id = input('room_id', 0);
         $user_id = $this->auth->id;
+        if (db('user_business')->where('id', $user_id)->value('role') == 4) $this->error(__('You have no permission'));
         $exist = db('room_admin')->where(['user_id' => $user_id, 'status' => 1])->find();
         if ($type == 1) {
             if ($exist) $this->error(__('You are already in the room'));
@@ -79,15 +81,13 @@ class Member extends Base
         $status = input('status', 0);
         $status == -3 && $status = 1;
         $roomServer = new RoomService();
-        $roomServer->audit_member(input('room_id'), input('user_id'), $status);
+        $roomServer->check(input('room_id'), input('user_id'), $status);
+        if (in_array($status, [1, -2])) {
+            UserBusinessService::set_user_role(input('user_id'), $status == 1 ? 3 : 1);
+        }
 
         $this->success();
     }
-
-    public function statistic()
-    {
-    }
-
 
     /**
      * @ApiTitle    (流水奖励兑换)

@@ -473,4 +473,14 @@ class UserBusinessService
         return $data;
     }
 
+    /**
+     * @param     $user_id
+     * @param int $role 角色:1=用户,2=厅主,3=主播,4=运营
+     * @return void
+     */
+    public static function set_user_role($user_id, int $role): void
+    {
+        db('user_business')->where('id', $user_id)->setField('role', $role);
+    }
+
 }

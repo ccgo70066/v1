@@ -58,6 +58,7 @@ class Room extends Base
         $user_id = $this->auth->id;
         $this->operate_check('create_room_' . $user_id, 5);
         $info = input();
+        if (db('user_business')->where('id', $user_id)->value('role') == 4) $this->error(__('You have no permission'));
         $exist = db('room')->where('owner_id', $user_id)->where('status', '>', 0)->find();
         if ($exist) $this->error(__('You already have a room'));
         $this->service->create($user_id, $info);
