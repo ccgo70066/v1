@@ -39,30 +39,33 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'nickname', title: __('Nickname'), operate: 'LIKE'},
                         // {field: 'group_id', title: __('用户组'), visible: false, searchList: $.getJSON('user/group/searchList'), operate: '='},
                         // {field: 'group.name', title: __('用户组'),operate: false},
-                        {field: 'business.role', title: __('Role'), formatter: Table.api.formatter.normal, searchList: {1: __('Role1'), 3: __('Role3'), 4: __('Role4')}},
+                        {field: 'business.role', title: __('Role'), formatter: Table.api.formatter.normal, searchList: {1: __('Role1'), 2: __('Role2'), 3: __('Role3'), 4: __('Role4')}},
                         {field: 'mobile', title: __('Mobile'), operate: 'LIKE'},
                         {field: 'avatar', title: __('Avatar'), events: Table.api.events.image, formatter: Table.api.formatter.image, operate: false},
                         {field: 'business.amount', title: __('金幣'), operate: false, sortable: true},
-                        {field: 'business.reward_amount', title: __('收益'),  operate: false,
+                        {
+                            field: 'business.reward_amount', title: __('收益'), operate: false,
                             formatter: function (value, row, index) {
                                 return parseFloat(value);
-                            }},
+                            }
+                        },
                         {field: 'level_name', title: __('Level'), operate: false, sortable: true},
                         //{field: 'level', title: __('Level'), operate: 'BETWEEN', sortable: true},
                         {field: 'gender', title: __('Gender'), visible: false, searchList: {1: __('Male'), 0: __('Female')}},
                         {field: 'channel.name', title: __('Appid'), formatter: Table.api.formatter.label, operate: false},
-                        {field: 'system', title: __('System'), searchList: {"1":__('System 1'),"2":__('System 2')}, formatter: Table.api.formatter.normal},
+                        {field: 'system', title: __('System'), searchList: {"1": __('System 1'), "2": __('System 2')}, formatter: Table.api.formatter.normal},
                         //{field: 'successions', title: __('Successions'), visible: false, operate: false, sortable: true},
                         //{field: 'maxsuccessions', title: __('Maxsuccessions'), visible: false, operate: false, sortable: true},
                         {field: 'logintime', title: __('Logintime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
                         {field: 'loginip', title: __('Loginip'), formatter: Table.api.formatter.search, operate: 'like', placeholder: '支持模糊搜索'},
                         {field: 'jointime', title: __('Jointime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
-                        {field: 'is_online', title: __('Is_online'), searchList: {"0":__('Is_online 0'),"1":__('Is_online 1')}, formatter: Table.api.formatter.normal},
+                        {field: 'is_online', title: __('Is_online'), searchList: {"0": __('Is_online 0'), "1": __('Is_online 1')}, formatter: Table.api.formatter.normal},
                         //{field: 'joinip', title: __('Joinip'), formatter: Table.api.formatter.search},
                         {field: 'status', title: __('Status'), formatter: Table.api.formatter.status, searchList: {normal: __('Normal'), hidden: __('Hidden'), death: __('Death')}},
                         {field: 'ls_flag', title: __('拉手标识'), operate: 'LIKE'},
                         {field: 'imei', title: __('imei'), operate: 'LIKE', formatter: Table.api.formatter.content, width: '200px'},
-                        {field: 'operate', title: __('Operate'),width:150, table: table, events: Table.api.events.operate,
+                        {
+                            field: 'operate', title: __('Operate'), width: 150, table: table, events: Table.api.events.operate,
                             buttons: [{
                                 name: 'detail',
                                 text: __('Detail'),
@@ -146,8 +149,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                     return 'user/business_log?user_id=' + row.id;
                                 },
                                 dropdown: '操作',
-                            },
-                                {
+                            }, {
                                 name: 'recharge_log',
                                 text: '充值明细',
                                 title: '充值明细',
@@ -168,27 +170,41 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 extend: '',
                                 url: 'user/user/update_password'
                             }, {
-                                    dropdown: '操作',
-                                    name: 'clear_login_limit',
-                                    text: '清理登陆限制',
-                                    title: '清理登陆限制',
-                                    classname: 'btn btn-xs  btn-ajax',
-                                    icon: 'fa fa-wrench',
-                                    extend: '',
-                                    url: 'user/user/clear_login_limit'
-                                }, {
-                                    dropdown: '操作',
-                                    name: 'reset_role',
-                                    text: '取消身份',
-                                    title: '取消身份',
-                                    classname: 'btn btn-xs  btn-dialog',
-                                    icon: 'fa fa-wrench',
-                                    extend: 'data-area=\'["800px", "550px"]\'',
-                                    url: 'user/user/reset_role',
-                                    visible: function (row) {
-                                        return row.business.role != 1;
-                                    }
+                                dropdown: '操作',
+                                name: 'clear_login_limit',
+                                text: '清理登陆限制',
+                                title: '清理登陆限制',
+                                classname: 'btn btn-xs  btn-ajax',
+                                icon: 'fa fa-wrench',
+                                extend: '',
+                                url: 'user/user/clear_login_limit'
+                            }, {
+                                dropdown: '操作',
+                                name: 'set_role',
+                                text: '取消运营身份',
+                                title: '取消运营身份',
+                                classname: 'btn btn-xs  btn-ajax',
+                                icon: 'fa fa-wrench',
+                                url: 'user/user/set_role/type/0',
+                                confirm: '确认操作吗?',
+                                refresh: true,
+                                visible: function (row) {
+                                    return row.business.role != 1;
                                 }
+                            }, {
+                                dropdown: '操作',
+                                name: 'set_role',
+                                text: '设置运营身份',
+                                title: '设置运营身份',
+                                classname: 'btn btn-xs  btn-ajax',
+                                icon: 'fa fa-wrench',
+                                url: 'user/user/set_role/type/1',
+                                confirm: '确认操作吗?',
+                                refresh: true,
+                                visible: function (row) {
+                                    return row.business.role == 1;
+                                }
+                            }
                             ],
                             formatter: Table.api.formatter.operate
                         }
@@ -209,7 +225,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         op[index] = params.op[index];
                     }
                 });
-                params_location={filter: filter, op: op};
+                params_location = {filter: filter, op: op};
             });
 
             $(document).on("click", "#sum_total_click", function () {
@@ -260,7 +276,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
         edit: function () {
             Controller.api.bindevent();
         },
-        add_amount:function () {
+        add_amount: function () {
             Controller.api.bindevent();
         },
 
@@ -307,23 +323,26 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
         api: {
             bindevent: function () {
                 // Form.api.bindevent($("form[role=form]"));
-                Form.api.bindevent($("form[role=form]"),function(){},function(){},function(){
+                Form.api.bindevent($("form[role=form]"), function () {
+                }, function () {
+                }, function () {
 
-                    Layer.confirm('敏感操作,请仔细核对和确认,确认进行吗?',{
+                    Layer.confirm('敏感操作,请仔细核对和确认,确认进行吗?', {
                         title: '提示',
-                        btn: ['确认无误','取消'] //按钮
-                    },function (index) {
-                        Form.api.submit($("form[role=form]"),function (){
+                        btn: ['确认无误', '取消'] //按钮
+                    }, function (index) {
+                        Form.api.submit($("form[role=form]"), function () {
                             parent.Toastr.success('提交成功');
                             parent.$(".btn-refresh").trigger("click");
                             var index_top = parent.Layer.getFrameIndex(window.name);
                             parent.Layer.close(index_top);
-                        },function (){},function () {
+                        }, function () {
+                        }, function () {
                             Layer.close(index);
                             // var index_top = parent.Layer.getFrameIndex(window.name);
                             // parent.Layer.close(index_top);
                         });
-                    },function (){
+                    }, function () {
                     });
                     return false;
                 });
@@ -356,7 +375,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         color = value && typeof colorArr[value] !== 'undefined' ? colorArr[value] : 'primary';
                         display = typeof that.searchList !== 'undefined' && typeof that.searchList[value] !== 'undefined' ? that.searchList[value] : __(value.charAt(0).toUpperCase() + value.slice(1));
                         // label = '<span class="label label-' + color + '"  style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-width:'+width+'px ">' + display + '</span>';
-                        label="<div style='white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:" + width + "px;' >" + value + "</div>";
+                        label = "<div style='white-space: nowrap; text-overflow:ellipsis; overflow: hidden; max-width:" + width + "px;' >" + value + "</div>";
                         if (that.operate) {
                             html.push('<a href="javascript:;" class="searchit" data-toggle="tooltip" title="' + __('Click to search %s', display) + '" data-field="' + field + '" data-value="' + value + '">' + label + '</a>');
                         } else {

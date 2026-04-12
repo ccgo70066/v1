@@ -9,6 +9,7 @@ use app\common\controller\Backend;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\library\Yunxin;
+use app\common\service\UserBusinessService;
 use fast\Random;
 use think\Db;
 use think\Exception;
@@ -90,12 +91,6 @@ class User extends Backend
             foreach ($list as $k => $v) {
                 $v->avatar = $v->avatar ? cdnurl($v->avatar, true) : letter_avatar($v->nickname);
                 $v->hidden(['password', 'salt']);
-                if ($v['business']['role'] == 4) {
-                    $isset = Db::name('union')->where(['owner_id' => $v['id'], 'id' => $v['business']['union_id'], 'status' => 1])->find();
-                    if (!$isset) {
-                        $v['business']['role'] = 1;
-                    }
-                }
             }
             $items = $list->items();
             foreach ($items as &$item) {
@@ -807,12 +802,18 @@ class User extends Backend
     }
 
     /**
-     *
-     * 重置角色(将族长/家族成员/主播身份重置为用户)
+     * 设置/取消运营身份
      */
-    public function reset_role($ids)
+    public function set_role($ids, $type)
     {
         $user_id = $ids;
+        UserBusinessService::set_user_role($user_id, $type ? 4 : 1);
+        board_notice(Message::CMD_REFRESH_USER, ['user_id' => $user_id]);
+        send_im_msg_by_system_with_lang($user_id, $type ? '您的身份已被设置为运营身份' : '您的身份已被重置为普通用户');
+
+        $this->success();
+
+
         $user = Db::name('user_business')->where('id', $ids)
             ->field('union_id,id as user_id')->field("CASE role WHEN 4 THEN '族长' WHEN 3 THEN '家族成员' WHEN 2 THEN '主播'  ELSE '普通用户' END as role")
             ->find();
@@ -885,4 +886,6 @@ class User extends Backend
         $this->assign('room_admin', $room_admin);
         return $this->view->fetch();
     }
+
+
 }
