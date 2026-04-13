@@ -36,8 +36,8 @@ class Member extends Base
             ->field('id,beautiful_id,name,owner_id,intro,cover,status', false, 'r')->find();
         $room['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $profit = db('room_profit')->where('room_id', $room_id)->find();
-        $room['gift_value'] = $profit['gift_val'] ?: 0;
-        $room['reward_value'] = $profit['reward_val'] ?: 0;
+        $room['gift_value'] = $profit['gift_val'] ?? 0;
+        $room['reward_value'] = $profit['reward_val'] ?? 0;
 
         $this->success('', $room);
     }
