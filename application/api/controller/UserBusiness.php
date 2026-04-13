@@ -8,6 +8,8 @@ use app\common\model\ShopItem as ShopModel;
 use app\common\model\UserBusiness as UserBusinessModel;
 use app\common\model\UserBusinessLog;
 use app\common\service\RedisService;
+use app\common\service\UserBusinessLogService;
+use app\common\service\UserBusinessService;
 use think\Db;
 use think\Exception;
 use think\Log;
