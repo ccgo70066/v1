@@ -137,7 +137,7 @@ class Member extends Base
     }
 
     /**
-     * 审核
+     * 审核成员
      * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
      * @ApiParams   (name="user_id", type="int",  required=true, rule="", description="用户ID")
@@ -149,7 +149,7 @@ class Member extends Base
         $status = input('status', 0);
         $status == -3 && $status = 1;
         $roomServer = new RoomService();
-        $roomServer->check(input('room_id'), input('user_id'), $status);
+        $roomServer->check_member(input('room_id'), input('user_id'), $status);
         if (in_array($status, [1, -2])) {
             UserBusinessService::set_user_role(input('user_id'), $status == 1 ? 3 : 1);
         }
