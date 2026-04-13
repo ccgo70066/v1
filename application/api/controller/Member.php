@@ -87,7 +87,7 @@ class Member extends Base
      * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
      * @return void
      */
-    public function destory()
+    public function dismiss()
     {
         $room_id = input('room_id', 0);
         $role = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $this->auth->id, 'status' => 1, 'role' => 1])->count();

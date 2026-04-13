@@ -653,4 +653,13 @@ class RoomService
     }
 
 
+    /**
+     * 解散房间
+     * @param $room_id
+     * @return void
+     */
+    public function destory($room_id)
+    {
+    }
+
 }
