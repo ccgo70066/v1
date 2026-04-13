@@ -38,7 +38,7 @@ class Member extends Base
         $role = db('room_admin')->where('user_id', $user_id)->where('room_id', $room_id)->where('status', '>', 0)->find();
         $room['role'] = $role['role'] ?? 0;
         $room['role_status'] = $role['status'] ?? 0;
-        $room['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
+        $room['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: null;
         $profit = db('room_profit')->where('room_id', $room_id)->find();
         $room['gift_value'] = $profit['gift_val'] ?? 0;
         $room['reward_value'] = $profit['reward_val'] ?? 0;
@@ -70,6 +70,7 @@ class Member extends Base
         foreach ($list as &$item) {
             $item['is_follow'] = isset($user_flow[$item['id']]) ? 1 : 0;
             $item['age'] = date('Y') - substr($item['birthday'], 0, 4);
+            $item['vip_icon'] = RedisService::getLevelCache($item['level']);
         }
 
         $this->success('', $list);
