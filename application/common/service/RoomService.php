@@ -49,6 +49,18 @@ class RoomService
     }
 
     /**
+     * 生成随机房间号
+     */
+    public function createRoomNumber()
+    {
+        $lockName = date('dh');
+        $key = incrLock($lockName, 3600);
+        $room_id = mt_rand(10, 99) . $lockName . str_pad($key, 2, '0', STR_PAD_LEFT);
+        return $room_id;
+    }
+
+
+    /**
      * @param int $room_id
      * @param int $result 审核结果:1=通过,0=拒绝
      * @param int $operator
@@ -350,16 +362,6 @@ class RoomService
         $imService->roomSendNotice($room_id, ['type' => $imService::ROOM_MIC_QUEUE_REFRESH, 'count' => 0]);
     }
 
-    /**
-     * 生成随机房间号
-     */
-    public function createRoomNumber()
-    {
-        $lockName = date('dh');
-        $key = incrLock($lockName, 3600);
-        $room_id = mt_rand(10, 99) . $lockName . str_pad($key, 2, '0', STR_PAD_LEFT);
-        return $room_id;
-    }
 
     /**
      * 更新用户所在房间redis信息
