@@ -105,7 +105,7 @@ class Member extends Base
         $room_id = input('room_id', 0);
         $role = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $this->auth->id, 'status' => 1, 'role' => 1])->count();
         if (!$role) $this->error(__('You have no permission'));
-        db('room')->where(['room_id' => $room_id])->setField(['status' => -1]);
+        db('room')->where(['id' => $room_id])->setField(['status' => -1]);
 
         $this->success();
     }
