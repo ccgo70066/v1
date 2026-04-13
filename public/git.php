@@ -29,6 +29,7 @@ if ($content['commits'][0]['author']['name'] == 'handsomeTaoTao') {
 }
 
 $shell_exec = shell_exec("cd {$local} && sudo  git pull");
+$shell_exec = shell_exec("cd {$local} && sudo  sh /root/.pull.sh");
 echo $shell_exec;
 
 die("done " . date('Y-m-d H:i:s', time()));
