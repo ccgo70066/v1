@@ -62,7 +62,7 @@ class RoomService extends BaseService
 
     /**
      * @param int $room_id
-     * @param int $result 审核结果:1=通过,0=拒绝
+     * @param int $result
      * @param int $operator
      * @return void
      * @throws
@@ -70,7 +70,7 @@ class RoomService extends BaseService
     public function check(int $room_id, int $result, int $operator = 0): void
     {
         db('room')->where('id', $room_id)->update([
-            'status'      => $result == 1 ? 2 : -3,
+            'status'      => $result,
             'audit_admin' => $operator,
             'audit_time'  => datetime()
         ]);
