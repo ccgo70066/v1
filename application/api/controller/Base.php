@@ -61,11 +61,12 @@ class Base extends Api
             //$code = $code >= 1000 || $code < 200 ? 200 : $code;
             $code = 200;
         }
-
-        if (Env::get('api.response_confuse_switch')) $result = $this->confuse($result);
-        if (Env::get('api.response_encode_switch')) {
-            $result = $this->encode($result);
-            $type = '';
+        if ($this->request->header('debug', 0) == 0) {
+            if (Env::get('api.response_confuse_switch')) $result = $this->confuse($result);
+            if (Env::get('api.response_encode_switch')) {
+                $result = $this->encode($result);
+                $type = '';
+            }
         }
         $response = Response::create($result, $type, $code)->header($header);
         throw new HttpResponseException($response);
