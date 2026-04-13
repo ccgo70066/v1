@@ -974,7 +974,7 @@ class Room extends Base
 
     /**
      * @ApiTitle    (获取房间详情[公,个])
-     * @ApiMethod   (get)
+     * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      **/
     public function get_room_info()

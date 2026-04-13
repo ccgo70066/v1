@@ -3,6 +3,9 @@
 namespace app\api\controller;
 
 use app\common\exception\ApiException;
+use app\common\library\agora\Agora;
+use app\common\model\ChannelBlacklist;
+use app\common\service\RedisService;
 use app\common\service\RoomService;
 use app\common\service\UserBusinessService;
 use think\Db;
@@ -15,6 +18,29 @@ class Member extends Base
 {
     protected $noNeedLogin = [];
     protected $noNeedRight = '*';
+
+    /**
+     * 获取厅信息
+     * @ApiMethod   (post)
+     * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
+     * @ApiReturnParams    (name="status", type="int", description="房间状态:1=审核中,2=休息中,3=开播中,0=禁封,-1=申请注销中,-2=已注销,-3=审核驳回")
+     */
+    public function get_room_info()
+    {
+        $user_id = $this->auth->id;
+        $room_id = input('room_id');
+        $redis = redis();
+        if (!db('room_admin')->where('user_id', $user_id)->where('room_id', $room_id)->where('status', 'in', '1,2')->count())
+            $this->error(__('You have no permission'));
+        $room = db('room r')->where('r.id', $room_id)
+            ->field('id,beautiful_id,name,owner_id,intro,cover,status', false, 'r')->find();
+        $room['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
+        $profit = db('room_profit')->where('room_id', $room_id)->find();
+        $room['gift_value'] = $profit['gift_val'] ?: 0;
+        $room['reward_value'] = $profit['reward_val'] ?: 0;
+
+        $this->success('', $room);
+    }
 
     /**
      * 获取房间成员
@@ -36,6 +62,17 @@ class Member extends Base
             ->page(input('page', 1), input('size', 10))->select();
 
         $this->success('', $list);
+    }
+
+    /**
+     * 踢出成员
+     * @ApiMethod   (post)
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
+     * @ApiParams   (name="user_id", type="int",  required=true, rule="", description="用户ID")
+     * @return void
+     */
+    public function kick()
+    {
     }
 
     /**
