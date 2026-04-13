@@ -115,7 +115,7 @@ class Member extends Base
      * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
      * @ApiParams   (name="type", type="int",  required=true, rule="", description="类型:1=加入,2=退出")
-     * @ApiParams   (name="reason", type="string",  required=true, rule="", description="原因")
+     * @ApiParams   (name="reason", type="string",  required=false, rule="", description="原因")
      */
     public function join()
     {
