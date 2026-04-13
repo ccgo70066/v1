@@ -66,9 +66,9 @@ class Member extends Base
             ->where('a.room_id', $room_id)
             ->where('a.status', input('status', 1))
             ->page(input('page', 1), input('size', 10))->select();
-        $user_flow = db('user_flow')->where('user_id', $user_id)->whereIn('to_user_id', array_column((array)$list, 'id'))->column('id', 'to_user_id');
+        $user_flow = db('user_follow')->where('user_id', $user_id)->whereIn('to_user_id', array_column((array)$list, 'id'))->column('id', 'to_user_id');
         foreach ($list as &$item) {
-            $item['is_flow'] = isset($user_flow[$item['id']]) ? 1 : 0;
+            $item['is_follow'] = isset($user_flow[$item['id']]) ? 1 : 0;
         }
 
         $this->success('', $list);
