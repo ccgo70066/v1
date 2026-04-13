@@ -12,7 +12,7 @@ use think\Exception;
 use think\exception\DbException;
 use think\Log;
 
-class RechargeService
+class RechargeService extends BaseService
 {
 
     /**

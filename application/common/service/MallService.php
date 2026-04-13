@@ -6,7 +6,7 @@ namespace app\common\service;
 /**
  * 用户商品相关
  */
-class MallService
+class MallService extends BaseService
 {
     /**
      * 获取所有礼物数组

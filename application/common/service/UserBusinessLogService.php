@@ -6,7 +6,7 @@ namespace app\common\service;
 /**
  * 用户业务流水-服务
  */
-class UserBusinessLogService
+class UserBusinessLogService extends BaseService
 {
 
     /**

@@ -11,7 +11,7 @@ use app\common\model\UserNoble;
 /**
  * 贵族相关类
  */
-class NobleService
+class NobleService extends BaseService
 {
 
     /**

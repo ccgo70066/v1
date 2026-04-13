@@ -17,7 +17,7 @@ use think\Log;
 /**
  * 房间服务类
  */
-class RoomService
+class RoomService extends BaseService
 {
 
     private RoomModel $model;

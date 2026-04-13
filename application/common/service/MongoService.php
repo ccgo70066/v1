@@ -4,7 +4,7 @@ namespace app\common\service;
 
 use think\Db;
 
-class MongoService
+class MongoService extends BaseService
 {
     //解决mongodb在mysql事务中存储的数据不能跟随mysql的回滚事务而保持一致性的问题
     public static $logData = [];

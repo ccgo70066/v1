@@ -8,7 +8,7 @@ use app\common\exception\ApiException;
 /**
  * 异步请求类
  */
-class AsyncRequestService
+class AsyncRequestService extends BaseService
 {
     /**
      * @param $url string 请求地址

@@ -6,7 +6,7 @@ namespace app\common\service;
 /**
  * 用户提现类
  */
-class UserWithdrawService
+class UserWithdrawService extends BaseService
 {
     /**
      * 获取账户信息

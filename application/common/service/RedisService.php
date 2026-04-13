@@ -2,7 +2,7 @@
 
 namespace app\common\service;
 
-class RedisService
+class RedisService extends BaseService
 {
     //常量命名规范：描述key的含义
     //key命名规范：业务模块：key描述.value描述.[key分割:]

@@ -11,7 +11,7 @@ use think\Exception;
 /**
  * 用户业务类
  */
-class UserBusinessService
+class UserBusinessService extends BaseService
 {
 
     /**

@@ -7,7 +7,7 @@ use app\common\model\Union as UnionModel;
 /**
  * 排行榜类
  */
-class RankService
+class RankService extends BaseService
 {
     /**
      * 判断用户是否是家族成员

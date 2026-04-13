@@ -12,7 +12,7 @@ use think\Db;
 /**
  * 用户业务类
  */
-class UserService
+class UserService extends BaseService
 {
     /**
      * 通过ID获取用户信息

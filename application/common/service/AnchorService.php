@@ -6,7 +6,7 @@ namespace app\common\service;
 /**
  * 主播服务类
  */
-class AnchorService
+class AnchorService extends BaseService
 {
 
     public function getInfo($user_id)

@@ -8,7 +8,7 @@ use think\Db;
 /**
  * 用户基础数据统计类
  */
-class UserBaseStatisticsService
+class UserBaseStatisticsService extends BaseService
 {
     /**
      * 获取用户基础统计

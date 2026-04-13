@@ -10,7 +10,7 @@ use think\Exception;
 /**
  * 礼物服务类
  */
-class GiftService
+class GiftService extends BaseService
 {
     protected GiftModel $model;
 

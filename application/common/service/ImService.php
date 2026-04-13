@@ -15,7 +15,7 @@ use think\exception\DbException;
 /**
  * Im服务类
  */
-class ImService
+class ImService extends BaseService
 {
     public Yunxin $im;
     //系统消息ID
