@@ -24,16 +24,16 @@ class Member extends Base
      * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      * @ApiReturnParams    (name="status", type="int", description="房间状态:1=审核中,2=休息中,3=开播中,0=禁封,-1=申请注销中,-2=已注销,-3=审核驳回")
+     * @ApiReturnParams    (name="role", type="int", description="角色:1=房主,2=管理,3=主播")
      */
     public function get_room_info()
     {
         $user_id = $this->auth->id;
         $room_id = input('room_id');
         $redis = redis();
-        if (!db('room_admin')->where('user_id', $user_id)->where('room_id', $room_id)->where('status', 'in', '1,2')->count())
-            $this->error(__('You have no permission'));
         $room = db('room r')->where('r.id', $room_id)
             ->field('id,beautiful_id,name,owner_id,intro,cover,status', false, 'r')->find();
+        $room['role'] = db('room_admin')->where('user_id', $user_id)->where('room_id', $room_id)->where('status', '>', 0)->value('role') ?? 0;
         $room['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $profit = db('room_profit')->where('room_id', $room_id)->find();
         $room['gift_value'] = $profit['gift_val'] ?? 0;
