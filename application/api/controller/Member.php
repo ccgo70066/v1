@@ -61,10 +61,11 @@ class Member extends Base
         $user_id = $this->auth->id;
         $room_id = input('room_id', 0);
         $extend = input('status') == 2 ? ',a.reason' : '';
+        $status = input('status', 1);
+        $where = $status == 1 ? ['a.status' => ['in', '1,2']] : ['a.status' => $status];
         $list = db('room_admin')->alias('a')->join('user u', 'a.user_id = u.id', 'left')
             ->field('a.user_id,a.status,u.id,u.nickname,u.avatar,u.birthday,gender,level,a.create_time,a.update_time' . $extend)
-            ->where('a.room_id', $room_id)
-            ->where('a.status', input('status', 1))
+            ->where('a.room_id', $room_id)->where($where)
             ->page(input('page', 1), input('size', 10))->select();
         $user_flow = db('user_follow')->where('user_id', $user_id)->whereIn('to_user_id', array_column((array)$list, 'id'))->column('id', 'to_user_id');
         foreach ($list as &$item) {
