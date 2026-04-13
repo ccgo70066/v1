@@ -38,6 +38,7 @@ class Member extends Base
         $profit = db('room_profit')->where('room_id', $room_id)->find();
         $room['gift_value'] = $profit['gift_val'] ?? 0;
         $room['reward_value'] = $profit['reward_val'] ?? 0;
+        $room['member_count'] = db('room_admin')->where('room_id', $room_id)->where('status', 'in', [1, 2])->count();
 
         $this->success('', $room);
     }
