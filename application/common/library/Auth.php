@@ -470,7 +470,6 @@ class Auth
         //$userinfo['constellation'] = __($userinfo['constellation']);
         $userinfo['interest_text'] = implode(',', db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name'));
 
-        $userinfo['room_id'] = 0;
         $userinfo['token'] = $this->_token;
         [
             $userinfo['level_info'],
@@ -507,6 +506,7 @@ class Auth
         $userinfo['blacklist_num'] = $statistics['blacklist_num'];
         $userinfo['red_packet_auth'] = UserBusiness::getRedPacketAuth($userinfo['id']);
         $userinfo['shutup'] = db('user_shutup')->where('user_id', $userinfo['id'])->find() ? 1 : 0;
+        $userinfo['room_id'] = db('room_admin')->where('user_id', $userinfo['id'])->where('status', 1)->value('room_id') ?? 0;
 
         return $userinfo;
     }
