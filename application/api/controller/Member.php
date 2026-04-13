@@ -73,7 +73,30 @@ class Member extends Base
      */
     public function kick()
     {
+        $room_id = input('room_id', 0);
+        $user_id = input('user_id', 0);
+        $role = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $this->auth->id, 'role' => ['in', '1,2'], 'status' => 1])->count();
+        if (!$role) $this->error(__('You have no permission'));
+        (new RoomService())->kick($room_id, $user_id);
+        $this->success();
     }
+
+    /**
+     * 申请解散
+     * @ApiMethod   (post)
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
+     * @return void
+     */
+    public function destory()
+    {
+        $room_id = input('room_id', 0);
+        $role = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $this->auth->id, 'status' => 1, 'role' => 1])->count();
+        if (!$role) $this->error(__('You have no permission'));
+        db('room')->where(['room_id' => $room_id])->setField(['status' => -1]);
+
+        $this->success();
+    }
+
 
     /**
      * 申请加入/退出

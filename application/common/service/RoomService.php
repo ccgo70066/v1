@@ -2,6 +2,7 @@
 
 namespace app\common\service;
 
+use app\admin\model\UserBusiness;
 use app\common\exception\ApiException;
 use app\common\model\Room;
 use app\common\model\Room as RoomModel;
@@ -633,6 +634,22 @@ class RoomService
         db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->update(['status' => $status]);
         // todo notice user
 
+    }
+
+    /**
+     * 踢出成员
+     * @param $room_id
+     * @param $user_id
+     * @return void
+     * @throws
+     */
+    public function kick($room_id, $user_id)
+    {
+        $where = ['room_id' => $room_id, 'user_id' => $user_id, 'status' => ['in', '1,2']];
+        $role = db('room_admin')->where($where)->count();
+        if (!$role) throw new ApiException(__('User does not exist'));
+        db('room_admin')->where($where)->setField(['status' => -2]);
+        UserBusinessService::set_user_role($user_id, 1);
     }
 
 
