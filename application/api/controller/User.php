@@ -14,7 +14,10 @@ use app\common\service\RedisService;
 use app\common\service\UserService;
 use fast\Random;
 use think\Db;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\ModelNotFoundException;
 use think\Exception;
+use think\exception\DbException;
 use think\Log;
 use util\Minio;
 
@@ -656,7 +659,7 @@ class User extends Base
         if ($status) {
             Db::name('user')->where('id', $user_id)->setField('avatar', $url);
         }
-         send_check_message("形象照(会员中心-->头像审核) - 用户: {$user_id} 提交了新的形象照，需要审核！");
+        send_check_message("形象照(会员中心-->头像审核) - 用户: {$user_id} 提交了新的形象照，需要审核！");
         $this->success();
     }
 
@@ -736,5 +739,46 @@ class User extends Base
             $this->error($e->getMessage());
         }
         $this->success();
+    }
+
+
+    /**
+     * 取号
+     * @ApiMethod   (post)
+     * @return void
+     */
+    public function vest()
+    {
+        $limit = 2;
+        $day_limit = 10;
+        $total_limit = 100;
+        $receiver = $this->auth->id;
+        if (db('user_business')->where('id', $receiver)->value('role') != 1) $this->error(__('You have no permission'));
+        $exist = db('user_vest')->where('status', 0)->order('create_time asc')->limit($limit)->select();
+        if (count($exist) < $limit) $this->error(__('The remaining numbers are insufficient'));
+        $day_count = db('user_vest')->where(['receiver' => $receiver,])->wheretime('update_time', 'today')->count();
+        if ($day_count >= $day_limit) $this->error(__('The remaining numbers are insufficient'));
+        $total_count = db('user_vest')->where(['receiver' => $receiver,])->count();
+        if ($total_count >= $total_limit) $this->error(__('The remaining numbers are insufficient'));
+
+        db('user_vest')->where('id', 'in', array_column((array)$exist, 'id'))->setField(['status' => 1, 'receiver' => $receiver]);
+
+        $this->success();
+    }
+
+    /**
+     * 取号记录
+     * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
+     * @ApiParams   (name="size", type="int",  required=false, rule="", description="页码大小")
+     * @return void
+     * @throws
+     */
+    public function vest_log()
+    {
+        $list = db('user_vest')
+            ->field('account,password,update_time')
+            ->where(['receiver' => $this->auth->id,])->order('update_time desc')->page(input('page', 1), input('size', 10))->select();
+
+        $this->success('', $list);
     }
 }

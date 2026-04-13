@@ -2,11 +2,14 @@
 
 namespace app\common\service;
 
+use app\common\library\Auth;
+use app\common\library\ChinaName;
 use app\common\model\AnchorRecommend as AnchorRecommendModel;
 use app\common\model\Gift as GiftModel;
 use app\common\model\User;
 use app\common\model\UserBlacklist;
 use app\common\model\UserBusiness;
+use fast\Random;
 use think\Db;
 
 /**
@@ -57,6 +60,38 @@ class UserService extends BaseService
     public static function getByMobile($mobile)
     {
         return User::where('mobile', $mobile)->find();
+    }
+
+    public function create_vest()
+    {
+        $auth = Auth::instance();
+        $gender = random_int(0, 1);
+        $extend = [
+            'id'       => $auth->get_user_skip_id(),
+            'nickname' => (new ChinaName())->getNickname(),
+            'avatar'   => $this->get_random_avatar($gender),
+            'gender'   => $gender,
+            'birthday' => date('Y-m-d', random_int(strtotime('-30year'), strtotime('-18year'))),
+        ];
+        $max = db('user')->where('mobile', 'like', '11%')->max('mobile');
+        $mobile = $max ? $max + 1 : '11000000001';
+        $password = Random::alpha(10);
+
+        $auth->register(Random::alnum(10), $password, '', $mobile, $extend);
+        dump($auth->getError());
+        db('user_vest')->insert(['user_id' => $extend['id'], 'account' => $mobile, 'password' => $password,]);
+    }
+
+    public static function get_random_avatar($gender = 1)
+    {
+        $all_avatars = config('app.default_avatar_gender');
+        $avatars = array_values(array_filter(array_map(function ($value) use ($gender) {
+            if ($value['gender'] == $gender) {
+                return $value['avatar'];
+            }
+        }, $all_avatars)));
+
+        return $avatars[array_rand($avatars)];
     }
 
 

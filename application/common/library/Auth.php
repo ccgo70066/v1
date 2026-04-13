@@ -164,6 +164,7 @@ class Auth
      */
     public function register($username, $password, $email = '', $mobile = '', $extend = [])
     {
+        dump(func_get_args());
         // 检测用户名、昵称、邮箱、手机号是否存在
         if (User::getByUsername($username)) {
             $this->setError('Username already exist');
@@ -204,7 +205,7 @@ class Auth
         ]);
         $password && $params['password'] = $this->getEncryptPassword($password, $params['salt']);
         $params = array_merge($params, $extend);
-        $params['id'] = $this->get_user_skip_id();
+        !isset($params['id']) && $params['id'] = $this->get_user_skip_id();
         Db::startTrans();
         try {
             $user = User::create($params);
@@ -242,7 +243,6 @@ class Auth
             return false;
         } catch (\Exception $e) {
             Db::rollback();
-            throw $e;
             error_log_out($e);
             $this->setError('网络开小差');
             return false;

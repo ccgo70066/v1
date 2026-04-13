@@ -60,7 +60,7 @@ class RedisService extends BaseService
     /*
      * 获取用户缓存信息
      */
-    public static function getLevelCache($key)
+    public static function getLevelCache($key = '')
     {
         if ($key == 'all' && !is_numeric($key)) {
             return db('level')->column('icon', 'grade');
