@@ -129,11 +129,12 @@ class Member extends Base
             db('room_admin')->insert([
                 'room_id' => $room_id,
                 'user_id' => $user_id,
-                'status'  => 0,
+                'role'    => 2,
                 'reason'  => input('reason', ''),
             ]);
         } else {
             if (!$exist) $this->error(__('You are not in the room'));
+            if (!input('reason')) $this->error(__('Please enter the reason'));
             db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id,])->update(['status' => 2, 'reason' => input('reason', ''),]);
         }
 
