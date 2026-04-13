@@ -457,76 +457,6 @@ class RoomService
     }
 
     /**
-     * 创建
-     * @param int $union_id
-     * @param     $room_name
-     * @param     $cover
-     * @param int $beautiful_id
-     * @return ApiException|bool
-     */
-    public function createUnionRoom(int $union_id, $room_name, $cover, int $beautiful_id = 0)
-    {
-        if ($room_name != Shield::sensitive_filter($room_name)) {
-            throw new ApiException(__('Room name violates regulations'));
-        }
-        if (!$room_name || !$cover) {
-            throw new ApiException(__('Room name or cover is empty'));
-        }
-        $union = db('union')->where('id', $union_id)->find();
-        $union_master = db('union_user')->where(['union_id' => $union_id, 'role' => 1])->value('user_id');
-        if (!$union_master) {
-            throw new ApiException(__('Clan leader does not exist'));
-        }
-        if (!$union) {
-            throw new ApiException(__('Clan does not exist'));
-        };
-        $count = db('room')->where(['union_id' => $union_id, 'status' => ['in', '1,2,3']])->count();
-        if ($count >= $union['room_max_num']) {
-            throw new ApiException(__('Room quantity limit reached'));
-        }
-        $exist = db('room')->where('name', $room_name)->find();
-        if ($exist) {
-            throw new ApiException(__('Room name already exists'));
-        }
-        if ($beautiful_id) {
-            if (!preg_match('/^[0-9]{4,5}$/i', $beautiful_id)) {
-                throw new ApiException(__('Room premium number should be 4~5 digits'));
-            }
-        } else {
-            $beautiful_id = $this->createRoomNumber();
-        }
-        $sel = db('room')->where('beautiful_id', $beautiful_id)->find();
-        if ($sel) {
-            throw new ApiException(__('This room premium number already exists'));
-        }
-        $imService = new ImService();
-        $resultIm = $imService->createRoom($union_master, $room_name);
-        $room_data = [
-            'beautiful_id'   => $beautiful_id,
-            'union_id'       => $union_id,
-            'name'           => $room_name,
-            'im_operator'    => $union_master,
-            'owner_id'       => $union_master,
-            'cover'          => $cover,
-            'im_roomid'      => $resultIm['chatroom']['roomid'],
-            'status'         => 1,
-            'is_show'        => 0,
-            'theme_id'       => input('theme_id') ?: db('room_theme_cate')->value('id'),
-            'way'            => input('way') ?: 1,
-            'bg_img'         => input('bg_img') ?: db('room_img')->where('type', 1)->order('weigh')->value('image'),
-            'welcome_msg'    => Shield::sensitive_filter(input('welcome_msg')),
-            'welcome_switch' => input('welcome_switch') ?: 0
-        ];
-        db('room')->max('id') < 100000 && $room_data['id'] = 100001;
-        $save = db('room')->insert($room_data);
-        if ($save) {
-            $room_id = db('room')->where('beautiful_id', $beautiful_id)->where('owner_id', $union_master)->value('id');
-            $result = db('room_admin')->insert(['room_id' => $room_id, 'user_id' => $union_master, 'role' => 1]);
-        }
-        return (bool)($result ?? false);
-    }
-
-    /**
      * 移除用户房间角色
      * @param $room_id    int 房间号
      * @param $to_user_id int 被操作人
@@ -657,9 +587,23 @@ class RoomService
      * 解散房间
      * @param $room_id
      * @return void
+     * @throws
      */
-    public function destory($room_id)
+    public function dismiss($room_id)
     {
+        $this->closeRoom($room_id);
+
+        db()->startTrans();
+        try {
+            db('room')->where('id', $room_id)->setField(['status' => -2]);
+            $members = db('room_admin')->where('room_id', $room_id)->whereIn('status', '1,2')->column('user_id');
+            UserBusinessService::set_user_role($members, 1);
+            db('room_admin')->where('room_id', $room_id)->whereIn('status', '1,2')->setField('status', -2);
+            db()->commit();
+        } catch (\Exception $e) {
+            db()->rollback();
+            throw new ApiException($e->getMessage());
+        }
     }
 
 }

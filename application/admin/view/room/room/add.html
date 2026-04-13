@@ -1,12 +1,6 @@
 <form id="add-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
 
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Im_roomid')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            <input class="form-control" data-rule="required" id="c-im_roomid" name="row[im_roomid]" type="text">
-        </div>
-    </div>
-    <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Im_operator')}:</label>
         <div class="col-xs-12 col-sm-8">
             <input class="form-control" id="c-im_operator" name="row[im_operator]" type="text">
@@ -33,7 +27,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Cate')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-cate" data-rule="required" class="form-control selectpicker" name="row[cate]">
                 {foreach name="cateList" item="vo"}
                     <option name="key" value="{$key}" value="1" {in}selected{/in}>{$vo}</option>
@@ -81,7 +75,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_lock')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_lock" data-rule="required" class="form-control selectpicker" name="row[is_lock]">
                 {foreach name="isLockList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -93,7 +87,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_give_box')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_give_box" data-rule="required" class="form-control selectpicker" name="row[is_give_box]">
                 {foreach name="isGiveBoxList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -105,7 +99,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_open_box')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_open_box" class="form-control selectpicker" name="row[is_open_box]">
                 {foreach name="isOpenBoxList" item="vo"}
                     <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
@@ -117,7 +111,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_open_treasure')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_open_treasure" class="form-control selectpicker" name="row[is_open_treasure]">
                 {foreach name="isOpenTreasureList" item="vo"}
                     <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
@@ -135,10 +129,10 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
+
             <div class="radio">
             {foreach name="statusList" item="vo"}
-            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="1"}checked{/in} /> {$vo}</label> 
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="1"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
 
@@ -159,7 +153,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Way')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-way" data-rule="required" class="form-control selectpicker" name="row[way]">
                 {foreach name="wayList" item="vo"}
                     <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
@@ -171,7 +165,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_close')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_close" data-rule="required" class="form-control selectpicker" name="row[is_close]">
                 {foreach name="isCloseList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -303,7 +297,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_commend')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_commend" class="form-control selectpicker" name="row[is_commend]">
                 {foreach name="isCommendList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -315,7 +309,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Pause')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-pause" class="form-control selectpicker" name="row[pause]">
                 {foreach name="pauseList" item="vo"}
                     <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
@@ -327,7 +321,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_show')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_show" class="form-control selectpicker" name="row[is_show]">
                 {foreach name="isShowList" item="vo"}
                     <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
@@ -339,7 +333,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_host_seat')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_host_seat" class="form-control selectpicker" name="row[is_host_seat]">
                 {foreach name="isHostSeatList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -351,7 +345,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_receive_seat')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_receive_seat" class="form-control selectpicker" name="row[is_receive_seat]">
                 {foreach name="isReceiveSeatList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -363,7 +357,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_boss_seat')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_boss_seat" class="form-control selectpicker" name="row[is_boss_seat]">
                 {foreach name="isBossSeatList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -375,7 +369,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_rank')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_rank" class="form-control selectpicker" name="row[is_rank]">
                 {foreach name="isRankList" item="vo"}
                     <option value="{$key}" {in name="key" value="0"}selected{/in}>{$vo}</option>
@@ -387,7 +381,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_screen')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_screen" class="form-control selectpicker" name="row[is_screen]">
                 {foreach name="isScreenList" item="vo"}
                     <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>

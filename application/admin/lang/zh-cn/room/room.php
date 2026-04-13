@@ -4,7 +4,6 @@ return [
     'Id'                => '房间ID',
     'Beautiful_id'      => '靓号ID',
     'Owner_id'          => '房主ID',
-    'Im_roomid'         => '云信房间ID',
     'Im_operator'       => '云信房主(不可变更)',
     'Name'              => '名称',
     'Theme_id'          => '房间标签ID',

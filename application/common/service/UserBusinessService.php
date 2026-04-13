@@ -480,7 +480,8 @@ class UserBusinessService
      */
     public static function set_user_role($user_id, int $role): void
     {
-        db('user_business')->where('id', $user_id)->setField('role', $role);
+        $where = is_array($user_id) ? ['id' => ['in', $user_id]] : ['id' => $user_id];
+        db('user_business')->where($where)->setField('role', $role);
     }
 
 }
