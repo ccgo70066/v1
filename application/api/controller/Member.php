@@ -58,13 +58,18 @@ class Member extends Base
      */
     public function get_list()
     {
+        $user_id = $this->auth->id;
         $room_id = input('room_id', 0);
         $extend = input('status') == 2 ? ',a.reason' : '';
         $list = db('room_admin')->alias('a')->join('user u', 'a.user_id = u.id', 'left')
-            ->field('a.user_id,a.status,u.id,u.nickname,u.avatar' . $extend)
+            ->field('a.user_id,a.status,u.id,u.nickname,u.avatar,u.birthday,gender,level' . $extend)
             ->where('a.room_id', $room_id)
             ->where('a.status', input('status', 1))
             ->page(input('page', 1), input('size', 10))->select();
+        $user_flow = db('user_flow')->where('user_id', $user_id)->whereIn('to_user_id', array_column((array)$list, 'id'))->column('id', 'to_user_id');
+        foreach ($list as &$item) {
+            $item['is_flow'] = isset($user_flow[$item['id']]) ? 1 : 0;
+        }
 
         $this->success('', $list);
     }
