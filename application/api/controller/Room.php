@@ -1184,7 +1184,7 @@ class Room extends Base
         $my = db('room r')->join('room_admin a', 'r.id = a.room_id', 'left')
             ->field('id,beautiful_id,name,is_lock,hot,cover,member_count,status', false, 'r')
             ->field('a.status as member_status,a.role')
-            ->where('a.user_id', $user_id)->where('a.status', '>=', 0)->find();
+            ->where('a.user_id', $user_id)->where('r.status', '>=', 0)->find();
         $this->success('', [
             'my'   => $my,
             'list' => $list,
