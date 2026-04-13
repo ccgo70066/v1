@@ -37,7 +37,7 @@ class Member extends Base
             ->field('id,beautiful_id,name,owner_id,intro,cover,status', false, 'r')->find();
         $role = db('room_admin')->where('user_id', $user_id)->where('room_id', $room_id)->where('status', '>', 0)->find();
         $room['role'] = $role['role'] ?? 0;
-        $room['role_status'] = $role['status'] ?? null;
+        $room['role_status'] = $role['status'] ?: null;
         $room['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $profit = db('room_profit')->where('room_id', $room_id)->find();
         $room['gift_value'] = $profit['gift_val'] ?? 0;
