@@ -29,21 +29,22 @@ class RoomService
 
     /**
      * @param $user_id
-     * @param $info
+     * @param $data
      * @return void
      * @throws
      */
-    public function create($user_id, $info)
+    public function create($user_id, $data)
     {
         $imService = new ImService();
-        $resultIm = $imService->createRoom($user_id, $info['name'], $info['intro']);
+        $resultIm = $imService->createRoom($user_id, $data['name'], $data['intro']);
         if (!$resultIm) throw new ApiException('创建房间失败');
         $room_id = $resultIm['chatroom']['roomid'];
-        $info['id'] = $room_id;
-        $info['owner_id'] = $user_id;
-        $info['status'] = 1;
-        db('room')->strict(false)->insert($info);
-        db('room_admin')->insert(['room_id' => $info['id'], 'user_id' => $user_id, 'role' => 1, 'status' => 1]);
+        $data['id'] = $room_id;
+        $data['beautiful_id'] = $this->createRoomNumber();
+        $data['owner_id'] = $user_id;
+        $data['status'] = 1;
+        db('room')->strict(false)->insert($data);
+        db('room_admin')->insert(['room_id' => $data['id'], 'user_id' => $user_id, 'role' => 1, 'status' => 1]);
         $this->add_room_log($room_id, $user_id, '申请创建房间');
     }
 
