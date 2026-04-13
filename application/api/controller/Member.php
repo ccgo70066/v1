@@ -62,7 +62,7 @@ class Member extends Base
         $room_id = input('room_id', 0);
         $extend = input('status') == 2 ? ',a.reason' : '';
         $list = db('room_admin')->alias('a')->join('user u', 'a.user_id = u.id', 'left')
-            ->field('a.user_id,a.status,u.id,u.nickname,u.avatar,u.birthday,gender,level' . $extend)
+            ->field('a.user_id,a.status,u.id,u.nickname,u.avatar,u.birthday,gender,level,a.create_time,a.update_time' . $extend)
             ->where('a.room_id', $room_id)
             ->where('a.status', input('status', 1))
             ->page(input('page', 1), input('size', 10))->select();
