@@ -75,8 +75,7 @@ class UserService extends BaseService
         ];
         $max = db('user')->where('mobile', 'like', '11%')->max('mobile');
         $mobile = $max ? $max + 1 : '11000000001';
-        $password = Random::alpha(10);
-
+        $password = Random::alnum(10);
         $auth->register(Random::alnum(10), $password, '', $mobile, $extend);
         dump($auth->getError());
         db('user_vest')->insert(['user_id' => $extend['id'], 'account' => $mobile, 'password' => $password,]);
