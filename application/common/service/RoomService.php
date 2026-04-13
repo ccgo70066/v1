@@ -611,7 +611,8 @@ class RoomService extends BaseService
 
     public function check_member($room_id, $user_id, mixed $status)
     {
-        db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->setField(['status' => $status]);
+        if ($status == -1) db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->delete();
+        else db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->setField(['status' => $status]);
     }
 
 }
