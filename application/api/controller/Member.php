@@ -126,12 +126,7 @@ class Member extends Base
         $exist = db('room_admin')->where(['user_id' => $user_id, 'status' => 1])->find();
         if ($type == 1) {
             if ($exist) $this->error(__('You are already in the room'));
-            db('room_admin')->insert([
-                'room_id' => $room_id,
-                'user_id' => $user_id,
-                'role'    => 2,
-                'reason'  => input('reason', ''),
-            ]);
+            db('room_admin')->insert(['room_id' => $room_id, 'user_id' => $user_id, 'role' => 2,]);
         } else {
             if (!$exist) $this->error(__('You are not in the room'));
             if (!input('reason')) $this->error(__('Please enter the reason'));
