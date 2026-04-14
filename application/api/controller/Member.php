@@ -166,7 +166,6 @@ class Member extends Base
      * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="送礼人ID")
      * @ApiParams   (name="to_user_id", type="int",  required=false, rule="", description="收礼人ID")
      *
-     *
      * @ApiParams   (name="size", type="int", required=false, rule="", description="分頁大小,默認20")
      * @ApiParams   (name="start_id", type="int", required=false, rule="", description="分頁起始id")
      */
@@ -255,8 +254,23 @@ class Member extends Base
         $this->success();
     }
 
+    /**
+     * 兑换记录
+     * @ApiParams   (name="page",    type="int",  required=false, rule="", description="页码")
+     * @ApiParams   (name="size", type="int",  required=false, rule="", description="每页数量")
+     */
     public function withdraw_log()
     {
+        $user_id = $this->auth->id;
+        $room_id = db('room_admin')->where(['user_id' => $user_id, 'status' => 1, 'role' => 1])->value('room_id');
+        if (!$room_id) $this->error(__('You have no permission'));
+
+        $list = db('room_withdraw')->field('type,amount,audit_time')
+            ->where('status', 2)
+            ->where('room_id', $room_id)
+            ->order('id desc')->page(input('page', 1), input('size', 10))->select();
+
+        $this->success('', $list);
     }
 
 }
