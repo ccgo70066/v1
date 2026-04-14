@@ -407,10 +407,10 @@ class RoomService extends BaseService
             db('room')->where('id', $room_id)->setField(['status' => 3, 'is_close' => 0]);
         }
         $imService = new ImService();
-        $hiding = $room['type'] == 1 && user_vip_switch($user_id, 9);
-        if ($room['type'] == 2 && $room['is_close'] == 1) {
-            $imService->roomSetSwitch($room_id, true);
-        }
+        //$hiding = 1 && user_vip_switch($user_id, 9);
+        //if ($room['type'] == 2 && $room['is_close'] == 1) {
+        //    $imService->roomSetSwitch($room_id, true);
+        //}
 
         //筛选重复进入房间
         if ($last_room_id != $room_id) {
@@ -419,10 +419,10 @@ class RoomService extends BaseService
                 $this->quit_room($user_id, $last_room_id);
             }
             //如果没有开启房间隐身
-            if ($hiding == 0 && user_vip_switch($user_id, 7)) {
-                $roomModel->vip_hot($room_id, $user_id);
-            }
-            if (!($room['type'] == 2 && $room['owner_id'] == $user_id)) {
+            //if ($hiding == 0 && user_vip_switch($user_id, 7)) {
+            //    $roomModel->vip_hot($room_id, $user_id);
+            //}
+            if (!($room['owner_id'] == $user_id)) {
                 $roomModel->add_enter_log($user_id, $room_id);
             }
         }
