@@ -38,6 +38,7 @@ class Base extends Api
             $rc = new ReflectionClass($this);
             $this->validateParams($rc->getMethod(strtolower($this->request->action()))->getDocComment());
         } catch (ReflectionException $exception) {
+            t($exception->getMessage());
         }
     }
 
