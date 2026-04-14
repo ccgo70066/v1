@@ -77,7 +77,7 @@ class RoomService extends BaseService
         $this->add_room_log($room_id, $operator, $result == 1 ? '房间审核通过' : '房间审核被拒绝');
 
         $row = db('room')->find($room_id);
-        send_im_msg_by_system($row['owner_id'], sprintf($result == 1 ? '您的派对%s已审核通过!' : '您的派对%s审核拒绝!', $row['name']));
+        send_im_msg_by_system($row['owner_id'], sprintf($result == 1 ? '您的厅[%s]已审核通过!' : '您的厅[%s]审核拒绝!', $row['name']));
         if ($result == 0) {
             $this->closeRoom($room_id);
         } else {
