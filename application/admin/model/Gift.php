@@ -35,10 +35,10 @@ class Gift extends Model
     {
         return [
             '1' => __('Type 1'),
-            '2' => __('Type 2'),
+            //'2' => __('Type 2'),
             '3' => __('Type 3'),
             '4' => __('Type 4'),
-            '6' => __('Type 6'),
+            //'6' => __('Type 6'),
             // '8' => __('Type 8'),
 
         ];
@@ -93,16 +93,4 @@ class Gift extends Model
         return isset($list[$value]) ? $list[$value] : '';
     }
 
-    public function getCateList()
-    {
-        return [
-            '1' => ['10'=>'热门', '11'=>'专场', '12'=>'特权', '13'=>'土豪'],
-            '2' => ['20'=>'穹翼银龛', '21'=>'炎凰金匣', '22'=>'紫霄龍龕'],
-            '3' => [],
-            '4' => [],
-            '5' => [],
-            '6' => [],
-            '8' => [],
-        ];
-    }
 }

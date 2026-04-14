@@ -91,9 +91,6 @@ class Gift extends Backend
             }
             try {
                 Db::startTrans();
-                if ($params['cate'] <> \app\common\model\Gift::GIFT_CATE_PRIVILEGE) {
-                    $params['noble_limit'] = 0;
-                }
                 $giftId = db('gift')->insertGetId($params);
 
                 //添加礼物缓存
@@ -111,7 +108,9 @@ class Gift extends Backend
             }
             $this->success();
         }
-        return $this->view->fetch('edit');
+        $row = [];
+        $this->view->assign('row', $row);
+        return $this->view->fetch('');
     }
 
     public function edit($ids = null)
@@ -126,9 +125,6 @@ class Gift extends Backend
         }
         if (false === $this->request->isPost()) {
             $this->view->assign('row', $row);
-            $cates = $this->model->getCateList();
-            $cateList = $cates[$row['type']];
-            $this->view->assign('cateList', $cateList);
             return $this->view->fetch();
         }
         if ($this->request->isPost()) {

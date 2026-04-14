@@ -44,21 +44,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             formatter: Table.api.formatter.normal
                         },
                         {
-                            field: 'cate',
-                            title: __('Cate'),
-                            operate: false,
-                            searchList: {
-                                "10": __('热门'),
-                                "11": __('专场'),
-                                "12": __('特权'),
-                                "13": __('土豪'),
-                                "20": __('穹翼银龛'),
-                                "21": __('炎凰金匣'),
-                                "22": __('紫霄龍龕')
-                            },
-                            formatter: Table.api.formatter.normal
-                        },
-                        {
                             field: 'type1',visible:false, title: __('Type'), searchList: function () {
                                 return Template('categorytpl', {});
                             },

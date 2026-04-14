@@ -3,7 +3,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Type')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-type" class="form-control selectpicker" name="row[type]">
                 <option value="" value=""}>请选择</option>
                 {foreach name="typeList" item="vo"}
@@ -13,14 +13,7 @@
 
         </div>
     </div>
-    <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Cate')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            <select id="c-cate" class="form-control" name="row[cate]">
-                <option value="" value=""}>请选择</option>
-            </select>
-        </div>
-    </div>
+
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Name')}:</label>
         <div class="col-xs-12 col-sm-8">
@@ -56,7 +49,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Price_type')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-price_type" class="form-control selectpicker" name="row[price_type]">
                 {foreach name="priceTypeList" item="vo"}
                     <option value="{$key}" {in name="key" value="1"}selected{/in}>{$vo}</option>
@@ -86,7 +79,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Screen_show')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-screen_show" class="form-control selectpicker" name="row[screen_show]">
                 {foreach name="screenShowList" item="vo"}
                     <option value="{$key}" {in name="key" value="2"}selected{/in}>{$vo}</option>
@@ -106,10 +99,10 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
+
             <div class="radio">
             {foreach name="statusList" item="vo"}
-            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="1"}checked{/in} /> {$vo}</label> 
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="1"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
 
