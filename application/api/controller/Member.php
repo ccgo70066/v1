@@ -159,6 +159,23 @@ class Member extends Base
     }
 
     /**
+     * 礼物流水
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
+     * @ApiParams   (name="date", type="int",  required=false, rule="in:0,-1,-3,-7,-30", description="时间:0=今天,-1=昨天,-3=近3天,-7=近7天,-30=近一个月")
+     * @ApiParams   (name="type", type="int",  required=false, rule="in:0,1,2", description="类型:0=全部,1=背包礼物,2=面板礼物")
+     * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="送礼人ID")
+     * @ApiParams   (name="to_user_id", type="int",  required=false, rule="", description="收礼人ID")
+     *
+     * @ApiParams   (name="page", type="int", required=false,  rule="", description="当前页码，默认1")
+     * @ApiParams   (name="size", type="int", required=false,  rule="", description="页码大小，默认15")
+     */
+    public function gift_log()
+    {
+
+
+    }
+
+    /**
      * @ApiTitle    (流水奖励兑换)
      * @ApiParams   (name="reward_val",   type="int",     required=true,rule="between:1,9999999", description="申请兑换的流水奖励值")
      * @ApiParams   (name="type",         type="int",     required=true,rule="in:1,2", description="兑换类型:1=转为收益,2=转为金幣")

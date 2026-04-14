@@ -57,10 +57,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             searchList: {"1": __('Type 1'),"2": __('Type 2'),"3": __('Type 3'), "4": __('Type 4')},
                             formatter: Table.api.formatter.normal
                         },
-                        { field: 'union_reward_rate', title: __('家族收益率'), formatter: function (value, row, index) {
+                        { field: 'room_reward_rate', title: __('厅主收益率'), formatter: function (value, row, index) {
                                 return value * 100 + '%';
                             },operate: false},
-                        {field: 'ls_flag', title: __('拉手标识'),operate: false},
                         {
                             field: 'create_time',
                             title: __('送礼时间'),

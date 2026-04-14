@@ -59,9 +59,7 @@ class GiftLog extends Backend
             //这个是符号 类似这样['game_id'=>'=','name'=>'like']
             $op = json_decode($this->request->get('op'), true);
             //如果你想修改这个，比如去掉name这个条件,像下面这样操作
-            if (isset($filter['pk_id']) && $filter['pk_id'] > 0) {
-                $op['pk_id'] = '>';
-            }
+
             $this->request->get(['filter' => json_encode($filter)]);
             $this->request->get(['op' => json_encode($op)]);
 
@@ -294,7 +292,7 @@ class GiftLog extends Backend
         $sum = $this->model
             ->join('gift gift', 'gift_id=gift.id', 'left')
             ->where($where)
-            ->field('sum(gift_val) as gift_val,sum(gift_val*union_reward_rate) as union_reward')
+            ->field('sum(gift_val) as gift_val,sum(gift_val*room_reward_rate) as union_reward')
             ->find();
 
         //$diff = 1000;

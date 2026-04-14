@@ -33,14 +33,12 @@ class GiftSendStatistic extends Model
      */
     public static function count_up($user_id, $to_user_id,$room_id, $value)
     {
-        $ls_flag = db('user')->where('id', $user_id)->value('ls_flag');
         $sql = self::fetchSql(true)->insert([
             'user_id'    => $user_id,
             'to_user_id' => $to_user_id,
             'value'      => $value,
             'room_id'    => $room_id,
             'date'       => date('Y-m-d',time()),
-            'ls_flag'    => $ls_flag ?? ''
         ]);
         self::execute($sql . " on duplicate key update value=value+{$value}");
     }

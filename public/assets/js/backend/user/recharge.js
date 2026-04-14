@@ -49,7 +49,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'user_recharge.appid', title: __('Appid'), operate: 'LIKE'},
                         {field: 'system', title: __('System'), searchList: {"1":__('System 1'),"2":__('System 2'),"3":__('System 3'),"4":__('System 4')}, formatter: Table.api.formatter.normal, operate: false},
                         {field: 'user_recharge.system', visible:false, title: __('System'), searchList: {"1":__('System 1'),"2":__('System 2'),"3":__('System 3'),"4":__('System 4')}, formatter: Table.api.formatter.normal},
-                        {field: 'order_ls_flag', title: __('Order_ls_flag'), operate: 'LIKE', formatter: Table.api.formatter.flag},
                         {field: 'profit_status', title: __('Profit_status'), searchList: {"0":__('Profit_status 0'),"1":__('Profit_status 1')}, formatter: Table.api.formatter.status},
                         {field: 'is_reorder', title: __('补单'), searchList: {"0":__('否'),"1":__('是')}, formatter: Table.api.formatter.status},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},

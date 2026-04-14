@@ -27,7 +27,6 @@ return [
     'System 3'        => 'h5',
     'System 4'        => 'web',
     'Agent_id'        => '代充',
-    'Order_ls_flag'   => '拉手标识',
     'Extend'          => '扩展',
     'Profit_status'   => '分账状态',
     'Profit_status 0' => '未分',

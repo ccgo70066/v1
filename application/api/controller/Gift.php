@@ -280,7 +280,7 @@ class Gift extends Base
                     'type'              => GiftModel::GIVE_TYPE_BAG_ALL,
                     'room_id'           => (int)$room_id,
                     'union_id'          => (int)($room['union_id']),
-                    'union_reward_rate' => config('app.gift_room_owner'),
+                    'room_reward_rate' => config('app.gift_room_owner'),
                     'create_time'       => datetime()
                 ];
                 $item['price'] = (int)$item['price'];

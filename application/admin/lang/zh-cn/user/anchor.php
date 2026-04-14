@@ -54,8 +54,6 @@ return [
     'User.first_login 1'            => '是',
     'User.province'                 => '省份信息',
     'User.city'                     => '城市信息',
-    'User.ls_flag'                  => '拉手账号标识',
-    'User.flagtime'                 => '拉手绑定时间',
     'User.is_online'                => '是否在线:0=离线;1=在线',
     'User.actor_status'             => '演员标识',
     'User.actor_status 1'           => '正常',

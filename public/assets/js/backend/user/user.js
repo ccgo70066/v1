@@ -62,7 +62,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'is_online', title: __('Is_online'), searchList: {"0": __('Is_online 0'), "1": __('Is_online 1')}, formatter: Table.api.formatter.normal},
                         //{field: 'joinip', title: __('Joinip'), formatter: Table.api.formatter.search},
                         {field: 'status', title: __('Status'), formatter: Table.api.formatter.status, searchList: {normal: __('Normal'), hidden: __('Hidden'), death: __('Death')}},
-                        {field: 'ls_flag', title: __('拉手标识'), operate: 'LIKE'},
                         {field: 'imei', title: __('imei'), operate: 'LIKE', formatter: Table.api.formatter.content, width: '200px'},
                         {
                             field: 'operate', title: __('Operate'), width: 150, table: table, events: Table.api.events.operate,
