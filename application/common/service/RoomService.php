@@ -448,10 +448,7 @@ class RoomService extends BaseService
         $redis->del(RedisService::ROOM_USER_KEY_PRE . $room_id);
 
         $this->model->where('id', $room_id)->setField(['is_close' => 1]);
-        $this->model->where('id', $room_id)->where(
-            'status',
-            3
-        )->setField(['status' => 2]);
+        $this->model->where('id', $room_id)->where('status', 3)->setField(['status' => 2]);
 
         $imService = new ImService();
         $imService->room_wait_mic_delete_all($room_id);

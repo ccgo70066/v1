@@ -385,10 +385,9 @@ class Room extends Base
         }
         $this->service->enterRoom($user_id, $room_id, $last_room_id);
 
-        $hiding = $room['type'] == 1 && user_vip_switch($user_id, 9);
 
         $data = [];
-        $data['hiding'] = $hiding;
+        $data['hiding'] = 0;
         $data['is_collect'] = db('room_collect')->where(['room_id' => $room_id, 'user_id' => $this->auth->id])->count();
         $data['blacklist'] = ChannelBlacklist::get_blacklist($this->appid, $this->system, $this->version);
         //声网token
@@ -396,7 +395,7 @@ class Room extends Base
         $data['agora_token'] = $agora->get_token($room_id, $user_id);
 
         $data['room'] = db('room')->where('id', $room_id)
-            ->field('welcome_msg,welcome_switch,way,id,beautiful_id,name,type,owner_id,screen_clear_time,theme_id,cover,notice,hot,bg_img,is_lock,is_show')
+            ->field('welcome_msg,welcome_switch,way,id,beautiful_id,name,owner_id,screen_clear_time,theme_id,cover,notice,hot,bg_img,is_lock,is_show')
             ->find();
         $theme = db('room_theme_cate')->where('id', $data['room']['theme_id'])->field('name,image')->find();;
         $data['room']['theme_cate_name'] = $theme['name'] ?: '';
