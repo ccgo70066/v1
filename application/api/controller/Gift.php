@@ -65,7 +65,7 @@ class Gift extends Base
         $result = [];
         $userId = $this->auth->id;
         if (array_key_exists($cate, GiftModel::GIFT_TYPE_BOARD_CATES)) {
-            $result = db('gift')->where(['status' => 1, 'type' => 1, 'cate' => $cate])
+            $result = db('gift')->where(['status' => 1, 'type' => 1])
                 ->field('id as gift_id,name,image,price,animate,noble_limit')->order('weigh asc')->select();
 
             if ($cate == GiftModel::GIFT_CATE_PRIVILEGE) {
@@ -272,16 +272,16 @@ class Gift extends Base
                     $send_text .= ',';
                 }
                 $gift_log[] = [
-                    'user_id'           => (int)$user_id,
-                    'to_user_id'        => (int)$receiver,
-                    'gift_id'           => (int)$item['gift_id'],
-                    'gift_val'          => (int)$item['gift_val'],
-                    'count'             => (int)$item['count'],
-                    'type'              => GiftModel::GIVE_TYPE_BAG_ALL,
-                    'room_id'           => (int)$room_id,
-                    'union_id'          => (int)($room['union_id']),
+                    'user_id'          => (int)$user_id,
+                    'to_user_id'       => (int)$receiver,
+                    'gift_id'          => (int)$item['gift_id'],
+                    'gift_val'         => (int)$item['gift_val'],
+                    'count'            => (int)$item['count'],
+                    'type'             => GiftModel::GIVE_TYPE_BAG_ALL,
+                    'room_id'          => (int)$room_id,
+                    'union_id'         => (int)($room['union_id']),
                     'room_reward_rate' => config('app.gift_room_owner'),
-                    'create_time'       => datetime()
+                    'create_time'      => datetime()
                 ];
                 $item['price'] = (int)$item['price'];
                 $send_text .= $item['name'] . '(' . $item['price'] . ')×' . $item['count'];
