@@ -46,7 +46,7 @@ class Gift extends Base
         $data = [
             ['code' => 'bag', 'cate' => GiftModel::GIFT_CATE_BAG, 'name' => '背包'],
             ['code' => 'panel', 'cate' => GiftModel::GIFT_CATE_HOT, 'name' => '礼物'],
-            ['code' => 'special', 'cate' => GiftModel::GIFT_CATE_SPECIAL, 'name' => '专场'],
+            //['code' => 'special', 'cate' => GiftModel::GIFT_CATE_SPECIAL, 'name' => '专场'],
             //['code' => 'box', 'cate' => GiftModel::GIFT_CATE_BOX, 'name' => '魔法'],
             //['code' => 'noble', 'cate' => GiftModel::GIFT_CATE_PRIVILEGE, 'name' => '特权'],
             // ['code' => 'panel', 'cate' => GiftModel::GIFT_CATE_JET, 'name' => '土豪'],
@@ -342,7 +342,7 @@ class Gift extends Base
      * @ApiMethod   (get)
      * @ApiParams   (name="user_id", type="int", required=false,  rule="", description="默认为当前登录用户")
      * @ApiParams   (name="light", type="int", required=false,  rule="", description="是否点亮：1=已点亮，0=未点亮")
-     * @ApiParams   (name="cate", type="int", required=false,  rule="", description="面板礼物-二级分类：10=热门,11=专场,12=特权")
+     * @ApiParams   (name="cate", type="int", required=false,  rule="", description="面板礼物-二级分类：10=热门,12=特权")
      *
      * @ApiParams   (name="page", type="int", required=false,  rule="", description="当前页码，默认1")
      * @ApiParams   (name="size", type="int", required=false,  rule="", description="页码大小，默认15")
