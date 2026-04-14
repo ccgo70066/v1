@@ -59,7 +59,7 @@ class UserBusiness extends Model
             ->where('un.user_id', $userId)
             ->where('start_time', '<=', date('Y-m-d H:i:s', time()))
             ->where('end_time', '>=', date('Y-m-d H:i:s', time() - config('app.noble_protection_time')))
-            ->field('un.id,un.user_id,un.start_time,un.end_time,unl.id as noble_id,unl.name,unl.badge,unl.shop_badge as noble_shop_badge,un.name_color,un.union_room_hide,unl.weigh')
+            ->field('un.id,un.user_id,un.start_time,un.end_time,unl.id as noble_id,unl.name,unl.badge,unl.shop_badge as noble_shop_badge,un.name_color,un.room_hide,unl.weigh')
             ->find();
         if ($noble) {
             $noble['is_protection_time'] = strtotime($noble['end_time']) < time() ? 1 : 0;//是否在过期保护期中

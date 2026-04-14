@@ -37,7 +37,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'update_time', title: __('购买 / 续费时间'), operate:false, addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'start_time', title: __('Start_time'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime},
                         {field: 'end_time', title: __('过期时间'), operate:'RANGE', addclass:'datetimerange', formatter: Table.api.formatter.datetime,sortable: true},
-                        {field: 'union_room_hide', title: __('房间隐身'), searchList: {"0":__('无权限'),"1":__('开启'),"2":__('未开启')}, formatter: Table.api.formatter.normal},
+                        {field: 'room_hide', title: __('房间隐身'), searchList: {"0":__('无权限'),"1":__('开启'),"2":__('未开启')}, formatter: Table.api.formatter.normal},
                         {field: 'name_color', title: __('炫彩昵称'), searchList: {"0":__('无权限'),"1":__('开启'),"2":__('未开启')}, formatter: Table.api.formatter.normal},
 
                     ]

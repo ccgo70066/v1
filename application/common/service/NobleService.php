@@ -70,7 +70,7 @@ class NobleService extends BaseService
                 }
                 $item['switch'] = 0;
                 //如果用户开通了贵族等级，显示相应开关状态
-                if (isset($nobleInfo['union_room_hide']) && $nobleInfo['union_room_hide'] == UserNoble::UNION_ROOM_HIDE_ON && $item['id'] == 9) {
+                if (isset($nobleInfo['room_hide']) && $nobleInfo['room_hide'] == UserNoble::ROOM_HIDE_ON && $item['id'] == 9) {
                     $item['switch'] = 1;
                 }
                 if (isset($nobleInfo['name_color']) &&
@@ -101,8 +101,8 @@ class NobleService extends BaseService
         if (!$userNoble)  throw new ApiException(__('No permissions'));
 
         //如果用户开通了贵族等级，显示相应开关状态
-        if ($privilegeId == NoblePrivilege::PERMISSION_ID_ROOM_HIDE && $userNoble['union_room_hide']) {
-            $result = db('user_noble')->where('id', $userNoble['id'])->setField('union_room_hide', $switch);
+        if ($privilegeId == NoblePrivilege::PERMISSION_ID_ROOM_HIDE && $userNoble['room_hide']) {
+            $result = db('user_noble')->where('id', $userNoble['id'])->setField('room_hide', $switch);
         }
         if ($privilegeId == NoblePrivilege::PERMISSION_ID_NAME_COLOR && $userNoble['name_color']) {
             $result = db('user_noble')->where('id', $userNoble['id'])->setField('name_color', $switch);
