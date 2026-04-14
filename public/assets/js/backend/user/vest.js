@@ -33,7 +33,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'receiver.id', title: __('Receiver')+'ID'},
                         {field: 'receiver.nickname', title: __('Receiver')},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
-                        {field: 'update_time', title: __('领取时间'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
+                        {field: 'update_time', title: __('领取时间'), operate:'RANGE', addclass: 'datetimerange', autocomplete: false, formatter: function (v, r, i) {
+                                return r.receiver.id != undefined ? v : '-';
+                            }},
                         // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
