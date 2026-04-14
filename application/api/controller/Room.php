@@ -88,6 +88,7 @@ class Room extends Base
         $update = array_filter(input(), function ($value) {
             return $value !== '' && $value !== null;
         });
+        unset($update['raw']);
         $room_id = $update['id'];
         $this->operate_check('edit_room:' . $this->auth->id, 2);
         if (!($this->service->checkRoomRole($room_id, $this->auth->id, [1, 2])))
