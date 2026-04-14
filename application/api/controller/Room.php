@@ -8,6 +8,7 @@ use app\common\model\ChannelBlacklist;
 use app\common\model\NoblePrivilege;
 use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
+use app\common\service\BaseService;
 use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
@@ -387,7 +388,7 @@ class Room extends Base
 
 
         $data = [];
-        $data['hiding'] = 0;
+        $data['hiding'] = false;
         $data['is_collect'] = db('room_collect')->where(['room_id' => $room_id, 'user_id' => $this->auth->id])->count();
         $data['blacklist'] = ChannelBlacklist::get_blacklist($this->appid, $this->system, $this->version);
         //声网token
