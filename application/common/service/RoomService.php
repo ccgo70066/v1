@@ -549,6 +549,18 @@ class RoomService extends BaseService
         }
     }
 
+    public function sit_leave($room_id, $user_id)
+    {
+        $res = db('room')->where('id', $room_id)
+            ->field('no1_user_id,no2_user_id,no3_user_id,no4_user_id, no5_user_id,no6_user_id,no7_user_id,no8_user_id,no9_user_id')->find();
+        foreach ($res as $k => $v) {
+            if ($res[$k] == $user_id) {
+                db('room')->where('id', $room_id)->setField($k, 0);
+            }
+        }
+    }
+
+
     /**
      * 成员审核
      * @param $room_id
