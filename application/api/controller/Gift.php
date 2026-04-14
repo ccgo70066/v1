@@ -92,6 +92,9 @@ class Gift extends Base
             $result = array_merge($result, $bag);
         }
 
+        foreach ($result as &$item) {
+            $item['price'] = intval($item['price']);
+        }
         $this->success('', $result);
     }
 
