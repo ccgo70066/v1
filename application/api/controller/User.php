@@ -14,10 +14,7 @@ use app\common\service\RedisService;
 use app\common\service\UserService;
 use fast\Random;
 use think\Db;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\ModelNotFoundException;
 use think\Exception;
-use think\exception\DbException;
 use think\Log;
 use util\Minio;
 

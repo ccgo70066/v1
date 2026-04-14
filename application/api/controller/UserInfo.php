@@ -53,201 +53,6 @@ class UserInfo extends Base
         $this->success('ok', $data);
     }
 
-
-    /**
-     * @ApiTitle (用户领取升级奖励)
-     */
-    public function vip_reward()
-    {
-        try {
-            Db::startTrans();
-            $userId = $this->auth->id;
-            $level = db('user_business')
-                ->where('id', $userId)
-                ->value('level');
-            $levels = db('user_level_reward')
-                ->where('user_id', $userId)
-                ->column('user_level');
-            $where = [];
-            count($levels) && $where['grade'] = ['not in', $levels];
-
-            $data = db('level')->where('reward_json', '<>', '')
-                ->where('reward_json', '<>', '[]')
-                ->where('grade', '<=', $level)
-                ->where($where)
-                ->field('grade,reward_json,icon')
-                ->order('grade', 'asc')
-                ->select();
-
-            if (!$data) {
-                throw new ApiException(__('No rewards available'));
-            }
-
-            //获取所有：聊天气泡数组、坐骑数组、头像框数组
-            $bubbleArr = MallService::getBubbleArr();
-            $carArr = MallService::getCarArr();
-            $adornmentArr = MallService::getAdornmentArr();
-            foreach ($data as &$value) {
-                $reward_info = [];
-                $level_reward[] = [
-                    'user_id'    => $userId,
-                    'user_level' => $value['grade'],
-                ];
-                $reward_items = json_decode($value['reward_json'], true);
-                foreach ($reward_items as $item) {
-                    switch ($item['type']) {
-                        case 'amount':
-                            $reward_info[] = [
-                                'icon'  => 'assets/icon/diamond.png',
-                                'name'  => '金幣',
-                                'count' => $item['count'],
-                            ];
-                            break;
-                        case 'bubble':
-                            $bubble_info = $bubbleArr[$item['id']];
-                            $reward_info[] = [
-                                'icon'  => $bubble_info['image'],
-                                'name'  => $bubble_info['name'],
-                                'count' => $item['count'],
-                            ];
-                            break;
-                        case 'car':
-                            $car_info = $carArr[$item['id']];
-                            $reward_info[] = [
-                                'icon'  => $car_info['image'],
-                                'name'  => $car_info['name'],
-                                'count' => $item['count'],
-                            ];
-                            break;
-                        case 'adornment':
-                            $adornment_info = $adornmentArr[$item['id']];
-                            $reward_info[] = [
-                                'icon'  => $adornment_info['image'],
-                                'name'  => $adornment_info['name'],
-                                'count' => $item['count'],
-                            ];
-                            break;
-                    }
-                }
-
-                UserBusinessModel::reward_give($reward_items, $userId, '升级奖励');
-                other_log_add($userId, 6, $reward_info);
-                $value['reward'] = $reward_info;
-                unset($value['reward_json']);
-            }
-            array_values($data);
-            db('user_level_reward')->insertAll($level_reward);
-            Db::commit();
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            error_log_out($e);
-            $this->error($e->getMessage());
-        }
-        $this->success(__('Operation completed'), $data ?: []);
-    }
-
-
-    /**
-     * @ApiTitle (用户领取升级奖励,待删除)
-     */
-    public function receive_vip_reward()
-    {
-        try {
-            $userId = $this->auth->id;
-            $level = db('user_business')
-                ->where('id', $userId)
-                ->value('level');
-            $reward_info = $this->vipRewardSend($this->auth->id, $level);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            error_log_out($e);
-            $this->error($e->getMessage());
-        }
-        $this->success(__('Operation completed'), $reward_info ?: []);
-    }
-
-    //升级领取奖励
-    private function vipRewardSend($userId, $level)
-    {
-        try {
-            Db::startTrans();
-
-            $levels = db('user_level_reward')
-                ->where('user_id', $userId)
-                ->column('user_level');
-            $where = [];
-            count($levels) && $where['grade'] = ['not in', $levels];
-
-            $data = db('level')->where('reward_json', '<>', '')
-                ->where('grade', '<=', $level)
-                ->where($where)
-                ->field('grade,reward_json')
-                ->select();
-
-            if (!$data) {
-                throw new ApiException(__('No rewards available'));
-            }
-
-            //获取所有：聊天气泡数组、坐骑数组、头像框数组
-            $bubbleArr = MallService::getBubbleArr();
-            $carArr = MallService::getCarArr();
-            $adornmentArr = MallService::getAdornmentArr();
-            $reward_info = [];
-            foreach ($data as $value) {
-                $level_reward[] = [
-                    'user_id'    => $userId,
-                    'user_level' => $value['grade'],
-                ];
-                $reward_items = json_decode($value['reward_json'], true);
-                foreach ($reward_items as $item) {
-                    switch ($item['type']) {
-                        case 'amount':
-                            $reward_info[] = [
-                                'icon'  => 'assets/icon/diamond.png',
-                                'name'  => '金币',
-                                'count' => $item['count'],
-                            ];
-                            break;
-                        case 'bubble':
-                            $bubble_info = $bubbleArr[$item['id']];
-                            $reward_info[] = [
-                                'icon'  => $bubble_info['image'],
-                                'name'  => $bubble_info['name'],
-                                'count' => $item['count'],
-                            ];
-                            break;
-                        case 'car':
-                            $car_info = $carArr[$item['id']];
-                            $reward_info[] = [
-                                'icon'  => $car_info['image'],
-                                'name'  => $car_info['name'],
-                                'count' => $item['count'],
-                            ];
-                            break;
-                        case 'adornment':
-                            $adornment_info = $adornmentArr[$item['id']];
-                            $reward_info[] = [
-                                'icon'  => $adornment_info['image'],
-                                'name'  => $adornment_info['name'],
-                                'count' => $item['count'],
-                            ];
-                            break;
-                    }
-                }
-
-                UserBusinessModel::reward_give($reward_items, $userId, '升级奖励');
-                other_log_add($userId, 6, $reward_info);
-            }
-            db('user_level_reward')->insertAll($level_reward);
-            Db::commit();
-        } catch (\Exception  $e) {
-            Db::rollback();
-            Log::error($e->getMessage());
-            throw $e;
-        }
-        return $reward_info;
-    }
-
     /**
      * @ApiTitle (获取用户-头像、形象照审核状态)
      * @ApiSector (会员接口)
@@ -343,4 +148,18 @@ class UserInfo extends Base
         $this->success('ok');
     }
 
+
+    /**
+     * 财富等级
+     */
+    public function level()
+    {
+        $list = db('level')->field('name,grade,scope,icon')->order('grade asc')->select();
+        $my = db('user')->field('level,score,avatar')->where('id', $this->auth->id)->find();
+
+        $this->success('', [
+            'my'   => $my,
+            'list' => $list,
+        ]);
+    }
 }
