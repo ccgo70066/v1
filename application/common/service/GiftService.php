@@ -52,7 +52,7 @@ class GiftService extends BaseService
     public function giveGiftByRoom($giver_id, $to_user_ids_arr, $gift_id, $count, $room_id, $from_type = 0)
     {
         $gift = GiftModel::getGiftById($gift_id);
-        $room = db('room')->where('id', $room_id)->field('name,pause')->find();
+        $room = db('room')->where('id', $room_id)->field('id,name,pause')->find();
         if (!$room) {
             throw new ApiException(__('Failed to retrieve room'));
         }
