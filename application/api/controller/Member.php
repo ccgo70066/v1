@@ -161,18 +161,39 @@ class Member extends Base
     /**
      * 礼物流水
      * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间ID")
-     * @ApiParams   (name="date", type="int",  required=false, rule="in:0,-1,-3,-7,-30", description="时间:0=今天,-1=昨天,-3=近3天,-7=近7天,-30=近一个月")
+     * @ApiParams   (name="day", type="int",  required=false, rule="in:0,-1,-3,-7,-30", description="时间:0=今天,-1=昨天,-3=近3天,-7=近7天,-30=近一个月")
      * @ApiParams   (name="type", type="int",  required=false, rule="in:0,1,2", description="类型:0=全部,1=背包礼物,2=面板礼物")
      * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="送礼人ID")
      * @ApiParams   (name="to_user_id", type="int",  required=false, rule="", description="收礼人ID")
      *
-     * @ApiParams   (name="page", type="int", required=false,  rule="", description="当前页码，默认1")
-     * @ApiParams   (name="size", type="int", required=false,  rule="", description="页码大小，默认15")
+     *
+     * @ApiParams   (name="size", type="int", required=true,rule="", description="分頁大小,默認20")
+     * @ApiParams   (name="start_id", type="int", required=true,rule="", description="分頁起始id")
      */
     public function gift_log()
     {
+        $day = input('day', 0);
+        $query = db('gift_log')->alias('l')->join('user u', 'u.id=l.user_id', 'left')->join('user tu', 'tu.id=l.to_user_id', 'left')
+            ->join('gift g', 'l.gift_id=g.id', 'left');
+        $total_query = db('gift_log')->alias('l');
+        $where = ['l.room' => input('room_id', 0)];
+        if (input('type') == 1) $where['type'] = ['in', [-1, 1, 4]];
+        elseif (input('type') == 2) $where['type'] = 2;
+        else $where['type'] = ['in', [-1, 1, 2, 4]];
+        if (input('?user_id')) $where['user_id'] = input('user_id');
+        if (input('?to_user_id')) $where['to_user_id'] = input('to_user_id');
+        $where['l.create_time'] = $day != -1 ? ['>=', date('Y-m-d 00:00:00', strtotime("$day days"))] :
+            ['between', [date('Y-m-d 00:00:00', strtotime("-1 days")), date('Y-m-d 00:00:00')]];
+        $map = input('start_id') ? ['sl' => ['<', input('start_id')]] : [];
 
-
+        $list = $query->field('*', false, 'l')
+            ->field('image', false, 'g')
+            ->field('nickname,avatar', false, 'u')
+            ->field('nickname as to_nickname', false, 'ut')
+            ->where($where)->where($map)
+            ->limit(input('size', 20))->select();
+        $total = $total_query->where($where)->sum('l.gift_val');
+        $this->success('', compact($total, $list));
     }
 
     /**
