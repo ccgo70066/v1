@@ -167,8 +167,8 @@ class Member extends Base
      * @ApiParams   (name="to_user_id", type="int",  required=false, rule="", description="收礼人ID")
      *
      *
-     * @ApiParams   (name="size", type="int", required=true,rule="", description="分頁大小,默認20")
-     * @ApiParams   (name="start_id", type="int", required=true,rule="", description="分頁起始id")
+     * @ApiParams   (name="size", type="int", required=false, rule="", description="分頁大小,默認20")
+     * @ApiParams   (name="start_id", type="int", required=false, rule="", description="分頁起始id")
      */
     public function gift_log()
     {
@@ -176,24 +176,27 @@ class Member extends Base
         $query = db('gift_log')->alias('l')->join('user u', 'u.id=l.user_id', 'left')->join('user tu', 'tu.id=l.to_user_id', 'left')
             ->join('gift g', 'l.gift_id=g.id', 'left');
         $total_query = db('gift_log')->alias('l');
-        $where = ['l.room' => input('room_id', 0)];
-        if (input('type') == 1) $where['type'] = ['in', [-1, 1, 4]];
-        elseif (input('type') == 2) $where['type'] = 2;
-        else $where['type'] = ['in', [-1, 1, 2, 4]];
+        $where = ['l.room_id' => input('room_id', 0)];
+        if (input('type') == 1) $where['l.type'] = ['in', [-1, 1, 4]];
+        elseif (input('type') == 2) $where['l.type'] = 2;
+        else $where['l.type'] = ['in', [-1, 1, 2, 4]];
         if (input('?user_id')) $where['user_id'] = input('user_id');
         if (input('?to_user_id')) $where['to_user_id'] = input('to_user_id');
         $where['l.create_time'] = $day != -1 ? ['>=', date('Y-m-d 00:00:00', strtotime("$day days"))] :
             ['between', [date('Y-m-d 00:00:00', strtotime("-1 days")), date('Y-m-d 00:00:00')]];
-        $map = input('start_id') ? ['sl' => ['<', input('start_id')]] : [];
+        $map = input('start_id') ? ['l.id' => ['<', input('start_id')]] : [];
 
         $list = $query->field('*', false, 'l')
             ->field('image', false, 'g')
             ->field('nickname,avatar', false, 'u')
-            ->field('nickname as to_nickname', false, 'ut')
-            ->where($where)->where($map)
+            ->field('nickname as to_nickname', false, 'tu')
+            ->where($map)->where($where)
             ->limit(input('size', 20))->select();
         $total = $total_query->where($where)->sum('l.gift_val');
-        $this->success('', compact($total, $list));
+        $this->success('', [
+            'total' => $total,
+            'list'  => $list,
+        ]);
     }
 
     /**
@@ -250,6 +253,10 @@ class Member extends Base
             $this->error($e->getMessage());
         }
         $this->success();
+    }
+
+    public function withdraw_log()
+    {
     }
 
 }
