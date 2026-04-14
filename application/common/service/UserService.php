@@ -256,7 +256,7 @@ class UserService extends BaseService
             $where['id'] = ['in', $giftIds];
         }
 
-        $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD ];
         $query = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
             ->order('price desc');
@@ -300,7 +300,7 @@ class UserService extends BaseService
             $where['id'] = ['in', $giftIds];
         }
 
-        $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD ];
         $query = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
             ->order('price desc');

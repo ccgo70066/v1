@@ -70,7 +70,6 @@ class UserBusinessService extends BaseService
                 'name' => '打赏记录',
                 'sub'  => [
                     ['type' => 2, 'form' => '4', 'name' => '打赏礼物'],
-                    ['type' => 2, 'form' => '5', 'name' => '送盲盒'],
                 ]
             ],
             [

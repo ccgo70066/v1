@@ -351,7 +351,7 @@ class UserBusiness extends Base
                 ->select();
 
             $list = [];
-            //type类型:1=普通礼物,=盲盒
+            //type类型:1=普通礼物
             //use_status状态:0=未使用,1=已使用,2=已过期'
             if ($data['gift']) {
                 foreach ($data['gift'] as $val) {
@@ -699,7 +699,6 @@ class UserBusiness extends Base
                     UserBusinessLog::FROM_MALL_EXCHANGE,
                     UserBusinessLog::FROM_REWARD,
                     UserBusinessLog::FROM_IM_LUCKY_MONEY,
-                    UserBusinessLog::FROM_SEND_BOX,
                     UserBusinessLog::FROM_ROOM_LUCKY_MONEY,
                     UserBusinessLog::FROM_CHANGE_DIAMOND,
                     UserBusinessLog::FROM_GAME_ARCH,

@@ -43,7 +43,7 @@ function user_money_change($user_id, $money, string $memo = '')
  * @param double $amount 数值大小
  * @param string $flow   流水:increase=增长,decrease=减少
  * @param null   $note   备注
- * @param int    $from   分类:0=其它,1=商城兑换,2=活动奖励,3=充值金幣,4=打赏礼物,5=赠送盲盒,6=IM红包,7=红包雨,8=兑换金幣,9=兑换游戏券,10=守护分成,11=家族流水奖励兑换,12=家族周流水扶持,13=收益提现
+ * @param int    $from   分类:0=其它,1=商城兑换,2=活动奖励,3=充值金幣,4=打赏礼物,6=IM红包,7=红包雨,8=兑换金幣,9=兑换游戏券,10=守护分成,11=家族流水奖励兑换,12=家族周流水扶持,13=收益提现
  * @throws
  */
 function user_business_change($user_id, $type, $amount, $flow = 'increase', $note = '', $from = 0, $room_id = 0)

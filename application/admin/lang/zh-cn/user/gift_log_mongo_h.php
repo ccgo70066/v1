@@ -9,7 +9,6 @@ return [
     'Type'               => '礼物来源',
     'Type 1'             => '背包送',
     'Type 2'             => '面板直送',
-    'Type 3'             => '盲盒送',
     'Type 4'             => '一键清包',
     'Type 5'             => 'IM送礼',
     'Room_id'            => '房间ID',

@@ -25,7 +25,7 @@ class GiftService extends BaseService
      */
     public function checkRoomGiveParam($gift_id, $user_id, $to_user_ids, $room_id = 0): array
     {
-        $gift = GiftModel::getGiftById($gift_id, '*', ['type' => ['not in', array_keys(GiftModel::GIFT_CATE_SPECIAL_CATES)]]);
+        $gift = GiftModel::getGiftById($gift_id);
         if (!$gift) throw new ApiException(__('Gift does not exist'));
         if (!$to_user_ids) throw new ApiException(__('User does not exist'));
         $to_user_ids_arr = explode(',', $to_user_ids);
@@ -144,7 +144,7 @@ class GiftService extends BaseService
      */
     public static function getGiftsWall($where, $page = 1, $size = 15)
     {
-        $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD];
         $data = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
             ->where($where)
@@ -161,7 +161,7 @@ class GiftService extends BaseService
      */
     public static function getGiftsWallCount($user_id)
     {
-        $typeArr = [GiftModel::GIFT_TYPE_BOARD, GiftModel::GIFT_TYPE_BOX];
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD];
 
         $gift_count = db('gift g')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
