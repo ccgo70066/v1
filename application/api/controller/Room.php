@@ -118,7 +118,7 @@ class Room extends Base
         if (input('is_show') == 0 || input('way') == 1) $this->service->clearMicQueue($room_id); //清空排麦
         Db::startTrans();
         try {
-            db('room')->where('id', $room_id)->update($update);
+            db('room')->allowField(true)->where('id', $room_id)->update($update);
             RoomService::addRoomLog($room, $update, $this->auth->id);
             Db::commit();
             $data = db('room')->where('id', $room_id)->find();
