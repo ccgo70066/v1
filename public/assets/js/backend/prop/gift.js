@@ -32,22 +32,19 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {
                             field: 'type',
                             title: __('Type'),
-                            operate: false,
+                            operate: '=',
                             searchList: {
                                 "1": __('Type 1'),
-                                "2": __('Type 2'),
                                 "3": __('Type 3'),
                                 "4": __('Type 4'),
-                                // "5": __('Type 5'),
-                                "6": __('Type 6'),
                             },
                             formatter: Table.api.formatter.normal
                         },
-                        {
-                            field: 'type1',visible:false, title: __('Type'), searchList: function () {
-                                return Template('categorytpl', {});
-                            },
-                        },
+                        // {
+                        //     field: 'type1',visible:false, title: __('Type'), searchList: function () {
+                        //         return Template('categorytpl', {});
+                        //     },
+                        // },
                         {field: 'name', title: __('Name'), operate: 'LIKE'},
                         {
                             field: 'image',
@@ -121,102 +118,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Form.events.cxselect(table);
         },
         add: function () {
-            $('#c-type').change(function () {
-                var type = $(this).val();
-                $.ajax({
-                    url: 'prop/gift/select_type',
-                    type: 'get',
-                    data: {type: type},
-                    success: function (res) {
-                        var searchLists = res.data;
-                        $('#c-cate option').remove();
-                        $.each(searchLists, function (key, value) {
-                            if (value.constructor === Object) {
-                                key = value.value;
-                                value = value.name;
-                            } else {
-                                key = isArray ? value : key;
-                            }
-                            $('#c-cate').append("<option value='" + key + "' >" + value + "</option>");
-                        });
-                    }
-                });
-            });
-
-            $('#c-cate').change(function () {
-                var cate = $(this).val();
-
-                if (cate === 12 || cate === '12') {
-                    $('#noble_limit_div').show();
-                } else {
-
-                    $('#noble_limit_div').hide();
-
-                }
-            });
-
             Controller.api.bindevent();
         },
         edit: function () {
-            var type = $("#c-type").val();
-            var cate = $("#c-cate").val();
-            $.ajax({
-                url: 'prop/gift/select_type',
-                type: 'get',
-                data: {type: type},
-                success: function (res) {
-                    var searchLists = res.data;
-                    $('#c-cate option').remove();
-                    $.each(searchLists, function (key, value) {
-                        if (value.constructor === Object) {
-                            key = value.value;
-                            value = value.name;
-                        } else {
-                            key = isArray ? value : key;
-                        }
-                        var selected = '';
-                        if (key == cate) {
-                            selected = 'selected';
-                        }
-                        $('#c-cate').append("<option value='" + key + "' " + selected + ">" + value + "</option>");
-                    });
-                }
-            });
-
-            $('#c-type').change(function () {
-                var type = $(this).val();
-                $.ajax({
-                    url: 'prop/gift/select_type',
-                    type: 'get',
-                    data: {type: type},
-                    success: function (res) {
-                        var searchLists = res.data;
-                        $('#c-cate option').remove();
-                        $.each(searchLists, function (key, value) {
-                            if (value.constructor === Object) {
-                                key = value.value;
-                                value = value.name;
-                            } else {
-                                key = isArray ? value : key;
-                            }
-                            $('#c-cate').append("<option value='" + key + "' >" + value + "</option>");
-                        });
-                    }
-                });
-            });
-
-            $('#c-cate').change(function () {
-                var cate = $(this).val();
-                if (cate === 12 || cate === '12') {
-                    $('#noble_limit_div').show();
-                } else {
-
-                    $('#noble_limit_div').hide();
-
-                }
-            });
-
-
             Controller.api.bindevent();
         },
         api: {
