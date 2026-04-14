@@ -2,16 +2,9 @@
 
 namespace app\common\service;
 
-use app\admin\model\UserBusiness;
 use app\common\exception\ApiException;
 use app\common\model\Room;
 use app\common\model\Room as RoomModel;
-use app\common\model\Shield;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\ModelNotFoundException;
-use think\Exception;
-use think\exception\DbException;
-use think\exception\PDOException;
 use think\Log;
 
 /**
