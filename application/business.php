@@ -201,6 +201,16 @@ function room_profit_statistics($room_id, $gift_val, $room_reward_val, $receiver
     }
 }
 
+function gift_wall_add($user_id, $gift_id, $count)
+{
+    $sql = db('gift_wall')->fetchSql(true)->insert([
+        'user_id' => $user_id,
+        'gift_id' => $gift_id,
+        'count'   => $count,
+    ]);
+    db()->execute($sql . " on duplicate key update count=count+{$count}");
+}
+
 
 function mq_publish(BaseHandler $baseHandler, array $message, $delay = 0)
 {
