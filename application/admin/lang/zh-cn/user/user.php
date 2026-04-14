@@ -10,7 +10,7 @@ return [
     'Email'                                       => '电子邮箱',
     'Mobile'                                      => '手机号',
     'Avatar'                                      => '头像',
-    'Level'                                       => 'VIP等级',
+    'Level'                                       => '财富等级',
     'Gender'                                      => '性别',
     'Gender 1'                                    => '男',
     'Gender 0'                                    => '女',

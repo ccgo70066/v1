@@ -33,12 +33,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 search: false,
                 columns: [
                     [
-                        //{checkbox: true},
                         {field: 'id', title: __('Id'), sortable: true},
-                        {field: 'beautiful_id', title: __('靓号')},
                         {field: 'nickname', title: __('Nickname'), operate: 'LIKE'},
-                        // {field: 'group_id', title: __('用户组'), visible: false, searchList: $.getJSON('user/group/searchList'), operate: '='},
-                        // {field: 'group.name', title: __('用户组'),operate: false},
                         {field: 'business.role', title: __('Role'), formatter: Table.api.formatter.normal, searchList: {1: __('Role1'), 2: __('Role2'), 3: __('Role3'), 4: __('Role4')}},
                         {field: 'mobile', title: __('Mobile'), operate: 'LIKE'},
                         {field: 'avatar', title: __('Avatar'), events: Table.api.events.image, formatter: Table.api.formatter.image, operate: false},
@@ -49,18 +45,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 return parseFloat(value);
                             }
                         },
-                        {field: 'level_name', title: __('Level'), operate: false, sortable: true},
-                        //{field: 'level', title: __('Level'), operate: 'BETWEEN', sortable: true},
+                        {field: 'level_icon', title: __('Level'), operate: false, sortable: true, formatter: Table.api.formatter.image},
                         {field: 'gender', title: __('Gender'), visible: false, searchList: {1: __('Male'), 0: __('Female')}},
                         {field: 'channel.name', title: __('Appid'), formatter: Table.api.formatter.label, operate: false},
                         {field: 'system', title: __('System'), searchList: {"1": __('System 1'), "2": __('System 2')}, formatter: Table.api.formatter.normal},
-                        //{field: 'successions', title: __('Successions'), visible: false, operate: false, sortable: true},
-                        //{field: 'maxsuccessions', title: __('Maxsuccessions'), visible: false, operate: false, sortable: true},
                         {field: 'logintime', title: __('Logintime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
                         {field: 'loginip', title: __('Loginip'), formatter: Table.api.formatter.search, operate: 'like', placeholder: '支持模糊搜索'},
                         {field: 'jointime', title: __('Jointime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
                         {field: 'is_online', title: __('Is_online'), searchList: {"0": __('Is_online 0'), "1": __('Is_online 1')}, formatter: Table.api.formatter.normal},
-                        //{field: 'joinip', title: __('Joinip'), formatter: Table.api.formatter.search},
                         {field: 'status', title: __('Status'), formatter: Table.api.formatter.status, searchList: {normal: __('Normal'), hidden: __('Hidden'), death: __('Death')}},
                         {field: 'imei', title: __('imei'), operate: 'LIKE', formatter: Table.api.formatter.content, width: '200px'},
                         {
