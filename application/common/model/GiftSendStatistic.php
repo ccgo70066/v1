@@ -31,14 +31,14 @@ class GiftSendStatistic extends Model
      * @return void
      * @throws
      */
-    public static function count_up($user_id, $to_user_id,$room_id, $value)
+    public static function count_up($user_id, $to_user_id, $room_id, $value)
     {
         $sql = self::fetchSql(true)->insert([
             'user_id'    => $user_id,
             'to_user_id' => $to_user_id,
             'value'      => $value,
             'room_id'    => $room_id,
-            'date'       => date('Y-m-d',time()),
+            'date'       => date('Y-m-d', time()),
         ]);
         self::execute($sql . " on duplicate key update value=value+{$value}");
     }
@@ -55,19 +55,19 @@ class GiftSendStatistic extends Model
     {
         $name = $type == 1 ? 'user_id' : 'to_user_id';
 
-        list($start_time, $end_time) = self::get_rank_range($range,$room_id);
+        list($start_time, $end_time) = self::get_rank_range($range, $room_id);
 
         $list = self::alias('l')
-            ->join('user u', 'u.id=l.'.$name, 'left')
-            ->join('user_business ub', 'ub.id=l.'.$name, 'left')
+            ->join('user u', 'u.id=l.' . $name, 'left')
+            ->join('user_business ub', 'ub.id=l.' . $name, 'left')
             ->whereBetween('l.date', [$start_time, $end_time])
             ->where($room_id ? ['l.room_id' => $room_id] : [])
             ->group("l.{$name}")
-            ->field("l.{$name} as user_id,sum(value) as value,u.hidden_level,u.nickname,u.avatar,ub.level")
+            ->field("l.{$name} as user_id,sum(value) as value,u.nickname,u.avatar,u.level")
             ->order('value desc')
             ->limit(100)
             ->select();
-        return  collection($list)->toArray();
+        return collection($list)->toArray();
     }
 
     /**
@@ -75,13 +75,13 @@ class GiftSendStatistic extends Model
      * @param int $type 类别:1=周榜,2=日榜
      * @return array
      */
-    public static function get_rank_range($type,$room_id)
+    public static function get_rank_range($type, $room_id)
     {
         //1、房间日榜每天00:30更新，
         // 2、房间周榜每周一01:00更新
         // 00:00-00:30期间刷的魅力不会让榜单发生变化，00:30后才会统计上去
         // 3、总榜早上9点更新
-        if ($room_id ){
+        if ($room_id) {
             switch ($type) {
                 case 1:
                     $time = time() - ((date('w', time()) == 0 ? 7 : date('w', time())) - 1) * 24 * 3600;    //本周一时间
@@ -99,14 +99,14 @@ class GiftSendStatistic extends Model
                     if ($refresh_time < time()) {
                         $start_time = date('Y-m-d');
                         $end_time = date('Y-m-d');
-                    }else {
+                    } else {
                         //当前时间位于早上0点30分前,显示昨日的排行
-                        $start_time = date("Y-m-d",strtotime("-1 day"));//昨天
-                        $end_time = date("Y-m-d",strtotime("-1 day"));//昨天
+                        $start_time = date("Y-m-d", strtotime("-1 day"));//昨天
+                        $end_time = date("Y-m-d", strtotime("-1 day"));//昨天
                     }
                     return array($start_time, $end_time);
             }
-        }else{
+        } else {
             switch ($type) {
                 case 1:
                     $time = time() - ((date('w', time()) == 0 ? 7 : date('w', time())) - 1) * 24 * 3600;    //本周一时间
@@ -124,15 +124,14 @@ class GiftSendStatistic extends Model
                     if ($refresh_time < time()) {
                         $start_time = date('Y-m-d');
                         $end_time = date('Y-m-d');
-                    }else {
+                    } else {
                         //当前时间位于早上9点前,显示昨日的排行
-                        $start_time = date("Y-m-d",strtotime("-1 day"));//昨天
-                        $end_time = date("Y-m-d",strtotime("-1 day"));//昨天
+                        $start_time = date("Y-m-d", strtotime("-1 day"));//昨天
+                        $end_time = date("Y-m-d", strtotime("-1 day"));//昨天
                     }
                     return array($start_time, $end_time);
             }
         }
-
     }
 
 
