@@ -65,7 +65,6 @@ class Notice extends Backend
         }
         [$where, $sort, $order, $offset, $limit] = $this->buildparams();
         $list = $this->model
-            ->with(['lang'])
             ->where($where)
             ->order($sort, $order)
             ->paginate($limit);

@@ -46,10 +46,7 @@ class Broadcast extends Base
         $size = input('size') ?: 10;
         $start_id = input('start_id') ?: 0;
         $show_type = input('show_type');
-        $lang = request()->langset() ?? 'zh';
-        $lang_id = db('lang_type')->where('file_name', $lang)->value('id');
 
-        $where = ['lang_id' => $lang_id];
         if ($start_id) {
             $where['id'] = ['<', $start_id];
         }

@@ -91,8 +91,4 @@ class ChannelBillboard extends Model
     }
 
 
-    public function lang()
-    {
-        return $this->belongsTo('lang_type', 'lang_id', 'id', [], 'LEFT')->setEagerlyType(0);
-    }
 }

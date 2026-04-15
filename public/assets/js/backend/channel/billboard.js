@@ -31,7 +31,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},*/
                         // {field: 'type', title: __('Type'), searchList: {"1":__('Type 1'),"2":__('Type 2')}, formatter: Table.api.formatter.normal,operate: false},
                         {field: 'position', title: __('Position'), searchList: {"1":__('Position 1'),"6":__('Position 6')}, operate: false, formatter: Table.api.formatter.label},
-                        {field: 'lang.language_name', title: __('lang_id'), operate: '=', searchList: $.getJSON('general/lang_type/index/option/search_list/name/language_name/key/language_name')},
                         {field: 'title', title: __('Title'), operate: 'LIKE'},
                         {field: 'image', title: __('Image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         {field: 'action', title: __('Action'), searchList: {"0":__('Action 0'),"1":__('Action 1'),"7":__('Action 7'),"5":__('Action 5'),"8":__('Action 8')}, formatter: Table.api.formatter.normal},
