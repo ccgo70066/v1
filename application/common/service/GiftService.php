@@ -76,7 +76,7 @@ class GiftService extends BaseService
                 ];
                 $note .= $gift_info[$gift['gift_id']]['name'] . '×' . $gift['count'] . ',';
                 $gift['gift_id'] == $max_gift['id'] && $max_gift['count'] = $gift['count'];
-                $this->wall_add($to_user_id, $gift['gift_id'], $gift['count']);
+                GiftService::instance()->wall_add($to_user_id, $gift['gift_id'], $gift['count']);
             }
             user_business_change($to_user_id, 'reward_amount', $total_price[$to_user_id] * $user_rate, 'increase', substr($note, 0, -1), 4);
             room_profit_statistics($room_id, $total_price[$to_user_id], $room_rate, $to_user_id);
