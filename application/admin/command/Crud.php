@@ -787,7 +787,7 @@ class Crud extends Command
                         }
                         $this->appendAttr($appendAttrList, $field);
                         $formAddElement = $this->getReplacedStub('html/select', ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => $defaultValue]);
-                        $formEditElement = $this->getReplacedStub('html/select', ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => "\$row.{$field}"]);
+                        $formEditElement = $this->getReplacedStub('html/select', ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => "\$row.{$field}|default=''"]);
                     } elseif ($inputType == 'datetime') {
                         $cssClassArr[] = 'datetimepicker';
                         $attrArr['class'] = implode(' ', $cssClassArr);
@@ -825,7 +825,7 @@ class Crud extends Command
                         $attrArr['data-date-format'] = $format;
                         $attrArr['data-use-current'] = "true";
                         $formAddElement = Form::text($fieldName, $defaultDateTime, $attrArr);
-                        $formEditElement = Form::text($fieldName, ($fieldFunc ? "{:\$row.{$field}?{$fieldFunc}(\$row.{$field}):''}" : "{\$row.{$field}{$fieldFunc}}"), $attrArr);
+                        $formEditElement = Form::text($fieldName, ($fieldFunc ? "{:isset(\$row.{$field})?{$fieldFunc}(\$row.{$field}):''}" : "{\$row.{$field}{$fieldFunc}|default=''}"), $attrArr);
                     } elseif ($inputType == 'datetimerange') {
                         $cssClassArr[] = 'datetimerange';
                         $attrArr['class'] = implode(' ', $cssClassArr);
@@ -850,7 +850,7 @@ class Crud extends Command
                         $defaultValue = $inputType == 'radio' && !$defaultValue ? key($itemArr) : $defaultValue;
 
                         $formAddElement = $this->getReplacedStub('html/' . $inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => $defaultValue]);
-                        $formEditElement = $this->getReplacedStub('html/' . $inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => "\$row.{$field}"]);
+                        $formEditElement = $this->getReplacedStub('html/' . $inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldList' => $this->getFieldListName($field), 'attrStr' => Form::attributes($attrArr), 'selectedValue' => "\$row.{$field}|default=''"]);
                     } elseif ($inputType == 'textarea' && !$this->isMatchSuffix($field, $this->selectpagesSuffix) && !$this->isMatchSuffix($field, $this->imageField)) {
                         $cssClassArr[] = $this->isMatchSuffix($field, $this->editorSuffix) ? $this->editorClass : '';
                         $attrArr['class'] = implode(' ', $cssClassArr);
@@ -871,7 +871,7 @@ class Crud extends Command
                         }
                         $stateNoClass = 'fa-flip-horizontal text-gray';
                         $formAddElement = $this->getReplacedStub('html/' . $inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldYes' => $yes, 'fieldNo' => $no, 'attrStr' => Form::attributes($attrArr), 'fieldValue' => $defaultValue, 'fieldSwitchClass' => $defaultValue == $no ? $stateNoClass : '']);
-                        $formEditElement = $this->getReplacedStub('html/' . $inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldYes' => $yes, 'fieldNo' => $no, 'attrStr' => Form::attributes($attrArr), 'fieldValue' => "{\$row.{$field}}", 'fieldSwitchClass' => "{eq name=\"\$row.{$field}\" value=\"{$no}\"}fa-flip-horizontal text-gray{/eq}"]);
+                        $formEditElement = $this->getReplacedStub('html/' . $inputType, ['field' => $field, 'fieldName' => $fieldName, 'fieldYes' => $yes, 'fieldNo' => $no, 'attrStr' => Form::attributes($attrArr), 'fieldValue' => "{\$row.{$field}|default=''}", 'fieldSwitchClass' => "{eq name=\"\$row.{$field}|default=''\" value=\"{$no}\"}fa-flip-horizontal text-gray{/eq}"]);
                     } elseif ($inputType == 'citypicker') {
                         $attrArr['class'] = implode(' ', $cssClassArr);
                         $attrArr['data-toggle'] = "city-picker";
