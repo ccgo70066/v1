@@ -89,7 +89,7 @@ class Package extends Backend
             $this->error(__('Parameter %s can not be empty', ''));
         }
         $params = $this->preExcludeFields($params);
-        if($params['appid'] == 'coco_008' && $params['system'] != 'IOS'){
+        if ($params['appid'] == 'coco_008' && $params['system'] != 'IOS') {
             $this->error('选择的平台有误');
         }
 
@@ -98,7 +98,7 @@ class Package extends Backend
         }
         $result = false;
         Db::startTrans();
-        try{
+        try {
             //是否采用模型验证
             if ($this->modelValidate) {
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
@@ -110,7 +110,7 @@ class Package extends Backend
             }
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
-        }catch (ValidateException|PDOException|Exception $e){
+        } catch (ValidateException|PDOException|Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }
@@ -147,7 +147,7 @@ class Package extends Backend
             $this->error(__('Parameter %s can not be empty', ''));
         }
         $params = $this->preExcludeFields($params);
-        if($params['appid'] == 'coco_008' && $params['system'] != 'IOS'){
+        if ($params['appid'] == 'coco_008' && $params['system'] != 'IOS') {
             $this->error('选择的平台有误');
         }
         $result = false;
@@ -218,8 +218,7 @@ class Package extends Backend
 </dict>
 </plist>
 str;
-        $str = sprintf($str, str_replace('http://', 'https://', cdnurl($url)), 'com.coco.enterprise', $version,
-            '呆呆星球');
+        $str = sprintf($str, str_replace('http://', 'https://', cdnurl($url)), 'com.coco.enterprise', $version, 'share_text');
         $pathinfo = pathinfo($url);
         $file = './' . $pathinfo['dirname'] . '/' . $pathinfo['filename'] . '.plist';
 

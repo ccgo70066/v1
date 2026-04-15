@@ -190,8 +190,7 @@ class Configs extends Backend
             'cdn_url'         => Env::get('app.cdn_url', cdnurl('')),
             'ws_url'          => Env::get('app.web_socket_url'),
             'share_url'       => 'https://wx.ttworknet.com/index.html', // 分享链接
-            'share_text'      => '呆呆星球',
-            'sign_key'        => config('app.sign_key'),
+            'share_text'      => 'share_text',
             'kf_id'           => config('app.kf_id'),
             'document_prefix' => Env::get('app.page_url', $self_url),
             'green_pact'      => get_site_config('green_pact') ?: "",   //公屏绿色公约

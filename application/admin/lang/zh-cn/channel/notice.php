@@ -16,7 +16,6 @@ return [
     'Action 7'        => '外部H5',
     'Action 5'        => '充值页',
     'Action 8'        => '首充活动',
-    'Action 11'       => '星球探险',
     'Action_url'      => 'H5跳转链接',
     'Status'          => '状态',
     'Status 1'        => '启用',
