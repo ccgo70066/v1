@@ -45,7 +45,6 @@ class Room extends Base
     /**
      * 创建房间申请
      * @ApiMethod   (post)
-     * @ApiParams   (name="theme_id",    type="int",  required=true, rule="", description="主题类型")
      * @ApiParams   (name="name",    type="string",  required=true, rule="", description="名称")
      * @ApiParams   (name="cover",  type="string",  required=true, rule="require", description="封面")
      * @ApiParams   (name="intro",  type="string",  required=true, rule="require", description="简介")
