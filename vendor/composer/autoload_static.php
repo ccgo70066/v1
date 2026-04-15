@@ -25,7 +25,6 @@ class ComposerStaticInitf3106b6ef3260b6914241eab0bed11c1
         '1cfd2761b63b0a29ed23657ea394cb2d' => __DIR__ . '/..' . '/topthink/think-captcha/src/helper.php',
         'cc56288302d9df745d97c934d6a6e5f0' => __DIR__ . '/..' . '/topthink/think-queue/src/common.php',
         '190ec939e5c9a714534abbb4232740cb' => __DIR__ . '/..' . '/zoujingli/ip2region/function.php',
-        'e05a39681bfa590cc553470d9bb4106f' => __DIR__ . '/../..' . '/application/helper.php',
     );
 
     public static $prefixLengthsPsr4 = array (

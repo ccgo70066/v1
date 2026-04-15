@@ -56,7 +56,6 @@
 	  "addons\\": "addons/"
 	},
 	"files": [
-	  "application/helper.php"
 	]
   },
   "repositories": [

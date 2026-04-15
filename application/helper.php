@@ -14,16 +14,14 @@ function traceInDB($content)
 }
 
 /** trace log */
-if (!function_exists('trace')) {
-    function trace($log = '[think]', $level = 'log')
-    {
-        if ('[think]' === $log) {
-            return Log::getLog();
-        }
-        $back = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-        Log::record($back[0]['file'] . ':' . $back[0]['line'], $level);
-        Log::record($log, $level);
+function t($log = '[think]', $level = 'log')
+{
+    if ('[think]' === $log) {
+        return Log::getLog();
     }
+    $back = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+    Log::record($back[0]['file'] . ':' . $back[0]['line'], $level);
+    Log::record($log, $level);
 }
 
 function redis()
