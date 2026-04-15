@@ -55,7 +55,6 @@ class GiftService extends BaseService
     {
         $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->order('price desc')->column('id,name,price,screen_show,image', 'id');
         $max_gift = $gift_info[array_key_first($gift_info)];
-        trace($max_gift);
         $gift_log = [];
         $total_price = ['total' => 0];
         foreach ($to_user_ids as $to_user_id) {
@@ -77,6 +76,7 @@ class GiftService extends BaseService
                 ];
                 $note .= $gift_info[$gift['gift_id']]['name'] . '×' . $gift['count'] . ',';
                 $gift['gift_id'] == $max_gift['id'] && $max_gift['count'] = $gift['count'];
+                $this->wall_add($to_user_id, $gift['gift_id'], $gift['count']);
             }
             user_business_change($to_user_id, 'reward_amount', $total_price[$to_user_id] * $user_rate, 'increase', substr($note, 0, -1), 4);
             room_profit_statistics($room_id, $total_price[$to_user_id], $room_rate, $to_user_id);
@@ -160,6 +160,16 @@ class GiftService extends BaseService
             ];
             board_notice(Message::CMD_SHOW_GIFT_GLOBAL, $board_data, '打赏礼物飘屏');
         }
+    }
+
+    public function wall_add($user_id, $gift_id, $count)
+    {
+        $sql = db('gift_wall')->fetchSql()->insert([
+            'user_id' => $user_id,
+            'gift_id' => $gift_id,
+            'count'   => $count,
+        ]);
+        db()->execute($sql . " on duplicate key update count=count+{$count}");
     }
 
 
