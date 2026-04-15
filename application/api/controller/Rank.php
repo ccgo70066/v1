@@ -122,21 +122,10 @@ class Rank extends Base
      */
     protected function data_format(&$result, $room_id = 0)
     {
-        //return;
         if (count($result)) {
-            //非家族成员-不可见榜单值
-            $userId = $this->auth->id;
-            //$valueShow = (RankService::checkIsUnionUser($room_id, $userId));
-
             $levelIconMap = RedisService::getLevelCache('all');
             $wearAdornmentImages = UserBusinessService::getWearAdornmentImages(array_column($result, 'user_id'));
             foreach ($result as &$item) {
-                //if (!$valueShow) {
-                //    $item['value'] = 0;
-                //}
-                //if ($item['hidden_level'] == 1) {
-                //    $item['level'] = 0;
-                //}
                 $item['adornment'] = $wearAdornmentImages[$item['user_id']] ?? '';
                 $item['level'] = $levelIconMap[$item['level']] ?? '';
                 unset($item['hidden_level']);

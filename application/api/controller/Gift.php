@@ -111,6 +111,7 @@ class Gift extends Base
 
     /**
      * @ApiTitle    (聊天室赠送礼物)
+     * @ApiMethod   (post)
      * @ApiParams   (name="to_user_ids",   type="string", required=true,  rule="min:0", description="收禮人Id:多個以逗號隔開")
      * @ApiParams   (name="gift_id",    type="int", required=true,  rule="min:0", description="禮物ID")
      * @ApiParams   (name="gift_count", type="int", required=true,  rule="min:0", description="每个用户禮物數量")
@@ -133,11 +134,11 @@ class Gift extends Base
         Db::startTrans();
         try {
             $gift_count = count($to_user_ids) * $count;
-            if ($source == GiftModel::GIVE_TYPE_BAG_ONE_ALL) {
-                if (count($to_user_ids) > 1) throw new ApiException(__('Only one recipient can be selected for full gift delivery'));
-                $gifts = db('user_bag')->field('gift_id,count')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>', 0]])->select();
-                db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>', 0]])->setField('count', 0);
-            } elseif ($source == GiftModel::GIVE_TYPE_BAG) {
+            if ((input('source') == GiftModel::GIVE_TYPE_BAG || input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL)) {
+                if (input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL && count($to_user_ids) > 1)
+                    throw new ApiException(__('Only one recipient can be selected for full gift delivery'));
+                $bag_gift_count = db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift['id']])->value('count');
+                if ($bag_gift_count < count($to_user_ids) * $count) throw new ApiException(__('Insufficient gifts in backpack'));
                 $result = db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>=', $gift_count]])->setDec('count', $gift_count);
                 if (!$result) throw new ApiException(__('Insufficient gifts in backpack'));
             } else {
@@ -168,6 +169,7 @@ class Gift extends Base
 
     /**
      * @ApiTitle    (一鍵清包)
+     * @ApiMethod   (post)
      * @ApiParams   (name="to_user_id",   type="string", required=true,  rule="min:0", description="收禮人Id")
      * @ApiParams   (name="room_id",    type="int", required=false, rule="min:0", description="房間ID")
      * @ApiParams   (name="seat",    type="int", required=false, rule="min:0", description="座位號,1-9,不在座位上則不傳")

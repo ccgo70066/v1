@@ -657,8 +657,8 @@ class Room extends Base
         $room = db('room')->where('id', $room_id)->field('im_operator,owner_id,beautiful_id')->find();
         if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
         if (user_noble_switch($to_user_id, 5)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
-        send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s');
-        $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", '', $to_user_id);
+        send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出厅%s');
+        $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了厅", '', $to_user_id);
         $this->service->quit_room($to_user_id, $room_id, 0, 1);
         $this->success();
     }
@@ -695,8 +695,8 @@ class Room extends Base
                 db('room_blacklist')->insert(['room_id' => $room_id, 'user_id' => $to_user_id,]);
             }
             //给房主发消息
-            send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s,并加入派对黑名单');
-            $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", " kicked *{$nickname}* out of the room", $to_user_id);
+            send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出厅%s,并加入厅黑名单');
+            $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了厅", " kicked *{$nickname}* out of the room", $to_user_id);
             //移除房间角色
             $this->service->roomRoleRemove($room_id, $to_user_id);
         }
@@ -705,7 +705,7 @@ class Room extends Base
 
         if ($type == 2) {
             db('room_blacklist')->where(['room_id' => $room_id, 'user_id' => $to_user_id])->delete();
-            $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*解除了派对黑名单", " unblocked *{$nickname}* from the room blacklist", $to_user_id);
+            $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*解除了厅黑名单", " unblocked *{$nickname}* from the room blacklist", $to_user_id);
         }
 
         $this->success();

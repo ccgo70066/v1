@@ -163,7 +163,7 @@ function room_profit_statistics($room_id, $gift_val, $room_reward_val, $receiver
     if ($room_admin) {
         $room = db('room')->where(['id' => $room_id])->find();
         $owner_rate = get_site_config('gift_room_owner');
-        user_business_change($room['owner_id'], 'reward_amount', $gift_val * $owner_rate, 'increase', '联盟派对收获礼物', 4);
+        user_business_change($room['owner_id'], 'reward_amount', $gift_val * $owner_rate, 'increase', '厅成员收获礼物', 4);
     }
 
     // 用户在家族房间收礼, 流水5%进家族收益
