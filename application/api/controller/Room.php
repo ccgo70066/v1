@@ -1070,23 +1070,6 @@ class Room extends Base
     }
 
     /**
-     * 获取共享音乐
-     * @ApiMethod   (get)
-     */
-    public function get_share_song()
-    {
-        $data = db('share_song')->order('weigh asc')->where('status', 1)->select();
-        foreach ($data as $k => &$v) {
-            $v['file'] = cdnurl($v['file']);
-            $v['title'] = RedisService::loadLang($v['title']);
-            $v['author'] = RedisService::loadLang($v['author']);
-        }
-
-        $this->success('', $data);
-    }
-
-
-    /**
      * @ApiTitle    (随机进入房间)
      * @ApiMethod   (get)
      * @ApiParams   (name="theme_id",    type="int",  required=false,rule="min:1", description="房间主题类型")
