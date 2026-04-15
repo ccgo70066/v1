@@ -19,11 +19,8 @@ class Broadcast extends Base
     public function get_billboard()
     {
         $show_type = input('show_type');
-        $lang = request()->langset() ?? 'zh';
-        $lang_id = db('lang_type')->where('file_name', $lang)->value('id');
         $sel = db('channel_billboard')
             ->where('status', 1)
-            ->where('lang_id', $lang_id)
             ->where("find_in_set({$show_type}, `position`)")
             ->where([
                 'show_start_time' => ['lt', datetime(time())],
