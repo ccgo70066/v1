@@ -3,6 +3,7 @@
 namespace app\api\controller;
 
 use app\common\model\GiftSendStatistic;
+use app\common\service\RankService;
 use app\common\service\RedisService;
 use app\common\service\UserBusinessService;
 
@@ -19,7 +20,7 @@ class Rank extends Base
      * @ApiTitle    (房间财富榜)
      * @ApiSummary  (返回值中value为0，榜单值不显示)
      *
-     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=周榜,2=日榜")
+     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=今日,2=昨日,3=本周,4=上周")
      * @ApiParams   (name="room_id",   type="int", required=true,  rule="require|min:0", description="房间ID")
      * @ApiParams   (name="page",   type="int", required=false, rule="", description="頁碼,默認1")
      */
@@ -31,7 +32,7 @@ class Rank extends Base
         $size = 20;
         $page > 5 && $this->success('', []);
         //查询榜单数据
-        $cache = GiftSendStatistic::get_rank_data($range, 1, $room_id);
+        $cache = RankService::instance()->get_rank_data($range, 1, $room_id);
         !$cache && $this->success('', []);
         $result = array_slice($cache, ($page - 1) * $size, $size);
         $this->data_format($result, $room_id);
@@ -42,7 +43,7 @@ class Rank extends Base
      * @ApiTitle    (房间魅力榜)
      * @ApiSummary  (返回值中value为0，榜单值不显示)
      *
-     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=周榜,2=日榜")
+     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=今日,2=昨日,3=本周,4=上周")
      * @ApiParams   (name="room_id",   type="int", required=true,  rule="require|min:0", description="房间ID")
      * @ApiParams   (name="page",   type="int", required=false, rule="", description="頁碼,默認1")
      */
@@ -54,7 +55,7 @@ class Rank extends Base
         $size = 20;
         $page > 5 && $this->success('', []);
 
-        $cache = GiftSendStatistic::get_rank_data($range, 2, $room_id);
+        $cache = RankService::instance()->get_rank_data($range, 2, $room_id);
         !$cache && $this->success('', []);
         $result = array_slice($cache, ($page - 1) * $size, $size);
         $this->data_format($result, $room_id);
@@ -62,44 +63,12 @@ class Rank extends Base
         $this->success('', $result);
     }
 
-    /**
-     * 房间的贵族榜
-     * @ApiSummary  (返回值中value为0，榜单值不显示)
-     *
-     * @ApiParams   (name="page",   type="int", required=false, rule="", description="頁碼,默認1")
-     * @ApiParams   (name="size",   type="int", required=false, rule="", description="分頁大小,默認20")
-     * @ApiParams   (name="room_id",   type="int", required=true,  rule="require|min:0", description="房间ID")
-     */
-    public function room_noble()
-    {
-        $page = input('page') ?: 1;
-        $size = 20;
-        $page > 5 && $this->success();
-
-        $result = db('room_enter_log r')
-            ->join('user u', 'u.id=r.user_id and u.hidden_noble=0', 'left')
-            ->join('user_business ub', 'ub.id=r.user_id', 'left')
-            ->join('user_noble un', 'r.user_id = un.user_id')
-            ->join('noble n', 'un.noble_id = n.id')
-            ->where('r.room_id', input('room_id'))
-            ->where(['un.end_time' => ['gt', datetime()]])
-            ->field('r.user_id,n.badge,u.hidden_level,u.nickname,u.avatar,ub.level')
-            ->group('r.user_id')
-            ->order('n.weigh desc,un.end_time desc')
-            ->page($page, $size)
-            ->select();
-        $this->data_format($result, input('room_id'));
-        //foreach ($result as &$value) {
-        //    $value['nickname'] = '用户' . substr($value['user_id'], 0, 2) . '****' . substr($value['user_id'], -1, 1);
-        //}
-        $this->success('', $result);
-    }
 
     /**
      * @ApiTitle    (财富榜)
      * @ApiSummary  (返回值中value为0，榜单值不显示)
      *
-     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=周榜,2=日榜")
+     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=今日,2=昨日,3=本周,4=上周")
      * @ApiParams   (name="page",   type="int", required=false, rule="", description="頁碼,默認1")
      */
     public function contribution()
@@ -109,7 +78,7 @@ class Rank extends Base
         $size = 20;
         $page > 5 && $this->success('', []);
 
-        $cache = GiftSendStatistic::get_rank_data($range, 1);
+        $cache = RankService::instance()->get_rank_data($range, 1, 0);
         !$cache && $this->success('', []);
         $result = array_slice($cache, ($page - 1) * $size, $size);
         $this->data_format($result);
@@ -123,7 +92,7 @@ class Rank extends Base
      * @ApiTitle    (魅力榜)
      * @ApiSummary  (返回值中value为0，榜单值不显示)
      *
-     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=周榜,2=日榜")
+     * @ApiParams   (name="type",   type="int", required=true,  rule="require|min:0", description="類別:1=今日,2=昨日,3=本周,4=上周")
      * @ApiParams   (name="page",   type="int", required=false, rule="", description="頁碼,默認1")
      * @ApiParams   (name="size",   type="int", required=false, rule="", description="分頁大小,默認20")
      *
@@ -137,41 +106,13 @@ class Rank extends Base
         $size = 20;
         $page > 5 && $this->success('', []);
 
-        $cache = GiftSendStatistic::get_rank_data($range, 2);
+        $cache = RankService::instance()->get_rank_data($range, 2, 0);
         !$cache && $this->success('', []);
         $result = array_slice($cache, ($page - 1) * $size, $size);
         $this->data_format($result);
         $this->success('', $result);
     }
 
-
-    /**
-     * 贵族榜
-     * @ApiParams   (name="page",   type="int", required=false, rule="", description="頁碼,默認1")
-     *
-     * @ApiReturnParams   (name="room_id", type="string",  description="派对id：>0在派对中")
-     */
-    public function noble()
-    {
-        $page = input('page') ?: 1;
-        $size = 20;
-        $page > 5 && $this->success();
-
-        $result = db('user_noble l')
-            ->join('user u', 'u.id=l.user_id and u.hidden_noble=0', 'left')
-            ->join('user_business ub', 'ub.id=l.user_id', 'left')
-            ->join('noble n', 'l.noble_id=n.id', 'left')
-            ->where(['l.end_time' => ['gt', datetime()]])
-            ->field('l.user_id,n.badge,u.hidden_level,u.nickname,u.avatar,ub.level')
-            ->order('n.weigh desc,l.end_time desc')
-            ->page($page, $size)
-            ->select();
-        $this->data_format($result);
-        //foreach ($result as &$value) {
-        //    $value['nickname'] = '用户' . substr($value['user_id'], 0, 2) . '****' . substr($value['user_id'], -1, 1);
-        //}
-        $this->success('', $result);
-    }
 
     /**
      * 榜单数据格式

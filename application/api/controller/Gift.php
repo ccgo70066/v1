@@ -10,6 +10,7 @@ use app\common\model\GiftSendStatistic;
 use app\common\model\Room as RoomModel;
 use app\common\service\GiftService;
 use app\common\service\ImService;
+use app\common\service\RankService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
 use think\Db;
@@ -262,8 +263,7 @@ class Gift extends Base
 
                 $room_reward_val = $union_rate * $sum_gift_val;
                 room_profit_statistics($room_id, $sum_gift_val, $room_reward_val, $receiver);
-
-                GiftSendStatistic::count_up($user_id, $receiver, $room_id, $sum_gift_val);
+                RankService::instance()->count_up($user_id, $receiver, $room_id, $sum_gift_val);
 
                 $hot = $redis->hIncrBy(RedisService::ROOM_HOT_KEY, $room_id, $sum_gift_val * 10);
                 //麦上打赏统计
