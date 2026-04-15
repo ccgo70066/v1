@@ -3,7 +3,6 @@
 namespace app\api\controller;
 
 use app\common\controller\Api;
-use app\common\exception\ApiException;
 use app\common\library\ApiEnhance;
 use ReflectionClass;
 use ReflectionException;
@@ -11,7 +10,6 @@ use think\Env;
 use think\exception\HttpResponseException;
 use think\Request;
 use think\Response;
-use util\OpenSSL3DES;
 
 /**
  * API控制器基类
@@ -38,7 +36,7 @@ class Base extends Api
             $rc = new ReflectionClass($this);
             $this->validateParams($rc->getMethod(strtolower($this->request->action()))->getDocComment());
         } catch (ReflectionException $exception) {
-            t($exception->getMessage());
+            trace($exception->getMessage());
         }
     }
 
