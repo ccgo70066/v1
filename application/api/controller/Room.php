@@ -301,7 +301,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (下座[公,个])
+     * @ApiTitle    (下座)
      * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",  required=false, rule="", description="房间ID")
      * @ApiParams   (name="user_id", type="int",  required=false, rule="", description="用户ID,不传则为操作者")
@@ -352,7 +352,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (进入房间[公,个])
+     * @ApiTitle    (进入房间)
      * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      * @ApiParams   (name="password",type="int",    required=false,rule="", description="密码")
      * @ApiParams   (name="last_room_id", type="int",    required=false, rule="", description="用户当前所在房间")
@@ -502,7 +502,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (开始/暂停座位打赏金额[公,个])
+     * @ApiTitle    (开始/暂停座位打赏金额)
      * @ApiSummary  (开始/暂停座位打赏金额)
      * @ApiParams   (name="room_id",  type="int", required=true,  rule="require|min:0", description="房间ID")
      * @ApiParams   (name="pause",    type="int", required=true,  rule="require|min:0", description="设置统计状态:0:关闭,1=开启,2=暂停,3=清空")
@@ -782,7 +782,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (获取房间操作日志[公,个])
+     * @ApiTitle    (获取房间操作日志)
      * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间id")
      * @ApiParams   (name="size",       type="int",  required=true, rule="", description="分页大小")
      * @ApiParams   (name="start_id",   type="int",  required=false, rule="", description="查询起始id")
@@ -817,7 +817,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (写入房间操作日志[公,个])
+     * @ApiTitle    (写入房间操作日志)
      * @ApiSummary  ("action:1=封座,2=解封座,3=封人麦,4=解封人麦,5=禁言,6=取消禁言")
      * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间id")
      * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="操作者user_id")
@@ -892,7 +892,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (获取房间背景图[公,个])
+     * @ApiTitle    (获取房间背景图)
      * @ApiParams   (name="room_id",    type="int",  required=false, rule="", description="房间号")
      * @ApiMethod   (get)
      **/
@@ -919,7 +919,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (获取排麦队列用户(普通排麦)[公,个])
+     * @ApiTitle    (获取排麦队列用户(普通排麦))
      * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
      **/
     public function queue_list()
@@ -952,7 +952,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (获取房间综合通知信息[公,个])
+     * @ApiTitle    (获取房间综合通知信息)
      * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间号")
      **/
     public function get_notice()
@@ -967,7 +967,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (获取房间详情[公,个])
+     * @ApiTitle    (获取房间详情)
      * @ApiMethod   (post)
      * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      **/
@@ -1015,7 +1015,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (麦上打赏统计明细[公,个])
+     * @ApiTitle    (麦上打赏统计明细)
      * @ApiMethod   (get)
      * @ApiParams   (name="room_id", type="int",    required=true, rule="require", description="房间id")
      * @ApiParams   (name="seat", type="str",  required=true, rule="require", description="座位号:1到9")
