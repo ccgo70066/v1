@@ -6,6 +6,16 @@ use think\Db;
 
 class MongoService extends BaseService
 {
+    protected static $instance = null;
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
     //解决mongodb在mysql事务中存储的数据不能跟随mysql的回滚事务而保持一致性的问题
     public static $logData = [];
 

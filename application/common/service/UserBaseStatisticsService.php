@@ -10,6 +10,16 @@ use think\Db;
  */
 class UserBaseStatisticsService extends BaseService
 {
+    protected static $instance = null;
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
     /**
      * 获取用户基础统计
      * @param int $userId 用户ID

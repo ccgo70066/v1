@@ -8,6 +8,16 @@ namespace app\common\service;
  */
 class UserWithdrawService extends BaseService
 {
+    protected static $instance = null;
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
     /**
      * 获取账户信息
      * @param $user_id

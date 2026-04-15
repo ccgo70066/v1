@@ -13,7 +13,15 @@ use think\Exception;
  */
 class UserBusinessService extends BaseService
 {
+    protected static $instance = null;
 
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
     /**
      * 获取所有用户穿戴的头像框
      */

@@ -9,6 +9,15 @@ use app\common\model\Union as UnionModel;
  */
 class RankService extends BaseService
 {
+    protected static $instance = null;
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
     /**
      * 判断用户是否是家族成员
      * @param int $room_id 房间ID

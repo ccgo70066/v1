@@ -17,6 +17,9 @@ use think\exception\DbException;
  */
 class ImService extends BaseService
 {
+    protected static $instance = null;
+
+
     public Yunxin $im;
     //系统消息ID
     const SYS_ID = 'sys';
@@ -55,6 +58,15 @@ class ImService extends BaseService
     public function __construct()
     {
         $this->im = new Yunxin();
+    }
+
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
     }
 
 

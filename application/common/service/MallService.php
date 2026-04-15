@@ -8,6 +8,16 @@ namespace app\common\service;
  */
 class MallService extends BaseService
 {
+    protected static $instance = null;
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
     /**
      * 获取所有礼物数组
      */

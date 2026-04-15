@@ -2,21 +2,15 @@
 
 namespace app\common\service;
 
+use app\common\exception\ApiException;
+
 /**
  * Service 基类
  */
 class BaseService
 {
 
-    protected static $instance = null;
 
-    public static function instance()
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
 
 
     /**
@@ -30,7 +24,7 @@ class BaseService
     {
         $redis = redis();
         if (!$redis->set('operate_check:' . $operate, 1, ['nx', 'ex' => $second])) {
-            self::error(__('Operation too fast'));
+            throw  new ApiException(__('Operation too fast'));
         }
     }
 

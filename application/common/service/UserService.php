@@ -17,6 +17,16 @@ use think\Db;
  */
 class UserService extends BaseService
 {
+    protected static $instance = null;
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
     /**
      * 通过ID获取用户信息
      * @param $id

@@ -15,6 +15,16 @@ use think\Exception;
  */
 class GiftService extends BaseService
 {
+    protected static $instance = null;
+
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
     protected GiftModel $model;
 
     /**
@@ -43,8 +53,9 @@ class GiftService extends BaseService
 
     public function give_gift($user_id, $to_user_ids, $gifts, $room_id, $source)
     {
-        $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->order('price desc')->column('id,name,price,screen_show', 'id');
-        $max_gift = $gift_info[0];
+        $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->order('price desc')->column('id,name,price,screen_show,image', 'id');
+        $max_gift = $gift_info[array_key_first($gift_info)];
+        trace($max_gift);
         $gift_log = [];
         $total_price = ['total' => 0];
         foreach ($to_user_ids as $to_user_id) {
@@ -82,7 +93,8 @@ class GiftService extends BaseService
 
         //麦上打赏统计更新
         if (db('room')->where('id', $room_id)->value('pause') == RoomModel::RoomPauseOn) {
-            $roomService = RoomService::instance();
+            $roomService = new RoomService();
+            //::instance();
             $seat_user = $roomService->getSeatUserId($room_id);
             $key_value_update = [];
             //匹配收礼人是否在座上,记录麦上打赏明细

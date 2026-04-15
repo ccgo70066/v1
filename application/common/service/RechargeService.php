@@ -14,7 +14,15 @@ use think\Log;
 
 class RechargeService extends BaseService
 {
+    protected static $instance = null;
 
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
     /**
      * 获取充值项及对应的充值渠道
      * @param $appid

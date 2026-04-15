@@ -8,7 +8,15 @@ namespace app\common\service;
  */
 class UserBusinessLogService extends BaseService
 {
+    protected static $instance = null;
 
+    public static function instance()
+    {
+        if (is_null(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
     /**
      * 业务流水基础信息
      * @param int    $userId  用户ID
