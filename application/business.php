@@ -162,7 +162,7 @@ function room_profit_statistics($room_id, $gift_val, $room_reward_val, $receiver
     $room_admin = db('room_admin')->where('user_id', $receiver)->where('room_id', $room_id)->where('status', 'in', [1, 2])->find();
     if ($room_admin) {
         $room = db('room')->where(['id' => $room_id])->find();
-        $owner_rate = config('app.gift_room_owner');
+        $owner_rate = get_site_config('gift_room_owner');
         user_business_change($room['owner_id'], 'reward_amount', $gift_val * $owner_rate, 'increase', '联盟派对收获礼物', 4);
     }
 

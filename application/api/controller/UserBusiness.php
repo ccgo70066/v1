@@ -739,8 +739,8 @@ class UserBusiness extends Base
      */
     public function level()
     {
-        $list = db('level')->field('name,grade,scope,icon')->order('grade asc')->select();
         $my = db('user')->field('level,score,avatar')->where('id', $this->auth->id)->find();
+        $list = db('level')->field('name,grade,scope,icon')->order('grade asc')->select();
 
         $this->success('', [
             'my'    => $my,

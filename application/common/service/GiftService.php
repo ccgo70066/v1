@@ -183,14 +183,14 @@ class GiftService extends BaseService
     public function receiveGiftsRate($room_id, $user_id)
     {
         if (!$room_id) {
-            return [config('app.receive_gifts'), 0, 0];
+            return [get_site_config('receive_gifts'), 0, 0];
         }
         //9-16 任何人在房间中送礼族长都有18%收益
         // 在本派对下送礼的，家族都有2%周流水奖励
         return [
-            config('app.room_receive_gifts'),
-            config('app.gift_room_profit'),
-            config('app.gift_room_owner'),
+            get_site_config('room_receive_gifts'),
+            get_site_config('gift_room_profit'),
+            get_site_config('gift_room_owner'),
         ];
     }
 
