@@ -93,6 +93,7 @@ class Gift extends Backend
      */
     public function add()
     {
+        //error_reporting(E_ALL & ~E_WARNING);
         if ($this->request->isPost()) {
             $params = $this->request->post("row/a");
             if ($params) {
