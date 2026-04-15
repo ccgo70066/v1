@@ -121,19 +121,23 @@ class Gift extends Base
     {
         $user_id = $this->auth->id;
         $this->operate_check('give_gift:' . $user_id, 1);
-        $gift_id = input('gift_id');
+        $gift_id = input('gift_id', 0);
+        $source = input('source', 2);
         $count = abs((int)input('gift_count'));
 
-        list($gift, $to_user_ids_arr, $room_id) = $this->service->checkRoomGiveParam($gift_id, $user_id, input('to_user_ids'), input('room_id'));
-        $total_amount = $gift['price'] * $count * count($to_user_ids_arr);
+        list($gift, $to_user_ids, $room_id) = $this->service->checkRoomGiveParam($gift_id, $user_id, input('to_user_ids'), input('room_id'));
+
+        $total_amount = $gift['price'] * $count * count($to_user_ids);
+        $gifts = [['gift_id' => $gift_id, 'count' => $count],];
         Db::startTrans();
         try {
-            $gift_count = count($to_user_ids_arr) * $count;
-            if ((input('source') == GiftModel::GIVE_TYPE_BAG || input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL)) {
-                if (input('source') == GiftModel::GIVE_TYPE_BAG_ONE_ALL && count($to_user_ids_arr) > 1)
-                    throw new ApiException(__('Only one recipient can be selected for full gift delivery'));
-                $result = db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>=', $gift_count]])
-                    ->setDec('count', $gift_count);
+            $gift_count = count($to_user_ids) * $count;
+            if ($source == GiftModel::GIVE_TYPE_BAG_ONE_ALL) {
+                if (count($to_user_ids) > 1) throw new ApiException(__('Only one recipient can be selected for full gift delivery'));
+                $gifts = db('user_bag')->field('gift_id,count')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>', 0]])->select();
+                db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>', 0]])->setField('count', 0);
+            } elseif ($source == GiftModel::GIVE_TYPE_BAG) {
+                $result = db('user_bag')->where(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => ['>=', $gift_count]])->setDec('count', $gift_count);
                 if (!$result) throw new ApiException(__('Insufficient gifts in backpack'));
             } else {
                 $note = '打赏礼物:' . $gift['name'] . '×' . ($gift_count);
@@ -149,64 +153,15 @@ class Gift extends Base
             error_log_out($e);
             $this->error(__('Network busy'));
         }
-        $this->service->giveGiftByRoom($user_id, $to_user_ids_arr, $gift_id, $count, $room_id ?: 0, input('source'));
-
-        //更新热力值
-        $redis = redis();
-        $hot = $redis->hIncrBy(RedisService::ROOM_HOT_KEY, $room_id, 10 * $total_amount);
-
-        //麦上打赏统计更新
-        $pause = db('room')->where('id', $room_id)->value('pause');
-        if ($pause == RoomModel::RoomPauseOn) {
-            $roomService = new RoomService();
-            //获取在座用户
-            $seat_user = $roomService->getSeatUserId($room_id);
-            $key_value_update = [];
-
-            //匹配收礼人是否在座上,记录麦上打赏明细
-            foreach ($to_user_ids_arr as $to_user_id) {
-                $seat_no = array_search($to_user_id, $seat_user);
-                if (!$seat_no) {
-                    continue;
-                }
-                $key_value_update[$seat_no] = $gift['price'] * $count;
-                update_seat_gift_val($room_id, $seat_no, $user_id, $gift['price'] * $count);
-            }
-            //在座则增加麦上打赏额统计
-            if ($key_value_update) {
-                $roomService->incrSeatGiftValue($room_id, $key_value_update);
-            }
-        }
-        $imService = new ImService();
-        //聊天室送礼通知,前端刷新热力值和麦上打赏统计
-        $imService->roomGiveGiftNotice($room_id, $hot);
-        //聊天室送礼消息,聊天公屏送礼消息
-        $imService->roomGiveGiftMessage($room_id, $user_id, $to_user_ids_arr, $gift_id, $count);
-        $mq_gift = [['gift_id' => $gift_id, 'count' => $count, 'price' => $gift['price'], 'type' => $gift['type']]];
-        mq_publish(GiveGiftMQ::instance(), [
+        $arr = [
             'user_id'     => $user_id,
-            'to_user_ids' => $to_user_ids_arr,
-            'gifts'       => $mq_gift,
+            'to_user_ids' => $to_user_ids,
+            'gifts'       => $gifts,
             'room_id'     => $room_id,
-        ]);
-        //飘屏
-        if ($gift['screen_show'] == GiftModel::ScreenShowOn ||
-            ($gift['screen_show'] == GiftModel::ScreenShowPrice && $total_amount >= get_site_config('gift_value'))) {
-            foreach ($to_user_ids_arr as $to_user_id) {
-                $to_nickname = RedisService::getUserCache($to_user_id, 'nickname');
-                //$this->service->screenShow(
-                //    Message::CMD_SHOW_GIFT_GLOBAL,
-                //    $this->auth->nickname,
-                //    $gift['name'],
-                //    $count,
-                //    $gift['price'],
-                //    $gift['image'],
-                //    $to_nickname,
-                //    $gift['cate'] == GiftModel::GIFT_CATE_SPECIAL,
-                //    $room_id
-                //);
-            }
-        }
+            'source'      => $source,
+        ];
+        mq_publish(GiveGiftMQ::instance(), $arr);
+        //$this->service->give_gift($user_id, $to_user_ids, $gifts, $room_id, $source);
         $this->success();
     }
 

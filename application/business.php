@@ -46,7 +46,7 @@ function user_money_change($user_id, $money, string $memo = '')
  * @param int    $from   分类:0=其它,1=商城兑换,2=活动奖励,3=充值金幣,4=打赏礼物,6=IM红包,7=红包雨,8=兑换金幣,9=兑换游戏券,10=守护分成,11=家族流水奖励兑换,12=家族周流水扶持,13=收益提现
  * @throws
  */
-function user_business_change($user_id, $type, $amount, $flow = 'increase', $note = '', $from = 0, $room_id = 0)
+function user_business_change($user_id, $type, $amount, $flow = 'increase', $note = '', $from = 0, $room_id = 0): void
 {
     if ($amount < 0) throw new ApiException(__('Invalid operation'));
     $business = db('user_business')->where('id', $user_id)->lock(true)->find();
@@ -184,6 +184,7 @@ function update_seat_gift_val($room_id, $seat, $user_id, $gift_val)
 
 function room_profit_statistics($room_id, $gift_val, $room_reward_val, $receiver)
 {
+    if ($room_id == 0) return;
     // 用户在自己所在房间收礼, 自己家族族长分15%收益
     $room_admin = db('room_admin')->where('user_id', $receiver)->where('room_id', $room_id)->where('status', 'in', [1, 2])->find();
     if ($room_admin) {

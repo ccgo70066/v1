@@ -282,10 +282,10 @@ class RoomService extends BaseService
     public function getSeatUserId($room_id)
     {
         $imService = new ImService();
-        $queuelist = $imService->get_room_wait_mic($room_id);
-        if ($queuelist) {
+        $queueList = $imService->get_room_wait_mic($room_id);
+        if ($queueList) {
             $seat = [];
-            foreach ($queuelist['desc']['list'] as $list) {
+            foreach ($queueList['desc']['list'] as $list) {
                 foreach ($list as $kk => $vv) {
                     $k_arr = explode('#', $kk);
                     if (count($k_arr) == 3 && $k_arr[0] == 10 && $vv) {
@@ -295,7 +295,7 @@ class RoomService extends BaseService
             }
             return $seat;
         } else {
-            Log::error('云信获取麦上信息队列数据：' . json_encode($queuelist));
+            Log::error('云信获取麦上信息队列数据：' . json_encode($queueList));
             //云信获取座位信息失败的话，就用数据库信息
             $room = $this->model->getRoomById($room_id);
             return [

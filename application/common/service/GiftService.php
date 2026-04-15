@@ -2,9 +2,12 @@
 
 namespace app\common\service;
 
+use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\exception\ApiException;
+use app\common\library\rabbitmq\GiveGiftMQ;
 use app\common\model\Gift as GiftModel;
 use app\common\model\GiftSendStatistic;
+use app\common\model\Room as RoomModel;
 use think\Exception;
 
 /**
@@ -38,48 +41,82 @@ class GiftService extends BaseService
         return [$gift, $to_user_ids_arr, $room_id ?? 0];
     }
 
-    /**
-     * 房间送礼业务
-     * @param $giver_id
-     * @param $to_user_ids_arr
-     * @param $gift_id
-     * @param $count
-     * @param $room_id
-     * @param $from_type int 送礼方式:-1=背包全送,1=背包选择数量送,2=面板送礼,4=一键清包
-     * @return bool
-     * @throws
-     */
-    public function giveGiftByRoom($giver_id, $to_user_ids_arr, $gift_id, $count, $room_id, $from_type = 0)
+    public function give_gift($user_id, $to_user_ids, $gifts, $room_id, $source)
     {
-        $gift = GiftModel::getGiftById($gift_id);
-        $room = db('room')->where('id', $room_id)->field('id,name,pause')->find();
-        if (!$room) {
-            throw new ApiException(__('Failed to retrieve room'));
-        }
+        $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->order('price desc')->column('id,name,price,screen_show', 'id');
+        $max_gift = $gift_info[0];
         $gift_log = [];
-
-        foreach ($to_user_ids_arr as $receiver_id) {
-            //根据收礼人是否是本房间所属家族成员获取个人提成比例和家族提成比例
-            [$user_rate, $union_rate] = $this->receiveGiftsRate($room['id'], $receiver_id);
-            $gift_log[] = [
-                'user_id'     => $giver_id,
-                'to_user_id'  => $receiver_id,
-                'gift_id'     => $gift_id,
-                'gift_val'    => $gift['price'] * $count,
-                'count'       => $count,
-                'type'        => $from_type,
-                'room_id'     => $room_id,
-                'create_time' => datetime()
-            ];
-            user_business_change($receiver_id, 'reward_amount', $gift['price'] * $count * $user_rate, 'increase', '收获礼物:' . $gift['name'] . '×' . $count, 4);
-            //如果收礼人是本房间所属家族成员,家族会获得家族收益
-            //$union_reward_val = $union_rate * $gift['price'] * $count;
-            //$room['union_id'] && union_profit_statistics($room['union_id'], $gift['price'] * $count, $union_reward_val, $receiver_id);
-            //根据送礼人、收礼人、房间做送礼统计
-            GiftSendStatistic::count_up($giver_id, $receiver_id, $room_id, $gift['price'] * $count);
+        $total_price = ['total' => 0];
+        foreach ($to_user_ids as $to_user_id) {
+            [$user_rate, $room_rate] = $this->receiveGiftsRate($room_id, $to_user_id);
+            $total_price[$to_user_id] = 0;
+            $note = '收获礼物:';
+            foreach ($gifts as $gift) {
+                $gift_val = $gift_info[$gift['gift_id']]['price'] * $gift['count'];
+                $total_price['total'] += $gift_val;
+                $total_price[$to_user_id] += $gift_val;
+                $gift_log[] = [
+                    'user_id'    => $user_id,
+                    'to_user_id' => $to_user_id,
+                    'gift_id'    => $gift['gift_id'],
+                    'count'      => $gift['count'],
+                    'gift_val'   => $gift_val,
+                    'type'       => $source,
+                    'room_id'    => $room_id,
+                ];
+                $note .= $gift_info[$gift['gift_id']]['name'] . '×' . $gift['count'] . ',';
+                $gift['gift_id'] == $max_gift['id'] && $max_gift['count'] = $gift['count'];
+            }
+            user_business_change($to_user_id, 'reward_amount', $total_price[$to_user_id] * $user_rate, 'increase', substr($note, 0, -1), 4);
+            room_profit_statistics($room_id, $total_price[$to_user_id], $room_rate, $to_user_id);
+            GiftSendStatistic::count_up($user_id, $to_user_id, $room_id, $total_price[$to_user_id]);
+        }
+        if ($source == 2) {
+            UserBusinessService::instance()->level_scope($user_id, $total_price);
         }
         db('gift_log')->insertAll($gift_log);
+
+        //更新热力值
+        $redis = redis();
+        $hot = $redis->hIncrBy(RedisService::ROOM_HOT_KEY, $room_id, 10 * $total_price['total']);
+
+        //麦上打赏统计更新
+        if (db('room')->where('id', $room_id)->value('pause') == RoomModel::RoomPauseOn) {
+            $roomService = RoomService::instance();
+            $seat_user = $roomService->getSeatUserId($room_id);
+            $key_value_update = [];
+            //匹配收礼人是否在座上,记录麦上打赏明细
+            foreach ($to_user_ids as $to_user_id) {
+                $seat_no = array_search($to_user_id, $seat_user);
+                if (!$seat_no) continue;
+                $key_value_update[$seat_no] = $total_price[$to_user_id];
+                update_seat_gift_val($room_id, $seat_no, $user_id, $total_price[$to_user_id]);
+            }
+            if ($key_value_update) $roomService->incrSeatGiftValue($room_id, $key_value_update); //在座则增加麦上打赏额统计
+        }
+        $imService = ImService::instance();
+        $imService->roomGiveGiftNotice($room_id, $hot);
+        $source != -1 && $imService->roomGiveGiftMessage($room_id, $user_id, $to_user_ids, $gifts[0]['gift_id'], $gifts[0]['count']);
+        //飘屏
+        if ($max_gift['screen_show'] == GiftModel::ScreenShowOn ||
+            ($max_gift['screen_show'] == GiftModel::ScreenShowPrice && $max_gift['price'] * $max_gift['count'] >= get_site_config('gift_value'))) {
+            foreach ($to_user_ids as $to_user_id) {
+                $to_nickname = RedisService::getUserCache($to_user_id, 'nickname');
+                $this->screenShow(
+                    Message::CMD_SHOW_GIFT_GLOBAL,
+                    db('user')->where('id', $user_id)->value('nickname') ?? '',
+                    $max_gift['name'],
+                    $max_gift['count'],
+                    $max_gift['price'],
+                    $max_gift['image'],
+                    $to_nickname,
+                    false,
+                    $room_id
+                );
+            }
+        }
     }
+
 
     /**
      * 飘屏
@@ -95,28 +132,28 @@ class GiftService extends BaseService
         $image = null,
         $to_nickname = null,
         $is_all_server = false,
-        $room_id
+        $room_id = 0
     ) {
-        //if ($cmd == Message::CMD_SHOW_GIFT_GLOBAL) {
-        //    //广播
-        //    $board_data = [
-        //        'nickname'      => $nickname,
-        //        'gift_name'     => $gift_name,
-        //        'count'         => $count,
-        //        'price'         => (string)($price + 0),
-        //        'image'         => $image,
-        //        'to_nickname'   => $to_nickname,
-        //        'is_all_server' => $is_all_server,
-        //        'room_id'       => $room_id
-        //    ];
-        //    board_notice(Message::CMD_SHOW_GIFT_GLOBAL, $board_data, '打赏礼物飘屏');
-        //}
+        if ($cmd == Message::CMD_SHOW_GIFT_GLOBAL) {
+            //广播
+            $board_data = [
+                'nickname'      => $nickname,
+                'gift_name'     => $gift_name,
+                'count'         => $count,
+                'price'         => (string)($price + 0),
+                'image'         => $image,
+                'to_nickname'   => $to_nickname,
+                'is_all_server' => $is_all_server,
+                'room_id'       => $room_id
+            ];
+            board_notice(Message::CMD_SHOW_GIFT_GLOBAL, $board_data, '打赏礼物飘屏');
+        }
     }
 
 
     /**
      * 根据收礼人和房间所属家族ID获取家族收益提成和个人收益提成
-     * @param $room_id int 房间id
+     * @param $room_id  int 房间id
      * @param $user_id  int 用户id
      * @return array ['个人收益比例','家族收益比例', '族长直接分成']
      * @throws Exception

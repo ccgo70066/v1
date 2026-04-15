@@ -206,8 +206,8 @@ class UserBusiness extends Model
             db('user_business')->where('id', $order['user_id'])->setInc('recharge_amount', $order['pay_amount']);
 
             // 首充礼包
-            UserBusiness::order_first($order);
-            UserBusiness::vip_scope($order['user_id'], $order['amount']);
+            //UserBusiness::order_first($order);
+            //UserBusiness::vip_scope($order['user_id'], $order['amount']);
             Db::commit();
         } catch (\Throwable $e) {
             Db::rollback();
@@ -265,6 +265,7 @@ class UserBusiness extends Model
         }
         db('user_vip')->update($vip);
     }
+
 
     /**
      * 奖励发放

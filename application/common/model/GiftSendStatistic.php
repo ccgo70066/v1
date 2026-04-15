@@ -63,7 +63,7 @@ class GiftSendStatistic extends Model
             ->whereBetween('l.date', [$start_time, $end_time])
             ->where($room_id ? ['l.room_id' => $room_id] : [])
             ->group("l.{$name}")
-            ->field("l.{$name} as user_id,sum(value) as value,u.nickname,u.avatar,u.level")
+            ->field("l.{$name} as user_id,sum(value) as value,u.nickname,u.avatar,ub.level")
             ->order('value desc')
             ->limit(100)
             ->select();
