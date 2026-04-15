@@ -1072,11 +1072,9 @@ class Room extends Base
     /**
      * @ApiTitle    (随机进入房间)
      * @ApiMethod   (get)
-     * @ApiParams   (name="theme_id",    type="int",  required=false,rule="min:1", description="房间主题类型")
      **/
     public function rand_room()
     {
-        $theme_id = (int)input('theme_id');
         $res = db('room')->where(['status' => 3, 'is_lock' => 0,])->column('id');
         if (count($res) > 0) {
             $key = array_rand($res, 1);
