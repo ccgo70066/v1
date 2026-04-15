@@ -62,7 +62,7 @@ function user_business_change($user_id, $type, $amount, $flow = 'increase', $not
 
 /**
  * @param int    $user_id       用户名
- * @param int    $type          类型:1=积分,2=金幣,3=金幣,4=可提现收益(币),5=锁定金额,6=魅力值，7=能量, 8=VIP成长值,9=VIP积分
+ * @param int    $type          类型:1=积分,2=金幣,3=金幣,4=可提现收益(币),5=锁定金额,6=魅力值,7=能量
  * @param string $cate          变化类型:increase=增加,decrease=减少
  * @param double $origin_amount 原始数值
  * @param double $later_amount  结果数值
@@ -101,33 +101,6 @@ function business_log_add(
         'room_id'       => $room_id
     ]);
 }
-
-//添加VIP给用户
-function user_vip_add($user_id, $vip_id, $days, $remark = '')
-{
-    $vipData = db('vip')->where('id', $vip_id)->find();
-    $vip = db('user_vip')->where('id', $user_id)->find();
-    $days = $days == -1 ? 36500 : $days;
-    $date = date('Y-m-d H:i:s');
-    if ($vip && $vip['expire_time'] > $date) {
-        return;
-    }
-    db('user_vip')->insert([
-        'id'                => $user_id,
-        'grade'             => $vipData['grade'],
-        'expire_time'       => date('Y-m-d H:i:s', strtotime("+{$days}day")),
-        'next_protect_time' => date('Y-m-d H:i:s', strtotime("+{$days}day")),
-    ]);
-    db('user_business')->where(['id' => $user_id])->setField(['level' => $vipData['grade']]);
-    db('user_vip_log')->insert(['user_id' => $user_id, 'type' => 1, 'comment' => $remark]);
-    UserBusiness::reward_give(json_decode($vipData['reward_json'], true) ?? [], $user_id, $remark);
-    board_notice_delay(
-        Message::CMD_SHOW_VIP_LEVEL_UP,
-        RedisService::getCache('vip', 2, 'name,icon,grade') + ['nickname' => Db::name('user')->where('id', $user_id)->value('nickname')]
-    );
-    send_im_msg_by_system_with_lang($user_id, '恭喜您成功开通VIP，成为尊貴的VIP會員，已解鎖專屬特權');
-}
-
 
 /**
  * 报错信息输出到mongodb
@@ -297,15 +270,11 @@ function send_im_msg_by_system_with_lang($user_id, $text, ...$var)
 }
 
 
-function user_vip_switch($user_id, $switch_type)
+function user_noble_switch($user_id, $switch_type)
 {
-    $rs = db('user_vip')->where('id', $user_id)->where('expire_time', '>', datetime())->find();
+    // todo fix
+    $rs = db('user_noble')->where('id', $user_id)->where('expire_time', '>', datetime())->find();
     if (!$rs) return 0;
-    $vip = db('vip')->where('grade', $rs['grade'])->where("find_in_set($switch_type, `privilege_ids`)")->find();
-    if ($vip) {
-        $switch = json_decode($rs['switch'], true);
-        return isset($switch[$switch_type]) ? ($switch[$switch_type] == 1 ? 1 : 0) : 1;
-    }
     return 0;
 }
 

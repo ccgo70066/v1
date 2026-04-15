@@ -204,10 +204,6 @@ class UserBusiness extends Model
 
             user_business_change($order['user_id'], 'amount', $amount, 'increase', '充值', 3, 'recharge');
             db('user_business')->where('id', $order['user_id'])->setInc('recharge_amount', $order['pay_amount']);
-
-            // 首充礼包
-            //UserBusiness::order_first($order);
-            //UserBusiness::vip_scope($order['user_id'], $order['amount']);
             Db::commit();
         } catch (\Throwable $e) {
             Db::rollback();
@@ -227,43 +223,6 @@ class UserBusiness extends Model
             UserBusiness::reward_give(json_decode($parcel['reward_data'], true), $order['user_id'], '首充礼包');
             db('user_parcel_log')->insert(['user_id' => $order['user_id'], 'parcel_id' => $parcel['id']]);
         }
-    }
-
-    /** vip成长 */
-    public static function vip_scope($user_id, $amount)
-    {
-        $vip = db('user_vip')->where('id', $user_id)->find();
-        if (!$vip) return;
-        $add_amount = bcdiv($amount, 100, 2);
-        business_log_add($user_id, 8, 'increase', $vip['scope'], $vip['scope'] + $add_amount, $add_amount, '充值获取');
-        $vip['scope'] += $add_amount;
-        if ($vip['grade'] > 3) {
-            business_log_add($user_id, 9, 'increase', $vip['experience'], $vip['experience'] + $add_amount, $add_amount, '充值获取');
-            $vip['experience'] += $add_amount;
-        }
-        // 检测经验是否可以升级
-        for ($i = 0; $i < 5; $i++) {
-            $nextGrade = min($vip['grade'] + 1, 6);
-            if ($vip['grade'] < $nextGrade) {
-                $nextVip = db('vip')->where('grade', $nextGrade)->find();
-                if ($vip['scope'] >= $nextVip['scope']) {
-                    $vip['grade'] = $nextVip['grade'];
-                    $vip['protect'] = 0;
-                    $vip['next_protect_time'] = datetime('+1month');
-                    $vip['expire_time'] = datetime('+1month');
-                    $comment = 'VIP等级升级至' . $nextGrade;
-                    db('user_vip_log')->insert(['user_id' => $user_id, 'type' => 2, 'comment' => $comment]);
-                    db('user_business')->where('id', $user_id)->setField(['level' => $nextGrade]);
-                    UserBusiness::reward_give(json_decode($nextVip['reward_json'], true) ?? [], $user_id, $comment);
-                    if ($nextVip['grade'] >= 4) board_notice_delay(
-                        Message::CMD_SHOW_VIP_LEVEL_UP,
-                        array_index_filter($nextVip, 'name,grade,icon') + ['nickname' => Db::name('user')->where('id', $user_id)->value('nickname')]
-                    );
-                    send_im_msg_by_system($user_id, '恭喜,您的VIP升級至%s,已解鎖更多專屬特權!');
-                }
-            }
-        }
-        db('user_vip')->update($vip);
     }
 
 
@@ -296,9 +255,6 @@ class UserBusiness extends Model
                 case 'car': //坐骑
                     user_car_add($userId, $v['id'], $v['count'], 2);
                     break;
-                case 'vip': // vip
-                    user_vip_add($userId, $v['id'], $v['count']);
-                    break;
                 case 'tail': //尾巴
                     user_tail_add($userId, $v['id'], $v['count'], 2);
                     break;
@@ -329,7 +285,7 @@ class UserBusiness extends Model
 
     /**
      * 获取红包权限
-     * @info  红包白名单, VIP用户
+     * @info  红包白名单
      * @param $user_id
      */
     public static function getRedPacketAuth($user_id)
@@ -345,9 +301,6 @@ class UserBusiness extends Model
             return 1;
         }
         if (db('red_packet_whitelist')->where('user_id', $user_id)->count(1)) {
-            return 1;
-        }
-        if (db('user_vip')->where('id', $user_id)->where('expire_time', '>', datetime())->count(1)) {
             return 1;
         }
 

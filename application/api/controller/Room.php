@@ -405,9 +405,6 @@ class Room extends Base
         $data['room']['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $data['owner'] = db('user')->where('id', $data['room']['owner_id'])->field('id,avatar,nickname')->find();
         $data['role'] = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->value('role') ?: 0;
-        $data['vip_info'] = db('user_vip')->alias('uv')->cache(cacheFlag(), 3600, 'user_vip')
-            ->join('vip v', 'uv.grade=v.grade', 'left')->join('car c', 'v.car=c.id', 'left')
-            ->where('uv.id', $user_id)->field('uv.grade,v.icon,c.face_image as car')->find();
         $imService = new ImService();
         $countdown = $redis->keys(RedisService::ROOM_COUNTDOWN_KEY_PRE . $room_id . ':*');
         $data['countdown'] = [];
@@ -418,7 +415,7 @@ class Room extends Base
             ];
         }
 
-        $data['game_flag'] = false; // 参与游戏vip等级限制、参与游戏收到IM红包限制
+        $data['game_flag'] = false; // 参与游戏等级限制、参与游戏收到IM红包限制
         $data['green_pact'] = '安全提示：24小时线上巡查，任何传播违法、违规、低俗、暴力等不良资讯的行为将会导致账号被封停； 切勿轻信投资、理财； 切勿相信私聊的非官方储值广告，均属于诈骗行为！ 如有疑问请通过平台客服沟通确认！';
         $level = db('user_business')->where('id', $user_id)->value('level');
         if ($level >= get_site_config('game_limit_level')) {
@@ -660,7 +657,7 @@ class Room extends Base
         $nickname = db('user')->where('id', $to_user_id)->value('nickname');
         $room = db('room')->where('id', $room_id)->field('im_operator,owner_id,beautiful_id')->find();
         if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
-        if (user_vip_switch($to_user_id, 5)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
+        if (user_noble_switch($to_user_id, 5)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
         send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出派对%s');
         $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了派对", '', $to_user_id);
         $this->service->quit_room($to_user_id, $room_id, 0, 1);

@@ -4,8 +4,7 @@
             <div class="panel panel-default panel-intro">
                 <div class="panel-heading">
                     <ul class="nav nav-tabs">
-                        <li class="active"><a href="#noble" data-toggle="tab">发放VIP</a></li>
-                        <li class=""><a href="#adornment" data-toggle="tab">发放头像框</a></li>
+                        <li class="active"><a href="#adornment" data-toggle="tab">发放头像框</a></li>
                         <li class=""><a href="#car" data-toggle="tab">发放坐骑</a></li>
                         <li class=""><a href="#bubble" data-toggle="tab">发放聊天气泡</a></li>
                         <li class=""><a href="#nameplate" data-toggle="tab">发放铭牌</a></li>
@@ -21,22 +20,6 @@
                             </div>
                         </div>
 
-                        <div class="tab-pane fade active in" id="noble">
-
-                            <div class="form-group">
-                                <label class="control-label col-xs-12 col-sm-2">VIP:</label>
-                                <div class="col-xs-12 col-sm-8">
-                                    {:Form::selectpage('row[vip_id]', '', 'general/vip', null, null, ['data-params' => ['custom'=>['grade'=>['eq', 1]]]])}
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="control-label col-xs-12 col-sm-2">VIP时限:</label>
-                                <div class="col-xs-12 col-sm-8">
-                                    {:Form::radios('row[vip_days]', ['30'  => '30天'], '', ['data-rule'=>''])}
-                                </div>
-                            </div>
-
-                        </div>
 
                         <div class="tab-pane fade in" id="adornment">
 

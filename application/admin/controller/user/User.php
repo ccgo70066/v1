@@ -476,27 +476,6 @@ class User extends Backend
                         db('user_adornment')->where('user_id', $user_id)->delete();
                     }
                 }
-                if ($param == 'vip') {
-                    $vip = db('user_vip vp')
-                        ->join('vip n', 'vp.grade=n.grade', 'left')
-                        ->field('n.name,vp.expire_time')
-                        ->where(['vp.id' => $user_id,])
-                        ->find();
-                    if ($vip) {
-                        $date = floor((strtotime($vip['expire_time']) - time()) / 86400);
-                        $content = '清理背包[VIP]:' . $vip['name'] . '(' . $date . '天)';
-                        db('admin_option_log')->insert([
-                            'admin_id' => session('admin.id'),
-                            'user_id'  => $user_id,
-                            'option'   => 2,
-                            'params'   => json_encode(input(''), JSON_UNESCAPED_UNICODE),
-                            'comment'  => $params['comment'],
-                            'content'  => $content,
-                        ]);
-                        db('user_vip')->where('id', $user_id)->delete();
-                    }
-                    db('user_business')->where('id', $user_id)->setField(['level' => 0]);
-                }
                 if ($param == 'car') {
                     $car = db('user_car uc')
                         ->join('car c', 'uc.car_id=c.id', 'left')

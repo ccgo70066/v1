@@ -259,16 +259,16 @@ class Room extends Model
      * @param $user_id
      * @return void
      */
-    public function vip_hot($room_id, $user_id)
+    public function hot_in($room_id, $user_id)
     {
-        $key = 'vip_hot:' . $room_id . ':' . $user_id;
+        $key = 'hot_in:' . $room_id . ':' . $user_id;
         if (cache($key) != 1) {
             $redis = redis();
             $hot = $redis->hIncrBy(RedisService::ROOM_HOT_KEY, $room_id, 1000);
             $hot = $hot > 0 ? $hot : 0;
             $im = new ImService();
             $im->roomSendNotice($room_id, ['type' => ImService::ROOM_HOT_REFRESH, 'hot' => $hot]);
-            cache($key, 1, strtotime('tomorrow') - time(), 'vip_hot');
+            cache($key, 1, strtotime('tomorrow') - time(), 'hot_in');
         }
     }
 

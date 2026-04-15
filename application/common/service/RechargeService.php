@@ -178,13 +178,6 @@ class RechargeService extends BaseService
         }
 
 
-        // vip到达指定级别才可下单大额订单
-        if ($amount > get_site_config('recharge_big_min')) {
-            $level = db('user_business')->where('id', $user_id)->value('level');
-            if ($level <= get_site_config('recharge_vip_limit')) {
-                throw new ApiException('支付故障', 443);
-            }
-        }
     }
 
     /**

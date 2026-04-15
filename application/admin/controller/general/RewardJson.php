@@ -29,8 +29,6 @@ class RewardJson extends Backend
             'amount'    => '金幣',
             'gift'      => '礼物',
             'adornment' => '头像框',
-            //'noble'     => '贵族',
-            'vip'       => 'VIP',
             'car'       => '坐骑',
             'bubble'    => '聊天气泡',
         ];
@@ -139,16 +137,6 @@ class RewardJson extends Backend
                         ->page($page, $pagesize)
                         ->where($where)
                         ->order('weigh asc')
-                        ->select();
-                    break;
-                case 'vip':
-                    $where = ['grade' => 1];
-                    input('?keyValue') && $where['id'] = input('keyValue');
-                    $total = db('vip')->count();
-                    $list = db('vip')->field('id,name')
-                        ->page($page, $pagesize)
-                        ->where($where)
-                        ->order('grade asc')
                         ->select();
                     break;
                 case 'tail':

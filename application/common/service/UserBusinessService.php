@@ -410,63 +410,6 @@ class UserBusinessService extends BaseService
     }
 
     /**
-     * 获取用户等级信息
-     */
-    public static function getVipInfo($userId)
-    {
-        $levelInfo = db('user_business')->alias('ub')
-            ->join('user u', 'ub.id = u.id', 'left')
-            ->join('level l', 'l.grade = ub.level', 'left')
-            ->where('u.id', $userId)
-            ->field('u.id,u.nickname,u.avatar,ub.level,ub.integral,l.icon,l.name as level_name')
-            ->find();
-
-        // 下一等级所需要积分
-        $nextLevelInfo = db('level')->where('grade', $levelInfo['level'] + 1)->find();
-        $currentLevelInfo = db('level')->where('grade', $levelInfo['level'])->find();
-        $levelInfo['next_level'] = $nextLevelInfo['grade'] ?? 0;
-
-        if ($nextLevelInfo) {
-            $levelInfo['next_level_icon'] = $nextLevelInfo['icon'];
-            $levelInfo['next_integral'] = $nextLevelInfo['scope'] - $currentLevelInfo['scope'];
-            $levelInfo['diff_integral'] = bcsub($nextLevelInfo['scope'], $levelInfo['integral']);
-            if ($levelInfo['diff_integral'] < 0) {
-                $levelInfo['diff_integral'] = 0;
-            }
-            $levelInfo['surplus_integral'] = $levelInfo['next_integral'] - $levelInfo['diff_integral'];
-        } else {
-            $levelInfo['next_integral'] = $currentLevelInfo['scope'];
-            $levelInfo['diff_integral'] = 0;
-        }
-
-
-        //获取等级奖励信息
-        $levels = db('level')->where('reward_json', '<>', '')->where('reward_json', '<>', '[]')
-            ->column('icon');
-        $levelInfo['hasRewardLevel'] = [];
-        $levelInfo['hasReward'] = 0;
-        if (count($levels)) {
-            $levelInfo['hasRewardLevel'] = $levels;
-
-            $level_reward = db('user_level_reward')
-                ->where('user_id', $userId)
-                ->column('user_level');
-            $where = [];
-            count($level_reward) && $where['grade'] = ['not in', $level_reward];
-            $levelReward = db('level')->where('reward_json', '<>', '')->where('reward_json', '<>', '[]')
-                ->where('grade', '<=', $levelInfo['level'])
-                ->where($where)
-                ->count();
-
-            if ($levelReward > 0) {
-                $levelInfo['hasReward'] = 1;
-            }
-        }
-
-        return $levelInfo;
-    }
-
-    /**
      * 获取等级列表与奖励信息
      */
     public static function getLevelList()

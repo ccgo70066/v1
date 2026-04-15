@@ -71,7 +71,7 @@ class Member extends Base
         foreach ($list as &$item) {
             $item['is_follow'] = isset($user_flow[$item['id']]) ? 1 : 0;
             $item['age'] = date('Y') - substr($item['birthday'], 0, 4);
-            $item['vip_icon'] = RedisService::getLevelCache($item['level']);
+            $item['level_icon'] = RedisService::getLevelCache($item['level']);
         }
 
         $this->success('', $list);

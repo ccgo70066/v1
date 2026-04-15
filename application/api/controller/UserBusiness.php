@@ -7,6 +7,7 @@ use app\common\library\Sms;
 use app\common\model\ShopItem as ShopModel;
 use app\common\model\UserBusiness as UserBusinessModel;
 use app\common\model\UserBusinessLog;
+use app\common\service\NobleService;
 use app\common\service\RedisService;
 use app\common\service\UserBusinessLogService;
 use app\common\service\UserBusinessService;
@@ -26,7 +27,7 @@ class UserBusiness extends Base
      * @ApiTitle    (獲取會員業務信息)
      * @ApiSummary  ("返回值中role（用户身份:1=用户,2=主播,3=家族成员,4=族长）")
      * @ApiMethod   (get)
-     * @ApiReturn   ({"code":1,"msg":"","data":{"id":"100002221","proom_no":null,"integral":"0","vip_level":"0","recharge_amount":"0","reward_amount":"0","lock_amount":"0","rewarded_amount":"0","amount":"1","vip_start_time":null,"vip_end_time":null,"skill_order_count":null,"rob":"0","safe_code":null,"createtime":"2020-12-12 16:08:52","updatetime":"2020-12-12 16:08:52","amount_total":"1"}})
+     * @ApiReturn   ({"code":1,"msg":"","data":{"id":"100002221","proom_no":null,"integral":"0","recharge_amount":"0","reward_amount":"0","lock_amount":"0","rewarded_amount":"0","amount":"1","skill_order_count":null,"rob":"0","safe_code":null,"createtime":"2020-12-12 16:08:52","updatetime":"2020-12-12 16:08:52","amount_total":"1"}})
      */
     public function get()
     {
@@ -161,55 +162,6 @@ class UserBusiness extends Base
         $this->success('', $list);
     }
 
-    /**
-     * @ApiTitle    (获取用户等级与贵族信息)
-     * @ApiMethod   (get)
-     *
-     * @ApiReturnParams (name="level", type="int", description="当前等级")
-     * @ApiReturnParams (name="integral", type="int", description="当前经验")
-     * @ApiReturnParams (name="icon", type="int", description="当前等级头像")
-     *
-     * @ApiReturnParams (name="next_level", type="int", description="下个等级")
-     * @ApiReturnParams (name="next_level_icon", type="int", description="下个等级-头像")
-     * @ApiReturnParams (name="next_integral", type="int", description="升级下个等级-所需经验")
-     * @ApiReturnParams (name="diff_integral", type="int", description="升级下个等级-还需经验")
-     * @ApiReturnParams (name="surplus_integral", type="int", description="升级下个等级-已有经验")
-     *
-     * @ApiReturnParams (name="noble_level", type="int", description="当前贵族等级")
-     * @ApiReturnParams (name="noble_max_level", type="int", description="贵族最大等级")
-     */
-    public function vip_info()
-    {
-        $userId = $this->auth->id;
-        // 获取当前等级信息
-        $levelInfo = UserBusinessService::getVipInfo($userId);
-        $nobleInfo = UserBusinessModel::getUserNobleInfoById($userId);
-        $nobleMaxLevel = NobleService::getMaxNoble();
-
-        $levelInfo['noble_level'] = $nobleInfo['weigh'] ?? 0;
-        $levelInfo['noble_max_level'] = $nobleMaxLevel;
-
-        $this->success('', $levelInfo);
-    }
-
-    /**
-     * @ApiTitle    (獲取登记配置)
-     * @ApiMethod   (get)
-     */
-    public function get_vip_config()
-    {
-        $data = db('level')
-            // ->cache('config:data:user_level', 0, 'small_data_config')
-            ->field('grade,scope,icon')
-            ->where(
-                'grade',
-                'in',
-                '1,6,11,16,21,26,31,36,41,46,51,56,61,66,71,76,81,91,101,111,121,131,141,151,161,171,181,191,200'
-            )
-            ->order('grade')
-            ->select();
-        $this->success('', $data);
-    }
 
     /**
      * 会员可提现收益兑换金幣
@@ -781,34 +733,20 @@ class UserBusiness extends Base
         $this->result('', $data, 1);
     }
 
+
     /**
-     * @ApiTitle    (获取用户等级详情)
-     * @ApiMethod   (get)
-     *
-     * @ApiReturnParams (name="level", type="int", description="当前等级")
-     * @ApiReturnParams (name="integral", type="int", description="当前经验")
-     * @ApiReturnParams (name="icon", type="int", description="当前等级头像")
-     *
-     * @ApiReturnParams (name="next_level", type="int", description="下个等级")
-     * @ApiReturnParams (name="next_level_icon", type="int", description="下个等级-头像")
-     * @ApiReturnParams (name="next_integral", type="int", description="升级下个等级-所需经验")
-     * @ApiReturnParams (name="diff_integral", type="int", description="升级下个等级-还需经验")
-     * @ApiReturnParams (name="surplus_integral", type="int", description="升级下个等级-已有经验")
-     * @ApiReturnParams (name="hasRewardLevel", type="array", description="有奖励的等级图标")
-     * @ApiReturnParams (name="hasReward", type="string", description="是否有为领取奖励：1有，0无")
-     *
-     * @ApiReturnParams (name="level_list", type="array", description="等级列表")
+     * 财富等级
      */
-    public function level_info()
+    public function level()
     {
-        $userId = $this->auth->id;
-        // 获取当前等级信息
-        $levelInfo = UserBusinessService::getVipInfo($userId);
-        $levels = UserBusinessService::getLevelList();
+        $list = db('level')->field('name,grade,scope,icon')->order('grade asc')->select();
+        $my = db('user')->field('level,score,avatar')->where('id', $this->auth->id)->find();
 
-        $levelInfo['level_list'] = $levels['list'] ?: [];
-
-        $this->success('', $levelInfo);
+        $this->success('', [
+            'my'    => $my,
+            'intro' => '财富等级是您在平台的成长属性，您可以通过获取经验值提升等级，每打赏1钻可增加1点经验，累计获得经验越高，财富等级越高。',
+            'list'  => $list,
+        ]);
     }
 
 }

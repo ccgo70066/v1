@@ -7,7 +7,7 @@ return [
     'Reward_amount'   => '收益(可提现)',
     'Pledge_amount'   => '押金',
     'Integral'        => '积分',
-    'Level'           => 'vip等级',
+    'Level'           => '财富等级',
     'Recharge_amount' => '累计充值',
     'Rewarded_amount' => '累计已提现',
     'Payword'         => '支付密码',

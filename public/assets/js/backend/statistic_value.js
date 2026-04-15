@@ -39,7 +39,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'box_2', title: __('Box_2'), operate:false},
                         {field: 'gift', title: __('Gift'), operate:false},
                         {field: 'shop', title: __('Shop'), operate:false},
-                        {field: 'vip', title: __('Vip'), operate:false},
                         {field: 'system_sub', title: __('System_sub'), operate:false},
                         {field: 'total_used', title: __('Total_used'), operate:false},
                         {field: 'total_balance', title: __('Total_balance'), operate:false},

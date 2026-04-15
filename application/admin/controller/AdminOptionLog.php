@@ -141,9 +141,6 @@ class AdminOptionLog extends Backend
                 if ($params['adornment_id'] && !$params['adornment_days']) {
                     $this->error('请选择头像框时限');
                 }
-                if ($params['vip_id'] && !$params['vip_days']) {
-                    $this->error('请选择VIP时限');
-                }
                 if ($params['bubble_id'] && !$params['bubble_days']) {
                     $this->error('请选择聊天气泡时限');
                 }
@@ -168,22 +165,6 @@ class AdminOptionLog extends Backend
                             'params'   => json_encode(input(''), JSON_UNESCAPED_UNICODE),
                             'content'  => $content,
                         ]);
-                    }
-                    if ($params['vip_id']) {
-                        user_vip_add($user_id, $params['vip_id'], $params['vip_days']);
-                        $item = db('vip')->find($params['vip_id']);
-                        $vip_days = $params['vip_days'];
-                        $content = 'VIP[' . $item['name'] . '](' . $vip_days . '天)';
-                        board_notice(Message::CMD_REFRESH_USER, ['user_id' => $user_id]);
-                        db('admin_option_log')->insert([
-                            'admin_id' => session('admin.id'),
-                            'user_id'  => $user_id,
-                            'option'   => 1,
-                            'comment'  => input('row.comment'),
-                            'params'   => json_encode(input(''), JSON_UNESCAPED_UNICODE),
-                            'content'  => $content,
-                        ]);
-                        trace(getLastSql());
                     }
                     if ($params['bubble_id']) {
                         user_bubble_add($user_id, $params['bubble_id'], $params['bubble_days'], 2);

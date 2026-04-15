@@ -15,7 +15,6 @@ return [
     'Box_2'               => '金匣消耗',
     'Gift'                => '面板礼物消耗',
     'Shop'                => '商城消耗',
-    'Vip'                 => 'VIP消耗',
     'System_sub'          => '下分',
     'Total_used'          => '消耗总计',
     'Total_balance'       => '用户金币',

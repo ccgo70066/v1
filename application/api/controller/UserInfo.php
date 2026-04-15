@@ -149,18 +149,4 @@ class UserInfo extends Base
     }
 
 
-    /**
-     * 财富等级
-     */
-    public function level()
-    {
-        $list = db('level')->field('name,grade,scope,icon')->order('grade asc')->select();
-        $my = db('user')->field('level,score,avatar')->where('id', $this->auth->id)->find();
-
-        $this->success('', [
-            'my'    => $my,
-            'intro' => '财富等级是您在平台的成长属性，您可以通过获取经验值提升等级，每打赏1钻可增加1点经验，累计获得经验越高，财富等级越高。',
-            'list'  => $list,
-        ]);
-    }
 }
