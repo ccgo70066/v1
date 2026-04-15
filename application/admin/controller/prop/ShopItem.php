@@ -30,7 +30,6 @@ class ShopItem extends Backend
     }
 
 
-
     /**
      * 默认生成的控制器所继承的父类中有index/add/edit/del/multi五个基础方法、destroy/restore/recyclebin三个回收站方法
      * 因此在当前控制器中可不用编写增删改查的代码,除非需要自己控制这部分逻辑
@@ -46,9 +45,9 @@ class ShopItem extends Backend
         //搜索关键词,客户端输入以空格分开,这里接收为数组
         $word = (array)$this->request->request("q_word/a");
         //当前页
-        $page = $this->request->request("pageNumber");
+        $page = $this->request->request("pageNumber") ?: 1;
         //分页大小
-        $pagesize = $this->request->request("pageSize");
+        $pagesize = $this->request->request("pageSize") ?: 10;
         //搜索条件
         $andor = $this->request->request("andOr", "and", "strtoupper");
         //排序方式
@@ -79,8 +78,7 @@ class ShopItem extends Backend
         switch ($custom['type']) {
             case '1': // 碎片礼物
                 // $where['type'] = 1;
-                $data = db('gift')->field('id,name')->where($where)->where(['status' => 1])->order('weigh asc')->page($page,
-                    $pagesize)->select();
+                $data = db('gift')->field('id,name')->where($where)->where(['status' => 1])->order('weigh asc')->page($page, $pagesize)->select();
                 $total = db('gift')->field('id,name')->where($where)->where(['status' => 1])->count();
                 return json(['list' => $data, 'total' => $total]);
             case '2':
@@ -103,9 +101,7 @@ class ShopItem extends Backend
                 $data = db('guard')->field('id,name')->where($where)->order('weigh asc')->select();
                 return json(['list' => $data]);
             case '6':
-                $data = db('bubble')->field('id,name')->where($where)->where([
-                    'status' => 1,
-                ])->order('weigh asc')->page($page, $pagesize)->select();
+                $data = db('bubble')->field('id,name')->where($where)->where(['status' => 1,])->order('weigh asc')->page($page, $pagesize)->select();
                 $total = db('bubble')->field('id,name')->where($where)->where(['status' => 1])->count();
                 return json(['list' => $data, 'total' => $total]);
             case '8':
@@ -158,7 +154,6 @@ class ShopItem extends Backend
                     'status' => 1,
                 ])->field('name')->find();
                 break;
-
         }
         return $data ?? false;
     }
