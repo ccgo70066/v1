@@ -1077,12 +1077,7 @@ class Room extends Base
     public function rand_room()
     {
         $theme_id = (int)input('theme_id');
-        $res = db('room')->where([
-            'status'  => 3,
-            //'is_lock' => 0,
-        ])
-            //->where($theme_id ? 'theme_id = ' . $theme_id : [])
-            ->column('id');
+        $res = db('room')->where(['status' => 3, 'is_lock' => 0,])->column('id');
         if (count($res) > 0) {
             $key = array_rand($res, 1);
             $this->success('', $res[$key]);
