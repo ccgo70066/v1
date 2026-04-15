@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\model\GiftSendStatistic;
 use app\common\service\RedisService;
+use app\common\service\UserBusinessService;
 
 /**
  * 榜单
@@ -34,9 +35,6 @@ class Rank extends Base
         !$cache && $this->success('', []);
         $result = array_slice($cache, ($page - 1) * $size, $size);
         $this->data_format($result, $room_id);
-        //foreach ($result as &$value) {
-        //    $value['nickname'] = '用户' . substr($value['user_id'], 0, 2) . '****' . substr($value['user_id'], -1, 1);
-        //}
         $this->success('', $result);
     }
 

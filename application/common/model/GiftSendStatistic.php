@@ -67,6 +67,7 @@ class GiftSendStatistic extends Model
             ->order('value desc')
             ->limit(100)
             ->select();
+        t(getLastSql());
         return collection($list)->toArray();
     }
 
