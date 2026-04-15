@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'lang_id'         => '语言',
     'Id'              => 'ID',
     'Type'            => '链接',
     'Type 1'          => '内链',

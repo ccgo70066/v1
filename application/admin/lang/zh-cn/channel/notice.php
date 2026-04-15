@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'lang_id'         => '语言',
     'Id'              => 'id',
     'Type'            => '类型',
     'Type 1'          => '普通公告',
