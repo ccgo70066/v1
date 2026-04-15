@@ -28,7 +28,7 @@ if ($content['commits'][0]['author']['name'] == 'handsomeTaoTao') {
     die('self push.');
 }
 
-$shell_exec = shell_exec("cd {$local} && sudo  git pull");
+//$shell_exec = shell_exec("cd {$local} && sudo  git pull");
 $shell_exec = shell_exec("cd {$local} && sudo  sh /root/.pull.sh");
 echo $shell_exec;
 
