@@ -6,6 +6,7 @@ use think\Env;
 
 /**
  * 网易云信接口
+ * @link    https://doc.yunxin.163.com/messaging/server-apis?platform=server
  * @limit  普通消息: 单个应用默认最高调用频率：100 次/秒，如超限，将被屏蔽 10 秒。
  * @limit  广播消息: 单个应用默认最高调用频率：10 次/分，如超限，将被屏蔽 1 分钟。
  */

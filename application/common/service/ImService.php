@@ -230,30 +230,30 @@ class ImService extends BaseService
             'to_user'    => $to_users,
             'amount_sum' => $amount_sum,
             'gift'       => $gift_info,
-
         ];
         return $this->im->room_send_message($im_room_id, $body);
     }
 
 
     //房间一键清包送礼消息(前端展示于公屏)
-    public function roomGiveGiftAllMessage($room_id, $user_id, $to_user_id, $gift_info)
+    public function roomGiveGiftAllMessage($room_id, $user_id, $to_user_id, $gifts)
     {
         $roomModel = new Room();
         $im_room_id = $roomModel->getImRoomId($room_id);
         $user = db('user')->where('id', $user_id)->field('id,nickname,avatar')->find();
         $to_users = db('user')->where('id', $to_user_id)->field('id,nickname,avatar')->find();
-        $amount_sum = array_sum(array_column($gift_info, 'gift_val'));
-
+        $amount_sum = array_sum(array_column($gifts, 'gift_val'));
+        $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->column("name,price,animate,image", 'id');
+        foreach ($gifts as &$gift) {
+            $gift += $gift_info[$gift['gift_id']];
+        }
         $body = [
             'type'       => self::ROOM_GIVE_BAG_GIFT_ALL_MESSAGE,
             'user'       => $user,
             'to_user'    => $to_users,
             'amount_sum' => $amount_sum,
-            'gift'       => $gift_info,
-
+            'gift'       => $gifts,
         ];
-        \think\Log::error($body);
         return $this->im->room_send_message($im_room_id, $body);
     }
 
