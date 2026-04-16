@@ -17,7 +17,7 @@ use think\exception\DbException;
  */
 class ImService extends BaseService
 {
-    protected static $instance = null;
+    protected static self $instance;
 
 
     public Yunxin $im;
@@ -61,7 +61,7 @@ class ImService extends BaseService
     }
 
 
-    public static function instance()
+    public static function instance(): static
     {
         if (is_null(self::$instance)) {
             self::$instance = new static();

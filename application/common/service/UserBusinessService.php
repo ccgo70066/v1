@@ -13,9 +13,9 @@ use think\Exception;
  */
 class UserBusinessService extends BaseService
 {
-    protected static $instance = null;
+    protected static self $instance;
 
-    public static function instance()
+    public static function instance(): static
     {
         if (is_null(self::$instance)) {
             self::$instance = new static();

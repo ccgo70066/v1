@@ -33,9 +33,9 @@ class RedisService extends BaseService
     //哈希:打款方式基础数据列表(id、名称)
     const PAYMENT_WAY_BASE_LISTS_KEY = 'payment_way:base.lists:';
 
-    protected static $instance = null;
+    protected static self $instance;
 
-    public static function instance()
+    public static function instance(): static
     {
         if (is_null(self::$instance)) {
             self::$instance = new static();
