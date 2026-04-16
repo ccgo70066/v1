@@ -8,34 +8,8 @@ namespace util;
  */
 class Constellation
 {
-    protected static $name_zh = [
-        '摩羯座',
-        '水瓶座',
-        '雙魚座',
-        '白羊座',
-        '金牛座',
-        '雙子座',
-        '巨蟹座',
-        '獅子座',
-        '處女座',
-        '天秤座',
-        '天蠍座',
-        '射手座',
-    ];
-    protected static $name_en = [
-        'capricorn',
-        'aquarius',
-        'pisces',
-        'aries',
-        'taurus',
-        'gemini',
-        'cancer',
-        'leo',
-        'virgo',
-        'libra',
-        'scorpio ',
-        'sagittarius',
-    ];
+    protected static $name_zh = ['摩羯座', '水瓶座', '雙魚座', '白羊座', '金牛座', '雙子座', '巨蟹座', '獅子座', '處女座', '天秤座', '天蠍座', '射手座',];
+    protected static $name_en = ['capricorn', 'aquarius', 'pisces', 'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio ', 'sagittarius',];
 
     /**
      * 获取星座
