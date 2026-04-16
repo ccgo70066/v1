@@ -58,8 +58,7 @@ class App extends Base
         if (empty($file)) {
             $this->error(__('No file upload or server upload limit exceeded'));
         }
-        $scene_arr = $this->upload_scene;
-        $uploadDir = $scene_arr[$scene] . '/';
+        $uploadDir = $this->upload_scene[$scene] . '/';
 
         if ($scene == 99) {
             $uploadDir = 'user_log/' . $this->auth->id . '/';
@@ -134,9 +133,8 @@ class App extends Base
         $files = $this->request->file('images');
         (empty($files) || !count($files)) && $this->error(__('No file upload or server upload limit exceeded'));
         count($files) > 9 && $this->error(__('The maximum number of images exceeds the limit (9)'));
-        $scene_arr = $this->upload_scene;
         $scene = input('scene', 0);
-        $uploadDir = $scene_arr[$scene] . '/';
+        $uploadDir = $this->upload_scene[$scene] . '/';
         $data = [];
         $minio = new Minio();
         foreach ($files as $item => $file) {
