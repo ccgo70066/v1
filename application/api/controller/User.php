@@ -443,14 +443,7 @@ class User extends Base
             }
             $isGenderEdit = false;
             if (isset($gender) && $gender != '') {
-                //获取性别可修改次数
-                if (get_site_config('edit_gender_num') > $user->edit_gender_num) {
-                    $user->edit_gender_num = $user->edit_gender_num + 1;
-                    $user->gender = $gender;
-                    $isGenderEdit = true;
-                } else {
-                    throw new ApiException(__('Gender cannot be modified'));
-                }
+                $user->gender = $gender;
             }
             if (isset($area) && $area != '') {
                 $user->area = $area;
