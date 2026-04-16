@@ -46,7 +46,7 @@ function user_money_change($user_id, $money, string $memo = '')
  * @param int    $from   分类:0=其它,1=商城兑换,2=活动奖励,3=充值金幣,4=打赏礼物,6=IM红包,7=红包雨,8=兑换金幣,9=兑换游戏券,10=守护分成,11=家族流水奖励兑换,12=家族周流水扶持,13=收益提现
  * @throws
  */
-function user_business_change($user_id, $type, $amount, $flow = 'increase', $note = '', $from = 0, $room_id = 0): void
+function user_business_change($user_id, $type, $amount, $flow = 'increase', $note = '', $from = 0, $room_id = 0): float
 {
     if ($amount < 0) throw new ApiException(__('Invalid operation'));
     $business = db('user_business')->where('id', $user_id)->lock(true)->find();
@@ -58,6 +58,8 @@ function user_business_change($user_id, $type, $amount, $flow = 'increase', $not
     $row = db('user_business')->where(['id' => $user_id, 'version' => $business['version']])
         ->inc('version')->inc($type, $diff_amount)->update();
     if ($row > 0) business_log_add($user_id, $type, $flow, $origin_amount, $later_amount, $amount, $note, $from);
+
+    return $later_amount;
 }
 
 /**
@@ -384,4 +386,12 @@ function send_check_message($message)
     $message = urlencode($message);
     $api_url = "http://47.242.104.63/sendTextMessage?content={$message}&dialogId={$dialog_id}&replyTo=0";
     Http::post($api_url);
+}
+
+
+//添加礼物到用户背包
+function user_gift_add($user_id, $gift_id, $count)
+{
+    $sql = db('user_bag')->fetchSql(true)->insert(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => $count,]);
+    return Db::execute($sql . " on duplicate key update count=count+{$count};");
 }

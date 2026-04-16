@@ -53,9 +53,9 @@ function cacheFlag(): bool
  */
 function get_site_config($name)
 {
-    $value = db('config')->cache(cacheFlag(), 86400)->where('name', $name)->value('value');
+    $value = db('config')->cache(cacheFlag(), 86400, 'config')->where('name', $name)->value('value');
     if (!$value && $value != 0) {
-        trace('找不到配置值:' . $name, 'error');
+        trace('找不到配置值: ' . $name, 'error');
     }
     return $value;
 }
