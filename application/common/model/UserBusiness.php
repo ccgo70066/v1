@@ -213,19 +213,6 @@ class UserBusiness extends Model
         send_im_msg_by_system1($order['user_id'], '您于%s充值成功，到账%s金幣，请到钱包查看余额。');
     }
 
-    /** 首充礼包 */
-    public static function order_first($order)
-    {
-        $count = db('user_recharge')->where('user_id', $order['user_id'])->where('id', '<>', $order['id'])->where('status', 1)->count();
-        if ($count == 0) {
-            $parcel = db('parcel')->where('type', 2)->where('recharge_amount', '=', $order['amount'])->order('recharge_amount', 'desc')->find();
-            if (!$parcel) return;
-            UserBusiness::reward_give(json_decode($parcel['reward_data'], true), $order['user_id'], '首充礼包');
-            db('user_parcel_log')->insert(['user_id' => $order['user_id'], 'parcel_id' => $parcel['id']]);
-        }
-    }
-
-
     /**
      * 奖励发放
      * @param array  $rewardJson 奖励数据

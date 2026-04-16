@@ -94,10 +94,6 @@ class ChannelCard extends Model
     }
 
 
-    public function parcel()
-    {
-        return $this->belongsTo('Parcel', 'parcel_id', 'id', [], 'LEFT')->setEagerlyType(0);
-    }
 
 
 }

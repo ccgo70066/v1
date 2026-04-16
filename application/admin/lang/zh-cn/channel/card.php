@@ -20,7 +20,6 @@ return [
     'Weigh'          => '排序',
     'Extend_json'    => '扩展配置',
     'Give_amount'    => '额外赠送',
-    'Parcel_id'      => '首充礼包',
     'Item_code'      => '扩展编码',
     'Status'         => '状态',
     'Status 1'       => '启用',
