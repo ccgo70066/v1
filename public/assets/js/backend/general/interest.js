@@ -22,15 +22,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 url: $.fn.bootstrapTable.defaults.extend.index_url,
                 pk: 'id',
                 sortName: 'id',
-                search: false,
                 columns: [
                     [
-                       /* {checkbox: true},
-                        {field: 'id', title: __('Id')},*/
+                        {checkbox: true},
+                        {field: 'id', title: __('Id')},
                         {field: 'type', title: __('Type'), searchList: {"1":__('Type 1'),"2":__('Type 2'),"3":__('Type 3')}, formatter: Table.api.formatter.normal},
                         {field: 'name', title: __('Name'), operate: 'LIKE'},
-                        //{field: 'weigh', title: __('Weigh'), operate: false,sortable: true},
                         // {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
+                        // {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
@@ -40,6 +39,17 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             Table.api.bindevent(table);
         },
         add: function () {
+            var selectRow = parent.$('#table').bootstrapTable('getSelections');
+            if (selectRow.length > 0) {
+                selectRow = selectRow[0]
+                var rowArr = $("form").serializeArray();
+                rowArr.forEach(function (item, index) {
+                    var key = item.name.slice(item.name.indexOf("[") + 1, item.name.indexOf("]"));
+                    if (!['delete_time'].includes(key)) {
+                        $('[name="' + item.name + '"]').val(selectRow[key]);
+                    }
+                })
+            }
             Controller.api.bindevent();
         },
         edit: function () {
