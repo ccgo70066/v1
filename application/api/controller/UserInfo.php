@@ -66,27 +66,15 @@ class UserInfo extends Base
     {
         try {
             $userId = $this->auth->id;
-            $images = Db::name('user_audit_image')
-                ->field('id,img_type,url,status')
-                ->where('user_id', $userId)
-                ->whereIn('status', [0, 1])
-                ->select();
+            $images = Db::name('user_audit_image')->field('id,img_type,url,status')->where('user_id', $userId)->whereIn('status', [0, 1])->select();
             $data['avatar'] = null;
             $data['image'] = [];
             if (count($images)) {
                 foreach ($images as $image) {
                     if ($image['img_type'] == 'avatar') {
-                        $data['avatar'] = [
-                            'id'     => $image['id'],
-                            'url'    => $image['url'],
-                            'status' => $image['status'],
-                        ];
+                        $data['avatar'] = ['id' => $image['id'], 'url' => $image['url'], 'status' => $image['status'],];
                     } elseif ($image['img_type'] == 'image') {
-                        $data['image'][] = [
-                            'id'     => $image['id'],
-                            'url'    => $image['url'],
-                            'status' => $image['status'],
-                        ];
+                        $data['image'][] = ['id' => $image['id'], 'url' => $image['url'], 'status' => $image['status'],];
                     }
                 }
             }
