@@ -98,7 +98,8 @@ trait Backend
     public function add()
     {
         if (false === $this->request->isPost()) {
-            return $this->view->fetch();
+            $this->assign('row', null);
+            return $this->view->fetch('edit');
         }
         $params = $this->request->post('row/a');
         if (empty($params)) {
