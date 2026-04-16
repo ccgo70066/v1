@@ -399,7 +399,7 @@ class User extends Base
     {
         try {
             $user = $this->auth->getUser();
-            $nickname = Shield::sensitive_filter($this->request->param('nickname'));
+            $nickname = Shield::sensitive_filter($this->request->param('nickname') ?: '');
             $nickname = preg_replace('/\p{C}+/u', "", trim($nickname));
             $gender = $this->request->param('gender');
             $area = $this->request->param('area');
