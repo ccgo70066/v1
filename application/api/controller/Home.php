@@ -18,10 +18,9 @@ class Home extends Base
     protected $noNeedRight = '*';
     protected $service;
 
-    public function __construct(HomeService $service)
+    public function __construct()
     {
         parent::__construct();
-        $this->service = $service;
     }
 
     /**
