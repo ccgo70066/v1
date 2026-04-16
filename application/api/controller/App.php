@@ -130,71 +130,54 @@ class App extends Base
 
 
     /**
-     * 上传文件-H5
+     * 批量上传
+     * @ApiSummary 图片批量上传, 视频单个上传
      * @ApiMethod (POST)
-     * @ApiParams   (name="scene", type="int", required=true, rule="between:0,8", description="存儲場景:0=默認,1=用戶資料,2=廣場,3=房間和家族,4=聊天,5=签名-主播,6=签名-家族")
-     * @ApiParams   (name="file", type="file", required=false, rule="", description="文件")
+     * @ApiParams   (name="scene", type="int", required=true, rule="between:0,8", description="存儲場景:0=默認,1=用戶資料,2=廣場,3=房間,4=聊天,5=签名-主播,6=签名-家族")
+     * @ApiParams   (name="images[]", type="file", required=false, rule="", description="图片")
      */
-    public function upload_h5()
+    public function uploadManyImages()
     {
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
-        header("Access-Control-Allow-Headers: Content-Type");
-        $file = request()->file('file');
-        if (empty($file)) {
-            $this->error(__('No file upload or server upload limit exceeded'));
-        }
-        $scene_arr = [
-            'app_upload',
-            'avatar',
-            'moment',
-            'room',
-            'chat',
-            'sign_anchor',
-            'sign_union',
-        ];
-        $scene = input('scene') ?: '0';
+        $files = $this->request->file('images');
+        (empty($files) || !count($files)) && $this->error(__('No file upload or server upload limit exceeded'));
+        count($files) > 9 && $this->error(__('The maximum number of images exceeds the limit (9)'));
+        $scene_arr = ['app_upload', 'avatar', 'moment', 'room', 'chat', 'sign_anchor', 'sign_union',];
+        $scene = input('scene', 0);
         $uploadDir = $scene_arr[$scene] . '/';
-
-        $fileInfo = $file->getInfo();
-        $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
-        $mimetypeArr = ['jpg', 'png', 'bmp', 'jpeg', 'gif', 'webp', 'rar', 'wav', 'mp4', 'mp3', 'webm', 'aac', 'mov'];
-        //验证文件后缀
-        if (!in_array($suffix, $mimetypeArr)) {
-            $this->error(__('Uploaded file format is limited'));
-        }
-        if ($fileInfo['size'] > 10 * 1024 * 1024) {
-            $this->error(__('Upload file size exceeds the limit'));
-        }
-        //验证是否为图片文件
-        if (in_array(
-                $fileInfo['type'],
-                ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp']
-            ) || in_array(
-                $suffix,
-                ['gif', 'jpg', 'jpeg', 'bmp', 'png', 'webp']
-            )) {
-            $imgInfo = getimagesize($fileInfo['tmp_name']);
-            if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
-                $this->error(__('Uploaded file is not a valid image'));
-            }
-        }
-        $lockName = date('dh');
-        $key = incrLock($lockName, 3600);
-        $fileName = date('Ymdh') . random_int(1000, 9999) . $key . '.' . $suffix;
-
+        $data = [];
         $minio = new Minio();
-        $upload = $minio->putObject($fileInfo['tmp_name'], $uploadDir . $fileName);
-        str_contains($upload, 'error') && trace($upload, 'error');
-        if ($fileInfo['type'] == 'video/mp4') {
-            $ffmpeeg = new Ffmpeeg();
-            $cover_url = $uploadDir . $fileName . '.jpg';
-            if ($ffmpeeg->generateVideoCover($file->getRealPath(), $file->getRealPath() . '.jpg')) {
-                $upload = $minio->putObject($file->getRealPath() . '.jpg', $cover_url, 'image/jpeg');
+        foreach ($files as $item => $file) {
+            $fileInfo = $file->getInfo();
+            $suffix = strtolower(pathinfo($fileInfo['name'], PATHINFO_EXTENSION));
+            !in_array($suffix, ['jpg', 'png', 'bmp', 'jpeg', 'gif', 'webp', 'mp4', 'mov', 'avi']) && $this->error(__('上传文件格式不在范围内'));
+            //验证是否为图片文件
+            if (in_array($fileInfo['type'], ['image/gif', 'image/jpg', 'image/jpeg', 'image/bmp', 'image/png', 'image/webp'])) {
+                $imgInfo = getimagesize($fileInfo['tmp_name']);
+                if (!$imgInfo || !isset($imgInfo[0]) || !isset($imgInfo[1])) {
+                    $this->error(__('Uploaded file format is limited'));
+                }
+            }
+            if ($fileInfo['size'] > 20 * 1000 * 1000) {
+                $this->error(__('Upload file size exceeds the limit'));
+            }
+            $fileName = date('Ymdh') . random_int(1000, 9999) . incrLock(date('dh'), 3600) . '.' . $suffix;
+
+            $minio->putObject($fileInfo['tmp_name'], $uploadDir . $fileName);
+            $data[$item]['url'] = '/' . ltrim($uploadDir, '/') . $fileName;
+
+            if (in_array($fileInfo['type'], ['video/mp4'])) {
+                $ffmpeeg = new Ffmpeeg();
+                $cover_url = $uploadDir . $fileName . '.jpg';
+                if ($ffmpeeg->generateVideoCover($file->getRealPath(), $file->getRealPath() . '.jpg')) {
+                    $minio->putObject($file->getRealPath() . '.jpg', $cover_url, 'image/jpeg');
+                }
             }
         }
-        $this->success(__('success'), ['url' => '/' . ltrim($uploadDir, '/') . $fileName]);
+
+        $this->success(__('success'), $data);
     }
+
+
 
     /**
      * @ApiTitle    (版本更新)
