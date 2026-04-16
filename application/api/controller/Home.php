@@ -16,12 +16,6 @@ class Home extends Base
 {
     protected $noNeedLogin = ['room_list', 'anchor_list', 'search'];
     protected $noNeedRight = '*';
-    protected $service;
-
-    public function __construct()
-    {
-        parent::__construct();
-    }
 
     /**
      * @ApiTitle    (房间主题分类列表)
