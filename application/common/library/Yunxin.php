@@ -6,6 +6,8 @@ use think\Env;
 
 /**
  * 网易云信接口
+ * @limit  普通消息: 单个应用默认最高调用频率：100 次/秒，如超限，将被屏蔽 10 秒。
+ * @limit  广播消息: 单个应用默认最高调用频率：10 次/分，如超限，将被屏蔽 1 分钟。
  */
 class Yunxin
 {
@@ -61,7 +63,7 @@ class Yunxin
 
     /**
      * 聊天室消息(再次进入聊天室的时候会拉取到历史消息的消息)
-     * @param $room_id string IM房间号
+     * @param $room_id   string IM房间号
      * @param $data      array
      * @return mixed
      */
@@ -83,7 +85,7 @@ class Yunxin
 
     /**
      * 聊天室通知
-     * @param $room_id string IM房间号
+     * @param $room_id   string IM房间号
      * @param $data      array 数据,'type'=>400X房间信息更新相关,500X=>PK相关
      * @return mixed
      */
@@ -233,7 +235,7 @@ class Yunxin
     }
 
     /**修改聊天室开/关闭状态
-     * @param $room_id string IM房间号
+     * @param $room_id   string IM房间号
      * @param $creator   int 房间创建者user_id，必须是创建者才可以操作
      * @param $valid     boolean true或false，false:关闭聊天室；true:打开聊天室
      * @return mixed
@@ -274,9 +276,9 @@ class Yunxin
     /**
      * 聊天室云端历史消息查询
      * @param int    $room_id 云信聊天室ID
-     * @param int    $time      查询的时间戳锚点。reverse=1时timetag为起始时间戳，reverse=2时timetag为终止时间戳
-     * @param string $user_id   发送人
-     * @param int    $limit     条数
+     * @param int    $time    查询的时间戳锚点。reverse=1时timetag为起始时间戳，reverse=2时timetag为终止时间戳
+     * @param string $user_id 发送人
+     * @param int    $limit   条数
      * @return mixed
      */
     public function queryChatroomMsg($room_id, $time, $user_id)
@@ -323,8 +325,8 @@ class Yunxin
 
     /**
      * 批量获取在线成员信息
-     * @param string $room_id 房间号
-     * @param array  $user_ids  用户数组
+     * @param string $room_id  房间号
+     * @param array  $user_ids 用户数组
      * @return mixed
      */
     public function queryMembers($room_id, $user_ids)
