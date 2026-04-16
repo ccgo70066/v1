@@ -407,7 +407,6 @@ class User extends Base
             $voice_size = $this->request->param('voice_size');
             $constellation = $this->request->param('constellation');
             $birthday = $this->request->param('birthday') ?: null;
-            $age = $this->request->param('age') ?: null;
             $bio = Shield::sensitive_filter($this->request->param('bio', '', 'trim,strip_tags,htmlspecialchars'));
             $interest_ids = $this->request->param('interest_ids');
 
@@ -463,9 +462,7 @@ class User extends Base
                 $user->constellation = \util\Constellation::getConstellation($birthday, 'zh');
                 $user->age = date('Y') - date('Y', strtotime($birthday));
             }
-            if (isset($age) && $age != '') {
-                $user->age = $age;
-            }
+
             if (isset($bio) && $bio != '') {
                 $user->bio = $bio;
             }
