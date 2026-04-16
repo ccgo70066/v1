@@ -136,7 +136,7 @@ class App extends Base
      * @ApiParams   (name="scene", type="int", required=true, rule="between:0,8", description="存儲場景:0=默認,1=用戶資料,2=廣場,3=房間,4=聊天,5=签名-主播,6=签名-家族")
      * @ApiParams   (name="images[]", type="file", required=false, rule="", description="图片")
      */
-    public function uploadManyImages()
+    public function upload_many_images()
     {
         $files = $this->request->file('images');
         (empty($files) || !count($files)) && $this->error(__('No file upload or server upload limit exceeded'));
