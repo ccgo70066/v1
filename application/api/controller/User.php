@@ -612,7 +612,7 @@ class User extends Base
      */
     public function get_interest_list()
     {
-        $list = db('interest')->field('id,type,name')->cache('config:interest', 0, 'config')->order('id asc')->select();
+        $list = db('interest')->field('id,type,name')->cache(cacheFlag(), 0, 'interest')->order('id asc')->select();
         $this->success('', $list);
     }
 
