@@ -23,6 +23,9 @@ class Yunxin
 
     ];
 
+    private static $limitRate = 90;   // 次数
+    private static $limitTime = 1;   // 秒
+
     public function __construct()
     {
         if (Env::get('app.server') == 'prod') {
@@ -35,6 +38,22 @@ class Yunxin
             $this->server = Env::get('test.yunxinServer');
         }
         $this->account['kf_id'] = config('app.kf_id');
+    }
+
+    /**
+     * 本地限流：Redis计数器
+     */
+    private function checkRateLimit()
+    {
+        $key = 'nim_api_rate_limit';
+        $redis = redis();
+
+        $count = $redis->incr($key);
+        if ($count == 1) {
+            $redis->expire($key, self::$limitTime);
+        }
+
+        return $count <= self::$limitRate;
     }
 
     /*---------------------消息-------------------------------*/
@@ -378,6 +397,12 @@ class Yunxin
      */
     public function im($url, $data)
     {
+        if (!self::checkRateLimit()) {
+            \think\Log::notice('The Yunxin API triggers the local current throttling and waits for retry');
+            usleep(300000);
+            return $this->im($url, $data);
+        }
+
         $randStr = 'Nonce' . mt_rand(10000, 99999);
         $time = time();
         $header = array();
