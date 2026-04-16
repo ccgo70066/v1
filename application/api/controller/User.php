@@ -481,7 +481,8 @@ class User extends Base
                 throw new ApiException(__('Signature content must be within 60 characters'));
             }
             if (isset($interest_ids) && $interest_ids != '') {
-                $user->interest_ids = $interest_ids;
+                //$user->interest_ids = $interest_ids;
+                db('user_business')->where('id', $user['id'])->setField(['interest_ids' => $interest_ids]);
             }
 
             // 图片处理 审核
