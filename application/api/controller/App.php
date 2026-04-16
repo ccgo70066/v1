@@ -21,6 +21,7 @@ class App extends Base
     protected $noNeedLogin = ['*'];
     protected $noNeedRight = ['*'];
     protected $noNeedSign = ['*'];
+    protected $upload_scene = ['app_upload', 'avatar', 'moment', 'room', 'chat', 'sign_anchor', 'sign_union',];
 
     /**
      * @ApiInternal
@@ -57,15 +58,7 @@ class App extends Base
         if (empty($file)) {
             $this->error(__('No file upload or server upload limit exceeded'));
         }
-        $scene_arr = [
-            'app_upload',
-            'avatar',
-            'moment',
-            'room',
-            'chat',
-            'sign_anchor',
-            'sign_union',
-        ];
+        $scene_arr = $this->upload_scene;
         $uploadDir = $scene_arr[$scene] . '/';
 
         if ($scene == 99) {
@@ -141,7 +134,7 @@ class App extends Base
         $files = $this->request->file('images');
         (empty($files) || !count($files)) && $this->error(__('No file upload or server upload limit exceeded'));
         count($files) > 9 && $this->error(__('The maximum number of images exceeds the limit (9)'));
-        $scene_arr = ['app_upload', 'avatar', 'moment', 'room', 'chat', 'sign_anchor', 'sign_union',];
+        $scene_arr = $this->upload_scene;
         $scene = input('scene', 0);
         $uploadDir = $scene_arr[$scene] . '/';
         $data = [];
@@ -176,7 +169,6 @@ class App extends Base
 
         $this->success(__('success'), $data);
     }
-
 
 
     /**
