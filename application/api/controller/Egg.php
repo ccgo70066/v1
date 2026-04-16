@@ -4,7 +4,8 @@ namespace app\api\controller;
 
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\common\model\Egg as EggM;
+use app\common\exception\ApiException;
+use app\common\service\EggService;
 use app\common\service\MongoService;
 use app\common\service\RedisService;
 use think\Cache;
@@ -20,11 +21,6 @@ class Egg extends Base
 {
     protected $noNeedLogin = ['notice', 'explain',];
     protected $noNeedRight = ['*'];
-
-    public function __construct(Request $request)
-    {
-        parent::__construct($request);
-    }
 
     /**
      * 配置
@@ -71,7 +67,7 @@ class Egg extends Base
         }, 5);
 
         // fix 避免新用户第一次百抽时出雷霆一击的报错
-        EggM::get_user_index($this->auth->id, 1);
+        EggService::instance()->get_user_index($this->auth->id, 1);
 
         $this->success('', $config);
     }
@@ -254,9 +250,9 @@ class Egg extends Base
         }
         $room_id = (int)input('room_id') ?: 0;
 
+        Db::startTrans();
         try {
-            Db::startTrans();
-            $result = EggM::open($user_id, $box_type, $count, $room_id);
+            $result = EggService::open($user_id, $box_type, $count, $room_id);
             MongoService::dataInsert('aa_egg_log');
             Db::commit();
         } catch (\Exception $e) {
@@ -291,8 +287,8 @@ class Egg extends Base
         $reward = $info['reward'];
         $group_flag = $info['group_flag'];
         $intact_log_id = $info['intact_log_id'];
-        $box_gift = EggM::get_gift($index['box_type']);
-        $count == 100 && EggM::upgrade_level($index, array_column($gift, 'gift_id'));
+        $box_gift = EggService::get_gift($index['box_type']);
+        $count == 100 && EggService::upgrade_level($index, array_column($gift, 'gift_id'));
         $box_type = $index['box_type'];
         $screen_notice_switch = in_array(1, explode(',', get_site_config('egg_box' . $box_type . '_board_switch')));
         $room_notice_switch = in_array(2, explode(',', get_site_config('egg_box' . $box_type . '_board_switch')));
@@ -301,7 +297,7 @@ class Egg extends Base
         if ($group_flag && $count == 100) {
             Db::startTrans();
             try {
-                EggM::open_free($intact_log_id, $index['user_id'], $box_type, $count, $room_id);
+                EggService::open_free($intact_log_id, $index['user_id'], $box_type, $count, $room_id);
                 Db::commit();
             } catch (\Exception $e) {
                 Db::rollback();

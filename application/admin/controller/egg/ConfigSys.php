@@ -3,6 +3,7 @@
 namespace app\admin\controller\egg;
 
 use app\common\controller\Backend;
+use app\common\service\EggService;
 use Exception;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
@@ -140,7 +141,7 @@ class ConfigSys extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                         $this->model->validateFailException(true)->validate($validate);
                     }
-                    \app\common\model\Egg::weigh_title_unique($params['title'], 'sys', $ids ?? 0);
+                    EggService::instance()->weigh_title_unique($params['title'], 'sys', $ids ?? 0);
                     $params['range_start'] == '' && $params['range_start'] = null;
                     $params['range_end'] == '' && $params['range_end'] = null;
                     $list = db('egg_gift b')
@@ -207,7 +208,7 @@ class ConfigSys extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
                     }
-                    \app\common\model\Egg::weigh_title_unique($params['title'], 'sys', $ids ?? 0);
+                    EggService::instance()->weigh_title_unique($params['title'], 'sys', $ids ?? 0);
                     $params['range_start'] == '' && $params['range_start'] = null;
                     $params['range_end'] == '' && $params['range_end'] = null;
                     $params['title'] = trim($params['title']);
