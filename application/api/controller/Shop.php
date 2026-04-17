@@ -149,7 +149,7 @@ class Shop extends Base
                 $this->error(__('Insufficient balance'));
             }
         }
-        $id = db('shop_order')->insertGetId($data);
+        $id = db('shop_order')->strict(false)->insertGetId($data);
         shop_order_success($id, $data['pay_way'] ?? 2);
 
         $this->success(__('Operation completed'));
