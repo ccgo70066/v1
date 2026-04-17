@@ -58,19 +58,19 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
             // 为表格绑定事件
             Table.api.bindevent(table);
 
-            $(document).on("click", ".btn-del-all", function () {
-                Layer.confirm(
-                    __('Are you sure you want to delete or turncate?'),
-                    {icon: 3, title: __('Warning'), offset: 0, shadeClose: true, btn: [__('OK'), __('Cancel')]},
-                    function (index) {
-                        Backend.api.ajax({url: $.fn.bootstrapTable.defaults.extend.del_all_url,}, function () {
-                            table.bootstrapTable('refresh');
-                            Layer.close(index);
-                        });
-
-                    }
-                );
-            });
+            // $(document).on("click", ".btn-del-all", function () {
+            //     Layer.confirm(
+            //         __('Are you sure you want to delete or turncate?'),
+            //         {icon: 3, title: __('Warning'), offset: 0, shadeClose: true, btn: [__('OK'), __('Cancel')]},
+            //         function (index) {
+            //             Backend.api.ajax({url: $.fn.bootstrapTable.defaults.extend.del_all_url,}, function () {
+            //                 table.bootstrapTable('refresh');
+            //                 Layer.close(index);
+            //             });
+            //
+            //         }
+            //     );
+            // });
         },
         add: function () {
             Controller.api.bindevent();
