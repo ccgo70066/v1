@@ -712,3 +712,25 @@ function user_tail_add($user_id, $tail_id, $days, $from_by = 1)
         ]);
     }
 }
+
+
+function get_new_expiry_days($expiry_date)
+{
+    $time = strtotime($expiry_date);
+    //计算两个日期之间的时间差
+    $diff = $time - time();
+    $obj = new stdClass();
+    if ($diff < 0) {
+        $obj->days = 0;
+        $obj->hours = 0;
+        return $obj;
+    }
+    //转换时间差的格式
+    if ($diff / (60 * 60 * 24) < 1) {
+        $obj->days = floor($diff / (60 * 60 * 24));
+    } else {
+        $obj->days = ceil($diff / (60 * 60 * 24));
+    }
+    $obj->hours = ceil(($diff % (60 * 60 * 24)) / 3600);
+    return $obj;
+}
