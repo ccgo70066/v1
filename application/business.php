@@ -395,3 +395,45 @@ function user_gift_add($user_id, $gift_id, $count)
     $sql = db('user_bag')->fetchSql(true)->insert(['user_id' => $user_id, 'gift_id' => $gift_id, 'count' => $count,]);
     return Db::execute($sql . " on duplicate key update count=count+{$count};");
 }
+
+
+/**
+ * 返回数组中指定多列
+ *
+ * @param Array        $input       需要取出数组列的多维数组
+ * @param String|array $column_keys 要取出的列名，['aa','bb']或者'aa,bb'
+ * @param String       $index_key   作为返回数组的索引的列
+ * @param bool         $check_key   检查数组中是否缺少要取出的字段，true=缺少字段抛出异常,false=缺少字段忽略
+ * @return Array
+ */
+function array_columns($input, $column_keys = null, $index_key = null, $check_key = false)
+{
+    $result = array();
+    $keys = isset($column_keys) ? (!is_array($column_keys) ? explode(',', $column_keys) : $column_keys) : array();
+
+    if ($input) {
+        foreach ($input as $k => $v) {
+            // 指定返回列
+            if ($keys) {
+                $tmp = array();
+                foreach ($keys as $key) {
+                    if (isset($v[$key])) {
+                        $tmp[$key] = $v[$key];
+                    } elseif ($check_key) {
+                        throw new Exception('Undefined index: ' . $key);
+                    }
+                }
+            } else {
+                $tmp = $v;
+            }
+            // 指定索引列
+            if (isset($index_key)) {
+                $result[$v[$index_key]] = $tmp;
+            } else {
+                $result[] = $tmp;
+            }
+        }
+    }
+
+    return $result;
+}

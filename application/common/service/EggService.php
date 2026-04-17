@@ -50,9 +50,8 @@ class EggService extends BaseService
         $room_id && redis()->hIncrBy('room_egg', $room_id, $count * $price); // 房间统计
 
         $gift = self::get_gift($box_type);
-        if (!$gift) {
-            throw new ApiException(__('Network request exception, please retry'));
-        }
+        if (!$gift) throw new ApiException(__('Network request exception, please retry'));
+
         $index = self::get_user_index($user_id, $box_type);
         $index['current_room_id'] = $room_id;
         $user_info = self::get_user_info($user_id);
@@ -333,7 +332,7 @@ class EggService extends BaseService
             $gift = db('egg_gift e')
                 ->join('gift g', 'e.gift_id=g.id', 'left')
                 ->where(['e.box_type' => $box_type, 'e.status' => 1])
-                ->order('g.price desc')
+                ->order('g.price asc')
                 ->column('e.*,g.name,g.image,g.price,"0" as count', 'gift_id');
             foreach ($gift as &$item) {
                 unset($item['id'], $item['box_type'], $item['weigh'], $item['status']);

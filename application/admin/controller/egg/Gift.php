@@ -302,6 +302,7 @@ class Gift extends Backend
         'egg_config_def',
         'egg_config_per',
         'egg_config_pub',
+        'egg_config_pubn',
         'egg_config_single',
         'egg_config_sys',
     ];
