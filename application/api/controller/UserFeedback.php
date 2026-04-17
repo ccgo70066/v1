@@ -132,7 +132,7 @@ class UserFeedback extends Base
         $res = db('blacklist b')
             ->join('user u', 'b.number = u.id')
             ->where('type = 1')
-            ->field('u.beautiful_id as user_id,u.nickname,u.avatar,u.gender,end_time')
+            ->field('u.nickname,u.avatar,u.gender,end_time')
             ->order('b.id desc')
             ->page($page, $size)
             ->select();

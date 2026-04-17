@@ -228,7 +228,7 @@ class UserFollow extends Base
         $size = input('size') ?: 10;
         $list = db('user_blacklist b')
             ->join('user u', 'b.to_user_id = u.id')
-            ->field('u.id as user_id,u.nickname,u.beautiful_id,u.avatar,u.gender,u.bio,u.is_online,b.create_time')
+            ->field('u.id as user_id,u.nickname,u.avatar,u.gender,u.bio,u.is_online,b.create_time')
             ->where('b.user_id', $this->auth->id)
             ->where('u.status', 'normal')
             ->page($page, $size)

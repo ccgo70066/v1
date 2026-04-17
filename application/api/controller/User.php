@@ -582,7 +582,7 @@ class User extends Base
     public function get_base_info()
     {
         $user_id = input('user_id') ?: $this->auth->id;
-        $res = db('user')->where('id', $user_id)->field('id,gender,constellation,age,beautiful_id,nickname,avatar')->find() ?: [];
+        $res = db('user')->where('id', $user_id)->field('id,gender,constellation,age,nickname,avatar')->find() ?: [];
         $res['is_blacklist'] = (bool)(db('user_blacklist')
             ->where(['user_id' => $this->auth->id, 'to_user_id' => $user_id])->value('to_user_id'));
         $res['is_follow'] = (bool)(db('user_follow')
