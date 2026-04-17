@@ -67,7 +67,6 @@ class Shop extends Base
             if (isset($info['is_buy'])) {
                 $data[$key]['is_buy'] = $info['is_buy'];
             }
-            $data[$key]['name'] = RedisService::loadLang($value['name'], request()->langset());
         }
 
         $this->success('', $data);

@@ -123,32 +123,7 @@ class EggService extends BaseService
             'imei'        => $user_info['imei'],
             'imei_count'  => (int)($user_info['imei_count']),
             'create_time' => $time,
-            'log'         => array_reverse(
-                array_columns(
-                    $log_data,
-                    [
-                        'weigh_name',
-                        'jump_status',
-                        'pool_sys_before',
-                        'pool_sys_after',
-                        'pool_sys_diff',
-                        'pool_pub_after',
-                        'pool_pub_before',
-                        'pool_pub_diff',
-                        'pool_pubn_after',
-                        'pool_pubn_before',
-                        'pool_pubn_diff',
-                        'pool_per_after',
-                        'pool_per_before',
-                        'pool_per_diff',
-                        'box_index',
-                        'level_id',
-                        'gift_id',
-                        'gift_value',
-                        'used_amount'
-                    ]
-                )
-            )
+            'log'         => array_reverse(array_columns($log_data, ['weigh_name', 'jump_status', 'pool_sys_before', 'pool_sys_after', 'pool_sys_diff', 'pool_pub_after', 'pool_pub_before', 'pool_pub_diff', 'pool_pubn_after', 'pool_pubn_before', 'pool_pubn_diff', 'pool_per_after', 'pool_per_before', 'pool_per_diff', 'box_index', 'level_id', 'gift_id', 'gift_value', 'used_amount']))
         ]);
         $limit_log && db('egg_limit_log')->insertAll($limit_log); //todo 2023-09-23 后删除
         $limit_log_v2 && db('egg_limit_log_v2')->insertAll($limit_log_v2);

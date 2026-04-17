@@ -213,8 +213,8 @@ class UserBusiness extends Base
             $data['list'][] = ['amount' => $item];
         }
         $data['explain'] = [
-            RedisService::loadLang('1. 兑换额度只能是整数'),
-            RedisService::loadLang('2. 起兑额度>=1'),
+            '1. 兑换额度只能是整数',
+            '2. 起兑额度>=1',
         ];
 
         $this->success('', $data);
@@ -323,7 +323,7 @@ class UserBusiness extends Base
                         'type'         => 0,
                         'price_type'   => $val['price_type'],
                         'type_text'    => '',
-                        'name'         => RedisService::loadLang($val['name']),
+                        'name'         => $val['name'],
                         'image'        => $val['image'],
                         'price'        => $price,
                         'explain'      => $val['explain'] ?? '',

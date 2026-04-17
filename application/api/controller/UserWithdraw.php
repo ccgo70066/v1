@@ -164,13 +164,13 @@ class UserWithdraw extends Base
         foreach ($list as &$value) {
             if (in_array($value['status'], [0, 1])) {
                 $value['status'] = 0;
-                $value['comment'] = RedisService::loadLang('审核中');
+                $value['comment'] = '审核中';
             }
             if ($value['status'] == 2) {
                 $value['status'] = 1;
-                $value['comment'] = RedisService::loadLang('成功');
+                $value['comment'] = '成功';
             }
-            if ($value['status'] == -1) $value['comment'] = RedisService::loadLang('驳回');
+            if ($value['status'] == -1) $value['comment'] = '驳回';
             $info = json_decode($value['account_data'], true);
             $value['account_info'] = '';
             isset($info['bank_name']) && $info['bank_name'] && $value['account_info'] = $info['bank_name'] . '(' . substr($info['bank_number'], -4) . ')';

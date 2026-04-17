@@ -44,7 +44,7 @@ class Im extends Base
      **/
     public function customer_service_notice()
     {
-        $get_site_config = RedisService::loadLang(get_site_config('automatic_response'));
+        $get_site_config = get_site_config('automatic_response');
         $this->success('', ['text' => $get_site_config]);
     }
 
