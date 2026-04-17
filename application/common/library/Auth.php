@@ -507,6 +507,7 @@ class Auth
         $userinfo['red_packet_auth'] = UserBusiness::getRedPacketAuth($userinfo['id']);
         $userinfo['shutup'] = db('user_shutup')->where('user_id', $userinfo['id'])->find() ? 1 : 0;
         $userinfo['room_id'] = db('room_admin')->where('user_id', $userinfo['id'])->where('status', 1)->value('room_id') ?? 0;
+        $userinfo['age'] = date('Y') - substr($userinfo['birthday'], 0, 4);
 
         return $userinfo;
     }
