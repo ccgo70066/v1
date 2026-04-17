@@ -459,6 +459,7 @@ class User extends Base
             if (isset($birthday) && $birthday != '') {
                 $user->birthday = $birthday;
                 $user->constellation = \util\Constellation::getConstellation($birthday, 'zh');
+                $user->age = date('Y') - date('Y', strtotime($birthday));
             }
 
             if (isset($bio) && $bio != '') {

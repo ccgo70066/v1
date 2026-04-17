@@ -37,7 +37,7 @@ class UserFollow extends Base
         $where = ['f.user_id' => $user_id];
         $list = db('user_follow f')
             ->join('user u', 'f.to_user_id = u.id', 'left')
-            ->field('f.to_user_id as user_id,u.bio,f.create_time')
+            ->field('f.to_user_id as user_id,u.bio,u.age,f.create_time')
             ->where($where)
             ->where(['u.status' => 'normal'])
             ->page($page, $size)
@@ -73,7 +73,7 @@ class UserFollow extends Base
         $where = ['f.to_user_id' => $user_id];
         $list = db('user_follow f')
             ->join('user u', 'f.user_id = u.id', 'left')
-            ->field('f.user_id as user_id,f.to_user_id,u.bio,f.create_time')
+            ->field('f.user_id as user_id,f.to_user_id,u.bio,u.age,f.create_time')
             ->where($where)
             ->where(['u.status' => 'normal'])
             ->page($page, $size)
