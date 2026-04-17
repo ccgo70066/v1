@@ -369,7 +369,9 @@ class Gift extends Backend
             $box_gift = db('egg_gift eg')
                 ->join('gift g', 'eg.gift_id=g.id', 'left')
                 ->where(['eg.box_type' => $box_type,])
-                ->column('g.id,g.name,g.image,g.price', 'g.id');
+                ->order('price asc')
+                ->field('g.id,g.name,g.image,g.price,"0" as weight')
+                ->select();
 
             $tables = $this->tables;
 
@@ -377,12 +379,12 @@ class Gift extends Backend
                 $list = db($table)->where(['box_type' => $box_type])->select();
                 foreach ($list as $item) {
                     $json_data = json_decode($item['config'], true);
-                    foreach ($json_data as $kk => &$json_datum) {
-                        $json_datum = array_merge((array)$json_datum, (array)$box_gift[$json_datum['id']]);
+                    $result = $box_gift;
+                    foreach ($json_data as $kk => $json_datum) {
+                        isset($result[$kk]) && $result[$kk]['weight'] = $json_datum['weight'] ?: 0;
                     }
-                    array_multisort(array_column($json_data, 'price'), SORT_ASC, $json_data);
                     db($table)->where('id', $item['id'])->setField([
-                        'config' => json_encode($json_data, JSON_UNESCAPED_UNICODE)
+                        'config' => json_encode($result, JSON_UNESCAPED_UNICODE)
                     ]);
                 }
             }
