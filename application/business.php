@@ -437,3 +437,278 @@ function array_columns($input, $column_keys = null, $index_key = null, $check_ke
 
     return $result;
 }
+
+
+/**
+ * 商城订单成功
+ * @param $order_id
+ * @param $pay_way
+ */
+function shop_order_success($order_id, $pay_way = 2)
+{
+    $order = db('shop_order')->find($order_id);
+    $order['status'] = 1;
+    $order['pay_way'] = $pay_way;
+    $item = db('shop_item')->find($order['item_id']);
+
+    //类型:1=礼物,2=头像框,3=坐骑,4=贵族,6=气泡
+    if ($item['type'] == 1) {
+        user_gift_add($order['user_id'], $item['item_id'], 1);
+    } elseif ($item['type'] == 2) {
+        user_adornment_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
+    } elseif ($item['type'] == 3) {
+        user_car_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
+    } elseif ($item['type'] == 4) {
+        $extend = json_decode($order['extend_data'], true);
+        user_noble_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
+
+        $data = get_user_info($order['user_id'], ['level']);
+        $data['goods_name'] = $item['name'];
+        $data['goods_image'] = db('noble')->where('id', $item['item_id'])->value('badge');
+        board_notice(Message::CMD_SHOW_BUY_NOBLE, $data);
+
+        //更新云信用户等级贵族装扮相关信息
+        send_im_msg_by_system_with_lang($order['user_id'], '您已成功购买%s', $item['name']);
+    } elseif ($item['type'] == 6) {
+        user_bubble_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
+    } elseif ($item['type'] == 8) {
+        user_tail_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
+    }
+    db('shop_order')->update($order);
+    UserBusiness::clear_cache($order['user_id']);
+}
+
+
+/**
+ * 新增或累加装扮给用户
+ * @param $user_id
+ * @param $adornment_id
+ * @param $days
+ * @param $from_by 1=购买,2=系统赠送
+ */
+function user_adornment_add($user_id, $adornment_id, $days, $from_by = 1)
+{
+    if (cache('adornment:' . implode(',', [$user_id, $adornment_id])) == 1) {
+        return;
+    }
+    $adornment = db('user_adornment')->where(['user_id' => $user_id, 'adornment_id' => $adornment_id,])->find();
+    if ($adornment && $adornment['expired_days'] == -1) {
+        cache('adornment:' . implode(',', [$user_id, $adornment_id]), 1, strtotime('tomorrow') - time() + random_int(30, 9999));
+        return;
+    }
+    if ($adornment) {
+        if ($days < 0) {
+            if ($adornment['use_status'] == 0) {
+                $adornment['expired_days'] = -1;
+            } elseif ($adornment['use_status'] == 1) {
+                $adornment['expired_days'] = -1;
+                $adornment['expired_time'] = null;
+            } elseif ($adornment['use_status'] == 2) {
+                $adornment['expired_days'] = -1;
+                $adornment['expired_time'] = null;
+                $adornment['use_status'] = 0;
+            }
+        } else {
+            if ($adornment['use_status'] == 0) {
+                $adornment['expired_days'] += $days;
+            } elseif ($adornment['use_status'] == 1) {
+                $adornment['expired_days'] += $days;
+                $adornment['expired_time'] = date(
+                    'Y-m-d H:i:s',
+                    strtotime("+{$days}day", strtotime($adornment['expired_time']))
+                );
+            } elseif ($adornment['use_status'] == 2) {
+                $adornment['expired_days'] = $days;
+                $adornment['expired_time'] = null;
+                $adornment['use_status'] = 0;
+            }
+        }
+        db('user_adornment')->update($adornment);
+    } else {
+        if ($days < 0) {
+            $days = -1;
+        }
+        db('user_adornment')->insert([
+            'user_id'      => $user_id,
+            'adornment_id' => $adornment_id,
+            'from_by'      => $from_by,
+            'expired_days' => $days,
+            'use_status'   => 0,
+            'is_wear'      => 0,
+        ]);
+    }
+}
+
+
+/**
+ * 新增或累加坐骑给用户
+ * @param $user_id
+ * @param $car_id
+ * @param $days
+ * @param $from_by 1=购买,2=系统赠送
+ */
+function user_car_add($user_id, $car_id, $days, $from_by = 1)
+{
+    $car = db('user_car')->where(['user_id' => $user_id, 'car_id' => $car_id,])->find();
+    if ($car && $car['expired_days'] == -1) {
+        return;
+    }
+    if ($car) {
+        if ($days < 0) {
+            if ($car['use_status'] == 0) {
+                $car['expired_days'] = -1;
+            } elseif ($car['use_status'] == 1) {
+                $car['expired_days'] = -1;
+                $car['expired_time'] = null;
+            } elseif ($car['use_status'] == 2) {
+                $car['expired_days'] = $days;
+                $car['expired_time'] = null;
+                $car['use_status'] = 0;
+            }
+        } else {
+            if ($car['use_status'] == 0) {
+                $car['expired_days'] += $days;
+            } elseif ($car['use_status'] == 1) {
+                $car['expired_days'] += $days;
+                $car['expired_time'] = date(
+                    'Y-m-d H:i:s',
+                    strtotime("+{$days}day", strtotime($car['expired_time']))
+                );
+            } elseif ($car['use_status'] == 2) {
+                $car['expired_days'] = $days;
+                $car['expired_time'] = null;
+                $car['use_status'] = 0;
+            }
+        }
+
+        db('user_car')->update($car);
+    } else {
+        if ($days < 0) {
+            $days = -1;
+        }
+        db('user_car')->insert([
+            'user_id'      => $user_id,
+            'car_id'       => $car_id,
+            'from_by'      => $from_by,
+            'expired_days' => $days,
+            'use_status'   => 0,
+            'is_wear'      => 0,
+        ]);
+    }
+}
+
+
+/**
+ * 新增或累加聊天气泡给用户
+ * @param $user_id
+ * @param $bubble_id
+ * @param $days
+ * @param $from_by 1=购买,2=系统赠送
+ */
+function user_bubble_add($user_id, $bubble_id, $days, $from_by = 1)
+{
+    $bubble = db('user_bubble')->where(['user_id' => $user_id, 'bubble_id' => $bubble_id,])->find();
+    if ($bubble && $bubble['expired_days'] == -1) {
+        return;
+    }
+    if ($bubble) {
+        if ($days < 0) {
+            if ($bubble['use_status'] == 0) {
+                $bubble['expired_days'] = -1;
+            } elseif ($bubble['use_status'] == 1) {
+                $bubble['expired_days'] = -1;
+                $bubble['expired_time'] = null;
+            } elseif ($bubble['use_status'] == 2) {
+                $bubble['expired_days'] = $days;
+                $bubble['expired_time'] = null;
+                $bubble['use_status'] = 0;
+            }
+        } else {
+            if ($bubble['use_status'] == 0) {
+                $bubble['expired_days'] += $days;
+            } elseif ($bubble['use_status'] == 1) {
+                $bubble['expired_days'] += $days;
+                $bubble['expired_time'] = date(
+                    'Y-m-d H:i:s',
+                    strtotime("+{$days}day", strtotime($bubble['expired_time']))
+                );
+            } elseif ($bubble['use_status'] == 2) {
+                $bubble['expired_days'] = $days;
+                $bubble['expired_time'] = null;
+                $bubble['use_status'] = 0;
+            }
+        }
+
+        db('user_bubble')->update($bubble);
+    } else {
+        if ($days < 0) {
+            $days = -1;
+        }
+        db('user_bubble')->insert([
+            'user_id'      => $user_id,
+            'bubble_id'    => $bubble_id,
+            'from_by'      => $from_by,
+            'expired_days' => $days,
+            'use_status'   => 0,
+            'is_wear'      => 0,
+        ]);
+    }
+}
+
+
+/**
+ * 新增或累加铭牌给用户
+ * @param $user_id
+ * @param $tail_id
+ * @param $days
+ * @param $from_by 1=购买,2=系统赠送
+ */
+function user_tail_add($user_id, $tail_id, $days, $from_by = 1)
+{
+    $tail = db('user_tail')->where(['user_id' => $user_id, 'tail_id' => $tail_id,])->find();
+    if ($tail && $tail['expired_days'] == -1) {
+        return;
+    }
+    if ($tail) {
+        if ($days < 0) {
+            if ($tail['use_status'] == 0) {
+                $tail['expired_days'] = -1;
+            } elseif ($tail['use_status'] == 1) {
+                $tail['expired_days'] = -1;
+                $tail['expired_time'] = null;
+            } elseif ($tail['use_status'] == 2) {
+                $tail['expired_days'] = $days;
+                $tail['expired_time'] = null;
+                $tail['use_status'] = 0;
+            }
+        } else {
+            if ($tail['use_status'] == 0) {
+                $tail['expired_days'] += $days;
+            } elseif ($tail['use_status'] == 1) {
+                $tail['expired_days'] += $days;
+                $tail['expired_time'] = date(
+                    'Y-m-d H:i:s',
+                    strtotime("+{$days}day", strtotime($tail['expired_time']))
+                );
+            } elseif ($tail['use_status'] == 2) {
+                $tail['expired_days'] = $days;
+                $tail['expired_time'] = null;
+                $tail['use_status'] = 0;
+            }
+        }
+
+        db('user_tail')->update($tail);
+    } else {
+        if ($days < 0) {
+            $days = -1;
+        }
+        db('user_tail')->insert([
+            'user_id'      => $user_id,
+            'tail_id'      => $tail_id,
+            'from_by'      => $from_by,
+            'expired_days' => $days,
+            'use_status'   => 0,
+            'is_wear'      => 0,
+        ]);
+    }
+}
