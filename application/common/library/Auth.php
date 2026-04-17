@@ -475,13 +475,15 @@ class Auth
             $userinfo['user_adornment'],
             $userinfo['user_car'],
             $userinfo['user_bubble'],
-            $userinfo['user_tail']
+            $userinfo['user_tail'],
+            $userinfo['user_noble'],
         ] = [
             UserBusiness::getUserLevelInfoById($userinfo['id']),
             UserBusiness::getWearAdornmentImage($userinfo['id']),
             UserBusiness::getWearCarImage($userinfo['id']),
             UserBusiness::getWearBubbleImage($userinfo['id']),
             UserBusiness::getWearTailImage($userinfo['id']),
+            UserBusiness::getUserNobleInfoById($userinfo['id']),
         ];
 
         $currentRoomId = redis()->hGet(RedisService::USER_NOW_ROOM_KEY, $userinfo['id']);
