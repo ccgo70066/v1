@@ -473,9 +473,6 @@ class Shop extends Base
                 case ShopItemModel::TYPE_NOBLE:
                     $list = db('noble')->whereIn('id', $item_ids)->field('id,badge as image,shop_image as face_image')->select();
                     break;
-//                case 5:
-//                    $list = db('guard')->whereIn('id', $item_ids)->field('id,medal_image as image')->select();
-//                    break;
                 case ShopItemModel::TYPE_BUBBLE:
                     $list = db('bubble')->whereIn(
                         'id',
