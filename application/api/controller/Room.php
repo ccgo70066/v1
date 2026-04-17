@@ -239,13 +239,9 @@ class Room extends Base
         $redis = redis();
 
         //获取房间类似数组
-        $roomCateArr = $this->service->get_room_cate();
         foreach ($result as $k => &$v) {
             $room_user = $redis->zRevRange(RedisService::ROOM_USER_KEY_PRE . $v['id'], 0, 5);
             $result[$k]['room_user'] = db('user')->where('id', 'in', $room_user)->limit(5)->column('avatar');
-            $cateData = $roomCateArr[$v['theme_id']];
-            $result[$k]['theme_name'] = $cateData['name'];
-            $result[$k]['theme_color'] = $cateData['color'];
         }
         $this->success('', $result);
     }
