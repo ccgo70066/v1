@@ -657,6 +657,31 @@ function user_bubble_add($user_id, $bubble_id, $days, $from_by = 1)
 
 
 /**
+ * 新增或累加聊天气泡给用户
+ * @param $user_id
+ * @param $noble
+ * @param $days
+ * @param $from_by 1=购买,2=系统赠送
+ */
+function user_noble_add($user_id, $noble_id, $days, $from_by = 1)
+{
+    $noble = db('user_noble')->where(['user_id' => $user_id, 'noble' => $noble_id,])->find();
+    if ($noble) {
+        $noble['end_time'] = date('Y-m-d H:i:s', strtotime("+{$days}day", strtotime($noble['end_time'])));
+        db('user_noble')->update($noble);
+    } else {
+        db('user_noble')->insert([
+            'user_id'    => $user_id,
+            'noble_id'   => $noble,
+            'from_by'    => $from_by,
+            'start_time' => datetime(),
+            'end_time'   => datetime(strtotime("+$days day"))
+        ]);
+    }
+}
+
+
+/**
  * 新增或累加铭牌给用户
  * @param $user_id
  * @param $tail_id
