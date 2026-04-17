@@ -43,7 +43,8 @@ class UserBusiness extends Model
         return db('user_business')->alias('ub')
             ->join('level uil', 'ub.level = uil.grade', 'left')
             ->where('ub.id', $userId)
-            ->value('uil.icon');
+            ->field('name,grade,icon', false, 'uil')
+            ->find();
     }
 
 
