@@ -3,7 +3,7 @@
 namespace app\admin\controller\user;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\api\library\ImService;
+use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\controller\Backend;
 use think\Db;
