@@ -151,7 +151,7 @@ class LogMongo extends Backend
             }
 
             $pipeLine = array_values($pipeLine);
-            \think\Log::error($pipeLine);
+            //\think\Log::error($pipeLine);
 
             $queryPipeLine = $pipeLine;
             $totalPipeLine = $pipeLine;
@@ -180,8 +180,8 @@ class LogMongo extends Backend
             } else {
                 $total = 10000;
             }
-            \think\Log::error(__LINE__ . '查询耗时' . (microtime(true) - $t));
-            \think\Log::error($totalPipeLine);
+            //\think\Log::error(__LINE__ . '查询耗时' . (microtime(true) - $t));
+            //\think\Log::error($totalPipeLine);
 
             $command = new Command([
                 'aggregate' => 'aa_egg_log',
@@ -189,8 +189,8 @@ class LogMongo extends Backend
                 'cursor'    => new \stdClass()// 指定返回类型为文档游标
             ]);
             $list = $this->model->command($command);
-            \think\Log::error(__LINE__ . '查询耗时' . (microtime(true) - $t));
-            \think\Log::error($queryPipeLine);
+            //\think\Log::error(__LINE__ . '查询耗时' . (microtime(true) - $t));
+            //\think\Log::error($queryPipeLine);
 
             $list = collection($list)->toArray();
             $gift = db('gift')->column('name,price', 'id');

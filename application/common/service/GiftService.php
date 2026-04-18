@@ -15,15 +15,7 @@ use think\Exception;
  */
 class GiftService extends BaseService
 {
-    protected static self $instance;
 
-    public static function instance(): static
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
 
     protected GiftModel $model;
 

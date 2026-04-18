@@ -253,7 +253,7 @@ class Egg extends Base
         Db::startTrans();
         try {
             $result = EggService::open($user_id, $box_type, $count, $room_id);
-            MongoService::dataInsert('aa_egg_log');
+            MongoService::dataInsert('fa_egg_log');
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
@@ -265,124 +265,6 @@ class Egg extends Base
         $this->success(microtime(true) - $start, $result ?? null);
     }
 
-
-    /**
-     * 异步发送通知
-     * @ApiInternal
-     */
-    public function notice()
-    {
-        $info = json_decode(htmlspecialchars_decode(input('info')), true);
-        if (!$info) {
-            Log::error('异步解析出错');
-            Log::error(input('info'));
-            return;
-        }
-        $sleep = 4;
-        $start = microtime(true);
-        $gift = $info['gift'];
-        $count = $info['count'];
-        $index = $info['index'];
-        $room_id = $info['room_id'];
-        $reward = $info['reward'];
-        $group_flag = $info['group_flag'];
-        $intact_log_id = $info['intact_log_id'];
-        $box_gift = EggService::get_gift($index['box_type']);
-        $count == 100 && EggService::upgrade_level($index, array_column($gift, 'gift_id'));
-        $box_type = $index['box_type'];
-        $screen_notice_switch = in_array(1, explode(',', get_site_config('egg_box' . $box_type . '_board_switch')));
-        $room_notice_switch = in_array(2, explode(',', get_site_config('egg_box' . $box_type . '_board_switch')));
-
-        // 雷霆一击再开一次
-        if ($group_flag && $count == 100) {
-            Db::startTrans();
-            try {
-                EggService::open_free($intact_log_id, $index['user_id'], $box_type, $count, $room_id);
-                Db::commit();
-            } catch (\Exception $e) {
-                Db::rollback();
-                Log::error($e->getMessage());
-                error_log_out($e);
-            }
-
-            board_notice_delay(Message::CMD_EGG_REWARD_NOTICE, array_merge(get_user_info($index['user_id'], ['level', 'noble']), ['box_type' => $index['box_type']]), '', $sleep);
-        }
-
-        $all_room_notice_gift = [];
-        $current_room_notice_gift = [];
-        $screen_notice_gift = [];
-        $x_gift = [];
-        $count = 0;
-
-        $group_notice_switch = false;
-        foreach ($gift as $item) {
-            $count += $item['count'];
-            $gift_info = [
-                'gift_id'  => $item['gift_id'],
-                'name'     => $item['name'],
-                'image'    => $item['image'],
-                'price'    => (float)$item['price'],
-                'count'    => $item['count'],
-                'max_gift' => $item['max_gift'],
-            ];
-
-            if (isset($item['x_gift']) && $item['x_gift']) {
-                $x_gift = $gift_info;
-            } else {
-                $current_room_notice_gift[] = $gift_info;
-                $item['room_notice'] == 1 && $all_room_notice_gift[] = $gift_info;
-                $item['broadcast'] && $screen_notice_gift[] = $gift_info;
-            }
-            if (!$group_notice_switch && isset($item['light_group']) && $item['light_group'] == 1) {
-                $group_notice_switch = true;
-            }
-        }
-        $user_info = get_user_info($index['user_id'], ['level']);
-
-        if ($screen_notice_switch) {
-            $user_info = get_user_info($index['user_id'], ['level']);
-            if ($x_gift) {
-                $x_gift_info = [
-                    'x_gift'  => 1,
-                    'gift_id' => $x_gift['gift_id'],
-                    'name'    => '',
-                    'image'   => '',
-                    'price'   => '?',
-                    'count'   => '1',
-                ];
-                //  神秘彩蛋飘屏 张三在娱乐厅开出神秘彩蛋[icon]   前端解析飄屏到遊戲公屏
-                board_notice_delay(Message::CMD_EGG_SECRET, array_merge($user_info, ['box_type' => $index['box_type'],]), '', $sleep);
-                $all_room_notice_gift = array_merge([$x_gift_info], $all_room_notice_gift);
-                $current_room_notice_gift = array_merge([$x_gift_info], $current_room_notice_gift);
-            }
-        }
-
-        if ($screen_notice_switch) {
-            //  需要飘屏的礼物
-            foreach ($screen_notice_gift as $item) {
-                board_notice_delay(Message::CMD_EGG_NOTICE, array_merge($user_info, [
-                    'box_type'   => $index['box_type'],
-                    'gift_name'  => $item['name'],
-                    'gift_image' => $item['image'],
-                    'gift_price' => (string)($item['price'] + 0),
-                    'count'      => $item['count'],
-                ]), '', $sleep);
-            }
-        }
-
-        if ($x_gift && $room_notice_switch) {
-            // 定时5秒之后发所有房间公屏, 张三在娱乐厅开出神秘彩蛋获取得[icon](1)x1
-            $bubble = $box_gift[$x_gift['gift_id']]['light_level'] ?? '0';
-            $msg_data = array_merge([
-                'bubble'   => $bubble,
-                'box_type' => $index['box_type'],
-                'gift'     => $x_gift,
-            ], get_user_info($index['user_id'], ['level']));
-            board_notice_delay(Message::CMD_EGG_SECRET_OPEN, $msg_data, '', 7);
-        }
-        // 赠送永久头像框
-        user_adornment_add($index['user_id'], get_site_config('egg_gift_adornment'), -1);
-    }
 
     /**
      * 规则说明
