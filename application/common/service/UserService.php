@@ -202,7 +202,7 @@ class UserService extends BaseService
      */
     public static function getUserBaseInfo($userId, $authUserId)
     {
-        $data = User::field('id,nickname,avatar,gender,age,bio,constellation,hidden_level,hidden_noble,imei,mobile')
+        $data = User::field('id,nickname,avatar,gender,age,bio,constellation,mobile')
             ->find($userId);
         if (!$data) {
             return null;
