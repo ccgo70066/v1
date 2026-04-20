@@ -340,6 +340,51 @@ class User extends Base
         $this->success(__('Password set successfully'));
     }
 
+    /**
+     * 修改手机号
+     * @ApiSummary  (mobile_change_1th: 验证当前手机[验证码], mobile_change_2th: 验证新手机[手机号,验证码])
+     * @ApiMethod   (post)
+     * @ApiParams   (name="mobile", type="string", required=false, rule="regex:^1\d{10}$", description="新手机号")
+     * @ApiParams   (name="captcha", type="string", required=true, rule="", description="验证码")
+     * @throws Exception
+     * @ApiWeigh    (9802)
+     */
+    public function mobile_change()
+    {
+        try {
+            $user = $this->auth->getUser();
+            $mobile = $this->request->request('mobile');
+            $captcha = $this->request->request('captcha');
+
+            if (!$mobile) {
+                if (!(Sms::check($user['mobile'], $captcha, 'mobile_change_1th'))
+                ) {
+                    throw new ApiException(__('The verification code is incorrect'));
+                }
+                Sms::flush($mobile, 'mobile_change_1th');
+            } else {
+                if (db('user')->where('mobile', $mobile)->where('id', '<>', $user->id)->count()) {
+                    throw new ApiException(__('Phone number already registered'));
+                }
+                if (!(Sms::check($mobile, $captcha, 'mobile_change_2th'))) {
+                    throw new ApiException(__('The verification code is incorrect'));
+                }
+                $verification = $user->verification;
+                $verification->mobile = 1;
+                $user->verification = $verification;
+                $user->mobile = $mobile;
+                $user->save();
+                Sms::flush($mobile, 'mobile_change_2th');
+            }
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            error_log_out($e);
+            $this->error($e->getMessage());
+        }
+
+        $this->success(__('Operation completed'));
+    }
+
 
     /**
      * 退出登录
