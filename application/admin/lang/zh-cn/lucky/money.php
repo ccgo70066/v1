@@ -13,5 +13,5 @@ return [
     'Update_time' => '修改时间',
     'Min_amount'  => '红包最小金额',
     'Max_amount'  => '红包最小金额',
-    'Max_count'   => '单人最高领取次数'
+    'Max_count'   => '最高领取人数'
 ];

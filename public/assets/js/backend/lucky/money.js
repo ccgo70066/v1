@@ -36,7 +36,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'remain_amount', title: __('剩余红包'),operate: false},
                         {field: 'min_amount', title: __('单次最小金额'),operate: false},
                         {field: 'max_amount', title: __('单次最大金额'),operate: false},
-                        {field: 'max_count', title: __('单人最多领取次数'),operate: false},
+                        {field: 'max_count', title: __('max_count'),operate: false},
                         // {field: 'count', title: __('Count'), operate: false},
                         // {field: 'open_count', title: __('Open_count'), operate: false},
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1')}, formatter: Table.api.formatter.status},
