@@ -800,6 +800,7 @@ class User extends Base
 
     /**
      * 取号记录
+     * @ApiParams   (name="date", type="string",  required=false, rule="", description="日期")
      * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
      * @ApiParams   (name="size", type="int",  required=false, rule="", description="页码大小")
      * @return void
@@ -809,7 +810,9 @@ class User extends Base
     {
         $list = db('user_vest')
             ->field('account,password,update_time')
-            ->where(['receiver' => $this->auth->id,])->order('update_time desc')->page(input('page', 1), input('size', 10))->select();
+            ->where(['receiver' => $this->auth->id,])
+            ->where(input('date') ? ['update_time' => ['like', input('date') . '%']] : [])
+            ->order('update_time desc')->page(input('page', 1), input('size', 10))->select();
 
         $this->success('', $list);
     }
