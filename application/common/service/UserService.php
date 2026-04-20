@@ -239,15 +239,7 @@ class UserService extends BaseService
         $userinfo['level_img'] = RedisService::getLevelCache($userBusiness['level']) ?: '';
         $userinfo['user_tail'] = UserBusiness::getWearTailImage($userinfo['id']);
 
-        if (!empty($userId) && $userId != $authUserId) {
-            if ($userinfo['hidden_noble'] == 1) {
-                $userinfo['noble_img'] = '';
-            }
-            if ($userinfo['hidden_level'] == 1) {
-                $userinfo['level_img'] = RedisService::getLevelCache(0) ?: '';
-            }
-        }
-        unset($userinfo['hidden_noble'], $userinfo['hidden_level'], $userinfo['url']);
+        //unset($userinfo['hidden_noble'], $userinfo['hidden_level'], $userinfo['url']);
         //$userinfo['is_official'] = (int)Db::name('sys_user_role')->where('user_id',$userinfo['id'])->where('role',1)->find();
         //$userinfo['is_union_master'] = (int)Db::name('union')->where('owner_id',$userinfo['id'])->where('status',1)->find();
         return $userinfo;
