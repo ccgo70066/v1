@@ -47,6 +47,7 @@ class Broadcast extends Base
         $start_id = input('start_id') ?: 0;
         $show_type = input('show_type');
 
+        $where = ['show_start_time' => ['lt', datetime(time())], 'show_end_time' => ['gt', datetime(time())]];
         if ($start_id) {
             $where['id'] = ['<', $start_id];
         }
@@ -58,10 +59,6 @@ class Broadcast extends Base
             ->field("id,title,cover_image,icon,content,action,action_url,create_time")
             ->where('status', 1)
             ->where($where)
-            ->where([
-                'show_start_time' => ['lt', datetime(time())],
-                'show_end_time'   => ['gt', datetime(time())]
-            ])
             ->order('id', 'desc')
             ->page(1, $size)
             ->select();
