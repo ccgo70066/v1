@@ -3,6 +3,7 @@
 namespace app\admin\controller\user;
 
 use app\common\controller\Backend;
+use app\common\service\UserService;
 
 /**
  * 取号
@@ -36,4 +37,10 @@ class Vest extends Backend
      */
 
 
+    public function create_vest()
+    {
+        UserService::instance()->cron_vest();
+
+        $this->success();
+    }
 }

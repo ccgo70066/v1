@@ -76,7 +76,7 @@ class UserService extends BaseService
     {
         $count = db('user_vest')->where('status', 0)->count();
         if ($count < 50) {
-            for ($i = 0; $i < 50 - $count; $i++) {
+            for ($i = 0; $i < (50 - $count); $i++) {
                 $this->create_vest();
             }
         }
