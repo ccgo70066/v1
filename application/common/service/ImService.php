@@ -120,10 +120,10 @@ class ImService extends BaseService
             throw new ApiException(__('Opposite party account abnormality!'));
         }
 
-        $list = ChannelBlacklist::get_blacklist($to_user['package_appid'], $to_user['system'], $to_user['version']);
-        if (in_array(ChannelBlacklist::ITEM_CHAT, $list)) {
-            //throw new ApiException('对方尚未实名认证');
-        }
+        //$list = ChannelBlacklist::get_blacklist($to_user['package_appid'], $to_user['system'], $to_user['version']);
+        //if (in_array(ChannelBlacklist::ITEM_CHAT, $list)) {
+        //    throw new ApiException('对方尚未实名认证');
+        //}
 
         if (in_array($type, [self::CHAT_MESSAGE_GIFT, self::CHAT_MESSAGE_RED_PACKET])) {
             return [$user['nickname'], $user['avatar'], $to_user['nickname'], $to_user['avatar']];
