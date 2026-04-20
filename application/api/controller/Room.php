@@ -1172,13 +1172,15 @@ class Room extends Base
      * 开厅红包
      * @ApiMethod   (post)
      * @ApiParams   (name="id", type="int",  required=true, rule="", description="红包id")
+     * @ApiParams   (name="room_id", type="int",  required=true, rule="", description="房间id")
      * @throws
      */
     public function open_lucky_money()
     {
         $user_id = $this->auth->id;
         $id = input('id');
-        $money = LuckyMoneyService::instance()->open($id, $user_id);
+        $room_id = input('room_id') ?: 0;
+        $money = LuckyMoneyService::instance()->open($id, $user_id, $room_id);
         $this->success('', $money);
     }
 }
