@@ -15,7 +15,7 @@ use think\Db;
  */
 class Home extends Base
 {
-    protected $noNeedLogin = ['room_list', 'anchor_list', 'search'];
+    protected $noNeedLogin = ['room_list', 'anchor_list', 'search', 'vest'];
     protected $noNeedRight = '*';
 
     /**
