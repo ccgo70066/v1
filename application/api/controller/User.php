@@ -595,7 +595,7 @@ class User extends Base
     {
         if ($imei) {
             $business = db('user_business')->where('id', $user_id)->find();
-            if ($business['imei_limit'] == 1 && $business['imei'] != $imei) $this->error(__('Device error'), null, 401);
+            if ($business && $business['imei_limit'] == 1 && $business['imei'] != $imei) $this->error(__('Device error'), null, 401);
         }
 
         $is_black = db('blacklist')
