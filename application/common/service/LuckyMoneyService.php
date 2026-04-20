@@ -21,6 +21,7 @@ use think\db\exception\ModelNotFoundException;
 use think\Env;
 use think\Exception;
 use think\exception\DbException;
+use think\exception\PDOException;
 use think\Log;
 use think\Model;
 use util\Util;
@@ -32,12 +33,13 @@ class LuckyMoneyService extends BaseService
 {
 
     /**
-     * @param $id
-     * @param $user_id
+     * @param     $id
+     * @param     $user_id
+     * @param int $room_id
      * @return int|mixed
      * @throws
      */
-    public function open($id, $user_id)
+    public function open($id, $user_id, $room_id = 0)
     {
         $redis = redis();
         $key = 'lucky_money:' . $id;
@@ -62,6 +64,7 @@ class LuckyMoneyService extends BaseService
         $result = $redis->hIncrBy($key, 'remain_amount', -$amount);
         $redis->hIncrBy($key, 'count', 1);
         db('lucky_money_log')->insert(['lucky_money_id' => $id, 'user_id' => $user_id, 'amount' => $amount,]);
+        user_business_change($user_id, 'amount', $amount, 'increase', '开红包', 7, $room_id);
 
         if ($result == 0 || $redis->hGet($key, 'count') == $money['max_count']) {
             $money = $redis->hGetAll($key);

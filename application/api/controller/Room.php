@@ -1159,7 +1159,7 @@ class Room extends Base
     }
 
     /**
-     * 获取房间列表及自己的当前房间信息
+     * 开厅红包
      * @ApiMethod   (post)
      * @ApiParams   (name="id", type="int",  required=true, rule="", description="红包id")
      * @throws
