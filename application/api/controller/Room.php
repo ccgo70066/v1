@@ -10,6 +10,7 @@ use app\common\model\Room as RoomModel;
 use app\common\model\Shield;
 use app\common\service\BaseService;
 use app\common\service\ImService;
+use app\common\service\LuckyMoneyService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
 use think\Db;
@@ -1157,5 +1158,17 @@ class Room extends Base
         ]);
     }
 
-
+    /**
+     * 获取房间列表及自己的当前房间信息
+     * @ApiMethod   (post)
+     * @ApiParams   (name="id", type="int",  required=true, rule="", description="红包id")
+     * @throws
+     */
+    public function open_lucky_money()
+    {
+        $user_id = $this->auth->id;
+        $id = input('id');
+        $money = LuckyMoneyService::instance()->open($id, $user_id);
+        $this->success('', $money);
+    }
 }
