@@ -38,6 +38,8 @@ class Message
     const CMD_SHOW_BUY_GUARD = 2021; // 购买守护飘屏
     const CMD_SHOW_LEVEL_UP = 2222; // 等级升级飘屏
 
+    const CMD_LUCKY_MONEY = 2301;  // 厅红包推送
+
 
     // 游戏推送
     const CMD_EGG_NOTICE = 8101; // 扭蛋飘屏

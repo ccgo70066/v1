@@ -4,6 +4,7 @@ namespace app\admin\controller\lucky;
 
 use app\common\controller\Backend;
 use app\common\exception\ApiException;
+use app\common\library\rabbitmq\LuckyMoneyMQ;
 use Exception;
 use think\Db;
 use think\exception\PDOException;
@@ -97,6 +98,7 @@ class Money extends Backend
             }
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
+            mq_publish(LuckyMoneyMQ::instance(), ['id' => $this->model->getLastInsID()], strtotime($params['open_time']) - time());
         } catch (ValidateException|PDOException|Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
