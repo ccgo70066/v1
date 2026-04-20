@@ -128,13 +128,6 @@ class ImService extends BaseService
         if (in_array($type, [self::CHAT_MESSAGE_GIFT, self::CHAT_MESSAGE_RED_PACKET])) {
             return [$user['nickname'], $user['avatar'], $to_user['nickname'], $to_user['avatar']];
         }
-        $is_union_user = db('union_user')
-            ->where('user_id = ' . $user_id . ' or user_id = ' . $to_user_id)
-            ->where('status', 'in', Union::STATUS_JOINED_RANGE)
-            ->find();
-        if ($is_union_user) {
-            return [$user['nickname'], $user['avatar'], $to_user['nickname'], $to_user['avatar']];
-        }
         throw new ApiException(__('This feature is not unlocked'));
     }
 
