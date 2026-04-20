@@ -5,6 +5,7 @@ namespace app\api\controller;
 use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\exception\ApiException;
 use app\common\model\Shield;
+use app\common\service\ImService;
 use think\Db;
 
 /**
@@ -118,7 +119,6 @@ class RedPacket extends Base
         }
         $this->success();
     }
-
 
 }
 
