@@ -57,6 +57,7 @@ class Auth
         'hidden_level',
         'hidden_noble',
         //'edit_gender_num',
+        'imei_limit',
     ];
 
     public function __construct($options = [])

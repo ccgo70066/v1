@@ -438,6 +438,7 @@ class User extends Base
      * @ApiParams   (name="birthday", type="string", required=false, rule="", description="生日")
      * @ApiParams   (name="bio", type="string", required=false, rule="", description="个人签名")
      * @ApiParams   (name="interest_ids", type="string", required=false, rule="", description="个人标签id,多个用逗号隔开")
+     * @ApiParams   (name="imei_limit", type="string", required=false, rule="", description="设置限制:1=限制,0=不限")
      * @throws
      */
     public function profile()
@@ -514,10 +515,14 @@ class User extends Base
             if (mb_strlen($bio) > 60) {
                 throw new ApiException(__('Signature content must be within 60 characters'));
             }
+            // business
+            $business = [];
             if (isset($interest_ids) && $interest_ids != '') {
-                //$user->interest_ids = $interest_ids;
-                db('user_business')->where('id', $user['id'])->setField(['interest_ids' => $interest_ids]);
+                $business['interest_ids'] = $interest_ids;
             }
+            input('imei_limit') && input('imei_limit') != '' && $business['imei_limit'] = input('imei_limit');
+
+            db('user_business')->where('id', $user['id'])->setField($business);
 
             // 图片处理 审核
             $delete_images = [];
@@ -772,7 +777,6 @@ class User extends Base
         }
         $this->success();
     }
-
 
     /**
      * 取号
