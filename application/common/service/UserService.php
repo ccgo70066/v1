@@ -207,8 +207,7 @@ class UserService extends BaseService
         if (!$data) {
             return null;
         }
-        $business = db('user_business')->field('interest_ids')->where('id', $userId)->find();
-        $userinfo = array_merge($data->toArray(), $business->toArray());
+        $userinfo = $data->toArray();
         $userinfo['is_follow'] = 0;
         if ($userId <> $authUserId) {
             $isExits = db('user_follow')->where(['user_id' => $authUserId, 'to_user_id' => $userId])->count();
@@ -219,12 +218,10 @@ class UserService extends BaseService
         $userinfo['follow_count'] = db('user_follow')->where(['user_id' => $userId])->count();
         $userinfo['fans_count'] = db('user_follow')->where(['to_user_id' => $userId])->count();
 
+        $userBusiness = UserBusiness::field('interest_ids,safe_code,level')->find($userinfo['id']);
         //个性标签
-        $userinfo['interest_text'] = db('interest')->whereIn('id', $userinfo['interest_ids'])->column('name');
+        $userinfo['interest_text'] = db('interest')->whereIn('id', $userBusiness['interest_ids'])->column('name');
         unset($userinfo['interest_ids']);
-
-        $userBusiness = UserBusiness::field('union_id,safe_code,level')->find($userinfo['id']);
-        $userinfo['union_id'] = $userBusiness['union_id'];
 
         $roomStatus = redis()->hGet(RedisService::USER_NOW_ROOM_KEY, $userinfo['id']);
         $userinfo['is_on_room'] = $roomStatus ?: 0;
