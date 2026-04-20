@@ -75,4 +75,21 @@ class LuckyMoneyService extends BaseService
 
         return $amount;
     }
+
+    public function get($user_id)
+    {
+        $result = [];
+        $money = db('lucky_money')
+            ->field('id,end_time')
+            ->where(['status' => 0, 'open_time' => ['<=', datetime()], 'end_time' => ['>', datetime()]])->find();
+        if ($money) {
+            $exist = db('lucky_money_log')->where(['lucky_money_id' => $money['id'], 'user_id' => $user_id,])->count();
+            if (!$exist) {
+                $money['second'] = strtotime($money['end_time']) - time();
+                return $money;
+            }
+        }
+
+        return $result;
+    }
 }

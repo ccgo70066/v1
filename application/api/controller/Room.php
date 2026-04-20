@@ -1159,6 +1159,16 @@ class Room extends Base
     }
 
     /**
+     * 获取厅红包
+     * @ApiMethod   (post)
+     */
+    public function get_lucky_money()
+    {
+        $list = LuckyMoneyService::instance()->get($this->auth->id);
+        $this->success('', $list);
+    }
+
+    /**
      * 开厅红包
      * @ApiMethod   (post)
      * @ApiParams   (name="id", type="int",  required=true, rule="", description="红包id")
