@@ -240,7 +240,7 @@ class UserWithdraw extends Base
             user_business_change($user_id, 'reward_amount', $amount, 'decrease', '用户申请提现', 13);
 
             Db::commit();
-            Enigma::send_check_message("订单中心--->用户提现申请  - 用户: {$user_id} 提交了新的记录，需要审核！");
+            //Enigma::send_check_message("订单中心--->用户提现申请  - 用户: {$user_id} 提交了新的记录，需要审核！");
         } catch (\Exception $e) {
             Db::rollback();
             Log::error($e->getMessage());

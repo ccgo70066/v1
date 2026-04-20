@@ -81,7 +81,7 @@ class UserFeedback extends Base
             error_log_out($e);
             $this->error($e->getMessage());
         }
-        Enigma::send_check_message("会员中心-->用户举报与反馈  - 用户: {$user_id} 提交了新的记录，需要审核！");
+        //Enigma::send_check_message("会员中心-->用户举报与反馈  - 用户: {$user_id} 提交了新的记录，需要审核！");
         $this->success(__('Operation completed'));
     }
 
