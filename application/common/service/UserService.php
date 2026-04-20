@@ -202,7 +202,7 @@ class UserService extends BaseService
      */
     public static function getUserBaseInfo($userId, $authUserId)
     {
-        $data = User::field('id,nickname,avatar,beautiful_id,gender,age,bio,constellation,interest_ids,hidden_level,hidden_noble,imei,mobile')
+        $data = User::field('id,nickname,avatar,gender,age,bio,constellation,interest_ids,hidden_level,hidden_noble,imei,mobile')
             ->find($userId);
         if (!$data) {
             return null;
@@ -266,7 +266,7 @@ class UserService extends BaseService
             $where['id'] = ['in', $giftIds];
         }
 
-        $typeArr = [GiftModel::GIFT_TYPE_BOARD ];
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD];
         $query = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
             ->order('price desc');
@@ -310,7 +310,7 @@ class UserService extends BaseService
             $where['id'] = ['in', $giftIds];
         }
 
-        $typeArr = [GiftModel::GIFT_TYPE_BOARD ];
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD];
         $query = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
             ->order('price desc');

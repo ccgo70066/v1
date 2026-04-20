@@ -284,8 +284,7 @@ class UserBusiness extends Model
         if (db('union_user')->where('user_id', $user_id)->where('status', 'in', [2, 3, 6])->count(1)) {
             return 1;
         }
-        if (db('room_admin a')->join('room r', 'a.room_id = r.id')
-            ->where(['a.user_id' => $user_id, 'a.role' => 1, 'r.type' => 1])->find()) {
+        if (db('room_admin a')->where(['a.user_id' => $user_id, 'a.role' => 1])->find()) {
             return 1;
         }
         if (db('red_packet_whitelist')->where('user_id', $user_id)->count(1)) {
