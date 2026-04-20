@@ -353,8 +353,8 @@ class User extends Base
     {
         try {
             $user = $this->auth->getUser();
-            $mobile = $this->request->request('mobile');
-            $captcha = $this->request->request('captcha');
+            $mobile = input('mobile');
+            $captcha = input('captcha');
 
             if (!$mobile) {
                 if (!(Sms::check($user['mobile'], $captcha, 'mobile_change_1th'))
