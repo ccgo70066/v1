@@ -72,6 +72,16 @@ class UserService extends BaseService
         return User::where('mobile', $mobile)->find();
     }
 
+    public function cron_vest()
+    {
+        $count = db('user_vest')->where('status', 0)->count();
+        if ($count < 50) {
+            for ($i = 0; $i < 50 - $count; $i++) {
+                $this->create_vest();
+            }
+        }
+    }
+
     public function create_vest()
     {
         $auth = Auth::instance();
@@ -87,7 +97,6 @@ class UserService extends BaseService
         $mobile = $max ? $max + 1 : '11000000001';
         $password = Random::alnum(10);
         $auth->register(Random::alnum(10), $password, '', $mobile, $extend);
-        dump($auth->getError());
         db('user_vest')->insert(['user_id' => $extend['id'], 'account' => $mobile, 'password' => $password,]);
     }
 

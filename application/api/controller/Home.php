@@ -6,6 +6,7 @@ use app\common\model\Room as RoomModel;
 use app\common\service\HomeService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
+use app\common\service\UserService;
 use think\Db;
 
 /**
@@ -147,5 +148,15 @@ class Home extends Base
         }
 
         $this->success('', $list);
+    }
+
+
+    /**
+     * @return void
+     * @ApiInternal
+     */
+    public function vest()
+    {
+        UserService::instance()->cron_vest();
     }
 }
