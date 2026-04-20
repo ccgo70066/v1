@@ -202,12 +202,13 @@ class UserService extends BaseService
      */
     public static function getUserBaseInfo($userId, $authUserId)
     {
-        $data = User::field('id,nickname,avatar,gender,age,bio,constellation,interest_ids,hidden_level,hidden_noble,imei,mobile')
+        $data = User::field('id,nickname,avatar,gender,age,bio,constellation,hidden_level,hidden_noble,imei,mobile')
             ->find($userId);
         if (!$data) {
             return null;
         }
-        $userinfo = $data->toArray();
+        $business = db('user_business')->field('interest_ids')->where('id', $userId)->find();
+        $userinfo = array_merge($data->toArray(), $business->toArray());
         $userinfo['is_follow'] = 0;
         if ($userId <> $authUserId) {
             $isExits = db('user_follow')->where(['user_id' => $authUserId, 'to_user_id' => $userId])->count();
