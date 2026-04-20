@@ -593,6 +593,11 @@ class User extends Base
      */
     private function check_blacklist($user_id, $imei = '', $mobile = '')
     {
+        if ($imei) {
+            $business = db('user_business')->where('id', $user_id)->find();
+            if ($business['imei_limit'] == 1 && $business['imei'] != $imei) $this->error(__('Device error'), null, 401);
+        }
+
         $is_black = db('blacklist')
             ->where("(type=1 and number = '{$user_id}') OR (type = 2 and number = '{$imei}') or (type=3 and number='{$mobile}')")
             ->where('end_time', '>', datetime())
