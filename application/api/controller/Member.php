@@ -279,7 +279,7 @@ class Member extends Base
         $room_id = db('room_admin')->where(['user_id' => $user_id, 'status' => 1, 'role' => 1])->value('room_id');
         if (!$room_id) $this->error(__('You have no permission'));
 
-        $list = db('room_withdraw')->field('type,amount,audit_time')
+        $list = db('room_withdraw')->field('type,amount,create_time')
             ->where('status', 2)
             ->where('room_id', $room_id)
             ->order('id desc')->page(input('page', 1), input('size', 10))->select();
