@@ -80,7 +80,7 @@ abstract class BaseHandler
     public function publish(array $message, $delay = 0)
     {
         try {
-            Log::error('生产开始' . datetime());
+            //Log::error('生产开始' . datetime());
             if (request()->isCli() && $this->connection->isConnected()) {
                 Log::error($this->queue_name . '重连开始' . datetime());
                 $this->connection->reconnect();
@@ -97,7 +97,7 @@ abstract class BaseHandler
         }
         // 投递消息成功处理
         $this->channel->set_ack_handler(function ($msg) {
-            Log::error('成功处理' . datetime());
+            //Log::error('成功处理' . datetime());
             $this->publish_success(unserialize($msg->body));
         });
         //投递消息失败处理
@@ -113,7 +113,7 @@ abstract class BaseHandler
         $this->channel->basic_publish($msg, $this->queue_name);
         //等待投递消息结果
         $this->channel->wait_for_pending_acks();
-        Log::error('生产完成' . datetime());
+        //Log::error('生产完成' . datetime());
         return true;
     }
 

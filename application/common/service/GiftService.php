@@ -54,6 +54,8 @@ class GiftService extends BaseService
      */
     public function give_gift($user_id, $to_user_ids, $gifts, $room_id, $source)
     {
+        t('GiveGift mq processing');
+        t(func_get_args());
         $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->order('price desc')->column('id,name,price,screen_show,image', 'id');
         $max_gift = $gift_info[array_key_first($gift_info)];
         $gift_log = [];
@@ -130,6 +132,7 @@ class GiftService extends BaseService
                 }
             }
         }
+        t('GiveGift mq processing end');
     }
 
 
