@@ -56,81 +56,86 @@ class GiftService extends BaseService
     {
         t('GiveGift mq processing');
         t(func_get_args());
-        $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->order('price desc')->column('id,name,price,screen_show,image', 'id');
-        $max_gift = $gift_info[array_key_first($gift_info)];
-        $gift_log = [];
-        $total_price = ['total' => 0];
-        foreach ($to_user_ids as $to_user_id) {
-            [$user_rate, $room_rate] = $this->receiveGiftsRate($room_id, $to_user_id);
-            $total_price[$to_user_id] = 0;
-            $note = '收获礼物:';
-            foreach ($gifts as $gift) {
-                $gift_val = $gift_info[$gift['gift_id']]['price'] * $gift['count'];
-                $total_price['total'] += $gift_val;
-                $total_price[$to_user_id] += $gift_val;
-                $gift_log[] = [
-                    'user_id'    => $user_id,
-                    'to_user_id' => $to_user_id,
-                    'gift_id'    => $gift['gift_id'],
-                    'count'      => $gift['count'],
-                    'gift_val'   => $gift_val,
-                    'type'       => $source,
-                    'room_id'    => $room_id,
-                ];
-                $note .= $gift_info[$gift['gift_id']]['name'] . '×' . $gift['count'] . ',';
-                $gift['gift_id'] == $max_gift['id'] && $max_gift['count'] = $gift['count'];
-                GiftService::instance()->wall_add($to_user_id, $gift['gift_id'], $gift['count']);
-            }
-            user_business_change($to_user_id, 'reward_amount', $total_price[$to_user_id] * $user_rate, 'increase', substr($note, 0, -1), 4);
-            room_profit_statistics($room_id, $total_price[$to_user_id], $room_rate, $to_user_id);
-            RankService::instance()->count_up($user_id, $to_user_id, $room_id, $total_price[$to_user_id]);
-        }
-        if ($source == 2) {
-            UserBusinessService::instance()->level_scope($user_id, $total_price);
-        }
-        db('gift_log')->insertAll($gift_log);
-
-        if ($room_id) {
-            //更新热力值
-            $redis = redis();
-            $hot = $redis->hIncrBy(RedisService::ROOM_HOT_KEY, $room_id, 10 * $total_price['total']);
-
-            //麦上打赏统计更新
-            if (db('room')->where('id', $room_id)->value('pause') == RoomModel::RoomPauseOn) {
-                $roomService = RoomService::instance();
-                $seat_user = $roomService->getSeatUserId($room_id);
-                $key_value_update = [];
-                //匹配收礼人是否在座上,记录麦上打赏明细
-                foreach ($to_user_ids as $to_user_id) {
-                    $seat_no = array_search($to_user_id, $seat_user);
-                    if (!$seat_no) continue;
-                    $key_value_update[$seat_no] = $total_price[$to_user_id];
-                    update_seat_gift_val($room_id, $seat_no, $user_id, $total_price[$to_user_id]);
+        try {
+            $gift_info = db('gift')->where('id', 'in', array_column($gifts, 'gift_id'))->order('price desc')->column('id,name,price,screen_show,image', 'id');
+            $max_gift = $gift_info[array_key_first($gift_info)];
+            $gift_log = [];
+            $total_price = ['total' => 0];
+            foreach ($to_user_ids as $to_user_id) {
+                [$user_rate, $room_rate] = $this->receiveGiftsRate($room_id, $to_user_id);
+                $total_price[$to_user_id] = 0;
+                $note = '收获礼物:';
+                foreach ($gifts as $gift) {
+                    $gift_val = $gift_info[$gift['gift_id']]['price'] * $gift['count'];
+                    $total_price['total'] += $gift_val;
+                    $total_price[$to_user_id] += $gift_val;
+                    $gift_log[] = [
+                        'user_id'    => $user_id,
+                        'to_user_id' => $to_user_id,
+                        'gift_id'    => $gift['gift_id'],
+                        'count'      => $gift['count'],
+                        'gift_val'   => $gift_val,
+                        'type'       => $source,
+                        'room_id'    => $room_id,
+                    ];
+                    $note .= $gift_info[$gift['gift_id']]['name'] . '×' . $gift['count'] . ',';
+                    $gift['gift_id'] == $max_gift['id'] && $max_gift['count'] = $gift['count'];
+                    GiftService::instance()->wall_add($to_user_id, $gift['gift_id'], $gift['count']);
                 }
-                if ($key_value_update) $roomService->incrSeatGiftValue($room_id, $key_value_update); //在座则增加麦上打赏额统计
+                user_business_change($to_user_id, 'reward_amount', $total_price[$to_user_id] * $user_rate, 'increase', substr($note, 0, -1), 4);
+                room_profit_statistics($room_id, $total_price[$to_user_id], $room_rate, $to_user_id);
+                RankService::instance()->count_up($user_id, $to_user_id, $room_id, $total_price[$to_user_id]);
             }
-            $imService = ImService::instance();
-            $imService->roomGiveGiftNotice($room_id, $hot);
-            if ($source == 4) $imService->roomGiveGiftAllMessage($room_id, $user_id, $to_user_ids[0], $gifts);
-            else $imService->roomGiveGiftMessage($room_id, $user_id, $to_user_ids, $gifts[0]['gift_id'], $gifts[0]['count']);
-            //飘屏
-            if ($max_gift['screen_show'] == GiftModel::ScreenShowOn ||
-                ($max_gift['screen_show'] == GiftModel::ScreenShowPrice && $max_gift['price'] * $max_gift['count'] >= get_site_config('gift_value'))) {
-                foreach ($to_user_ids as $to_user_id) {
-                    $to_nickname = RedisService::getUserCache($to_user_id, 'nickname');
-                    $this->screenShow(
-                        Message::CMD_SHOW_GIFT_GLOBAL,
-                        db('user')->where('id', $user_id)->value('nickname') ?? '',
-                        $max_gift['name'],
-                        $max_gift['count'],
-                        $max_gift['price'],
-                        $max_gift['image'],
-                        $to_nickname,
-                        false,
-                        $room_id
-                    );
+            if ($source == 2) {
+                UserBusinessService::instance()->level_scope($user_id, $total_price);
+            }
+            db('gift_log')->insertAll($gift_log);
+
+            if ($room_id) {
+                //更新热力值
+                $redis = redis();
+                $hot = $redis->hIncrBy(RedisService::ROOM_HOT_KEY, $room_id, 10 * $total_price['total']);
+
+                //麦上打赏统计更新
+                if (db('room')->where('id', $room_id)->value('pause') == RoomModel::RoomPauseOn) {
+                    $roomService = RoomService::instance();
+                    $seat_user = $roomService->getSeatUserId($room_id);
+                    $key_value_update = [];
+                    //匹配收礼人是否在座上,记录麦上打赏明细
+                    foreach ($to_user_ids as $to_user_id) {
+                        $seat_no = array_search($to_user_id, $seat_user);
+                        if (!$seat_no) continue;
+                        $key_value_update[$seat_no] = $total_price[$to_user_id];
+                        update_seat_gift_val($room_id, $seat_no, $user_id, $total_price[$to_user_id]);
+                    }
+                    if ($key_value_update) $roomService->incrSeatGiftValue($room_id, $key_value_update); //在座则增加麦上打赏额统计
+                }
+                $imService = ImService::instance();
+                $imService->roomGiveGiftNotice($room_id, $hot);
+                if ($source == 4) $imService->roomGiveGiftAllMessage($room_id, $user_id, $to_user_ids[0], $gifts);
+                else $imService->roomGiveGiftMessage($room_id, $user_id, $to_user_ids, $gifts[0]['gift_id'], $gifts[0]['count']);
+                //飘屏
+                if ($max_gift['screen_show'] == GiftModel::ScreenShowOn ||
+                    ($max_gift['screen_show'] == GiftModel::ScreenShowPrice && $max_gift['price'] * $max_gift['count'] >= get_site_config('gift_value'))) {
+                    foreach ($to_user_ids as $to_user_id) {
+                        $to_nickname = RedisService::getUserCache($to_user_id, 'nickname');
+                        $this->screenShow(
+                            Message::CMD_SHOW_GIFT_GLOBAL,
+                            db('user')->where('id', $user_id)->value('nickname') ?? '',
+                            $max_gift['name'],
+                            $max_gift['count'],
+                            $max_gift['price'],
+                            $max_gift['image'],
+                            $to_nickname,
+                            false,
+                            $room_id
+                        );
+                    }
                 }
             }
+        } catch (Exception $e) {
+            t('GiveGift mq processing error');
+            t($e->getMessage());
         }
         t('GiveGift mq processing end');
     }
