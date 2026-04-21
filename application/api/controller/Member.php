@@ -219,7 +219,8 @@ class Member extends Base
     public function withdraw()
     {
         $user_id = $this->auth->id;
-        $room = db('room')->where('owner_id', $user_id)->find();
+        $room_id = db('room_admin')->where(['user_id' => $this->auth->id, 'status' => 1, 'role' => 1])->value('room_id');
+        $room = db('room')->where('id', $room_id)->find();
         if ($room['status'] == 1) {
             throw new ApiException(__('Please be patient while the room is being reviewed'));
         } elseif ($room['status'] == 0) {
