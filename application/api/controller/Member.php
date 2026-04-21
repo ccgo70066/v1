@@ -40,7 +40,7 @@ class Member extends Base
         $room['role_status'] = $role['status'] ?? null;
         $room['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $profit = db('room_profit')->where('room_id', $room_id)->find();
-        $room['gift_value'] = $profit['gift_val'] ?? 0;
+        $room['gift_value'] = $profit['val'] ?? 0;
         $room['reward_value'] = $profit['reward_val'] ?? 0;
         $room['member_count'] = db('room_admin')->where('room_id', $room_id)->where('status', 'in', [1, 2])->count();
 
