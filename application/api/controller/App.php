@@ -177,8 +177,8 @@ class App extends Base
      */
     public function get_new_version()
     {
-        $system = $this->request->param('system');
-        $version = $this->request->param('version');
+        $system = input('system') == 1 ? 'IOS' : 'ANDROID';
+        $version = input('version');
 
         $data = db('channel_package')->alias('cp')->field('cp.id,cp.channel_id')
             ->where(['cp.system' => $system, 'cp.version' => $version, 'cp.status' => 1,])->find();
