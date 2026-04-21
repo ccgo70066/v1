@@ -17,9 +17,6 @@ use think\exception\DbException;
  */
 class ImService extends BaseService
 {
-    protected static self $instance;
-
-
     public Yunxin $im;
     //系统消息ID
     const SYS_ID = 'sys';
@@ -59,16 +56,6 @@ class ImService extends BaseService
     {
         $this->im = new Yunxin();
     }
-
-
-    public static function instance(): static
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
-
 
     /**
      * 获取IM黑名单
