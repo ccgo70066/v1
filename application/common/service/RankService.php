@@ -7,15 +7,6 @@ namespace app\common\service;
  */
 class RankService extends BaseService
 {
-    protected static self $instance;
-
-    public static function instance(): static
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
 
     /**
      * 判断用户是否是家族成员
