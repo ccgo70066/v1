@@ -10,15 +10,7 @@ use app\common\exception\ApiException;
  */
 class AsyncRequestService extends BaseService
 {
-    protected static self $instance;
 
-    public static function instance(): static
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
     /**
      * @param $url string 请求地址
      * @param $params array 请求参数,可为一维或多维数组或json字符串,json字符串会被转化为数组

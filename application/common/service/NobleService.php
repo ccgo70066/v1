@@ -13,15 +13,7 @@ use app\common\model\UserNoble;
  */
 class NobleService extends BaseService
 {
-    protected static self $instance;
 
-    public static function instance(): static
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
     /**
      * 获取贵族相关信息
      * @param int $userID 用户ID
