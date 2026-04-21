@@ -274,8 +274,7 @@ function send_im_msg_by_system_with_lang($user_id, $text, ...$var)
 
 function user_noble_switch($user_id, $switch_type)
 {
-    // todo fix
-    $rs = db('user_noble')->where('id', $user_id)->where('expire_time', '>', datetime())->find();
+    $rs = db('user_noble')->where('id', $user_id)->where('end_time', '>', datetime())->find();
     if (!$rs) return 0;
     return 0;
 }
