@@ -15,16 +15,6 @@ class RoomService extends BaseService
 
     private RoomModel $model;
 
-    protected static self $instance;
-
-    public static function instance(): static
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
-
     public function __construct()
     {
         $this->model = new RoomModel();
