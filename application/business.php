@@ -321,11 +321,15 @@ function get_expiry_days($expiry_date)
 
 function board_notice($cmd, $data, $msg = '')
 {
-    //if (Env::get('app.debug')) return;
-    if (in_array($cmd, [Message::CMD_REFRESH_USER, Message::CMD_KICK_USER])) {
-        Gateway::sendToUid($data['user_id'], Message::json($cmd, $data, $msg));
-    } else {
-        Gateway::sendToAll(Message::json($cmd, $data, $msg));
+    try {
+        if (in_array($cmd, [Message::CMD_REFRESH_USER, Message::CMD_KICK_USER])) {
+            Gateway::sendToUid($data['user_id'], Message::json($cmd, $data, $msg));
+        } else {
+            Gateway::sendToAll(Message::json($cmd, $data, $msg));
+        }
+    } catch (Exception $e) {
+        if (Env::get('app.debug')) return;
+        Log::error($e->getMessage());
     }
 }
 
