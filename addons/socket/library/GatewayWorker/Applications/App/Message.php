@@ -28,7 +28,9 @@ class Message
      */
     const CMD_REFRESH_USER = 2010; // 用户信息更新推送
     const CMD_GIFT_PUSH = 2015; // 资源推送
-    const CMD_ADVICE = 3999; // 全服通知, 接口返回code=999则前端开启全服维护状态
+
+    const CMD_NOTICE = 3998; // 全服通知(可关闭)   {"cmd":3999, "msg":"", "data":{"title":"test", "content":"cccccc"}}
+    const CMD_SYSTEM = 3999; // 系统通知(不可关闭)    接口返回code=999则前端开启全服维护状态
     const CMD_KICK_USER = 4000; // 踢用户掉线推送
 
     // 飄屏
