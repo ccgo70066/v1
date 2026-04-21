@@ -199,6 +199,19 @@ class Member extends Base
     }
 
     /**
+     * @ApiTitle    (获取流水奖励数值)
+     **/
+    public function get_reward()
+    {
+        $room_id = db('room_admin')->where(['user_id' => $this->auth->id, 'status' => 1, 'role' => 1])->value('room_id');
+        $profit = db('room_profit')->where('room_id', $room_id)->find();
+        $union['gift_val'] = $profit['val'] ?? 0;
+        $union['sur_reward'] = bcsub($profit['reward_val'] ?? 0, $profit['used_reward_val'] ?? 0, 2);
+        $this->success('', $union);
+    }
+
+
+    /**
      * @ApiTitle    (流水奖励兑换)
      * @ApiParams   (name="reward_val",   type="int",     required=true,rule="between:1,9999999", description="申请兑换的流水奖励值")
      * @ApiParams   (name="type",         type="int",     required=true,rule="in:1,2", description="兑换类型:1=转为收益,2=转为金幣")
