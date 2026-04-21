@@ -734,12 +734,10 @@ class Room extends Base
             ->page(1, $size)
             ->order('id desc')
             ->select();
-        $beautiful_ids = Db::name('user')->where('id', 'in', array_column($data, 'user_id'))->column('beautiful_id', 'id');
 
         foreach ($data as &$item) {
             $item['nickname'] = RedisService::getUserCache($item['user_id'], 'nickname');
             $item['avatar'] = RedisService::getUserCache($item['user_id'], 'avatar');
-            $item['beautiful_id'] = $beautiful_ids[$item['user_id']];
         }
 
         $this->success('', $data);
