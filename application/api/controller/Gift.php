@@ -156,8 +156,8 @@ class Gift extends Base
             $this->error(__('Network busy'));
         }
         $arr = ['user_id' => $user_id, 'to_user_ids' => $to_user_ids, 'gifts' => $gifts, 'room_id' => $room_id, 'source' => $source,];
-        //mq_publish(GiveGiftMQ::instance(), $arr);
-        $this->service->give_gift($user_id, $to_user_ids, $gifts, $room_id, $source);
+        mq_publish(GiveGiftMQ::instance(), $arr);
+        //$this->service->give_gift($user_id, $to_user_ids, $gifts, $room_id, $source);
         $this->success();
     }
 
