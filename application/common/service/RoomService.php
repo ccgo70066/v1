@@ -523,7 +523,6 @@ class RoomService extends BaseService
                 'online_count' => $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $room_id)
             ]
         );
-        t($is_kick);
         if ($is_kick) {
             $imService->room_kick_user($room_id, $user_id);
         }

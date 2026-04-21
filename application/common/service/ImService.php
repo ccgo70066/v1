@@ -335,7 +335,7 @@ class ImService extends BaseService
         $roomModel = new Room();
         $im_room_id = $roomModel->getImRoomId($room_id);
         $operator = db('room')->where('id', $room_id)->value('owner_id');
-        return $this->im->kickMember($operator, $im_room_id, $to_user_id, $extend);
+        return $this->im->kickMember($operator, $to_user_id, $im_room_id, $extend);
     }
 
     public function get_room_wait_mic($room_id)
