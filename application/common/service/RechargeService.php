@@ -4,6 +4,7 @@ namespace app\common\service;
 
 use app\common\exception\ApiException;
 use app\common\model\UserBusiness;
+use app\pay\library\AliPay;
 use fast\Http;
 use think\Collection;
 use think\db\exception\DataNotFoundException;
@@ -14,19 +15,11 @@ use think\Log;
 
 class RechargeService extends BaseService
 {
-    protected static self $instance;
 
-    public static function instance(): static
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new static();
-        }
-        return self::$instance;
-    }
+
     /**
      * 获取充值项及对应的充值渠道
      * @param $appid
-     * @return array|bool|Collection|string|void
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
@@ -77,8 +70,8 @@ class RechargeService extends BaseService
                         continue;
                     }
                     $card['payway'][] = [
-                        'code'  => $item['code'],
-                        'name'  => $item['app_pay_name'],
+                        'code' => $item['code'],
+                        'name' => $item['app_pay_name'],
                         'image' => $item['payway_image']
                     ];
                 }
@@ -106,7 +99,7 @@ class RechargeService extends BaseService
      * @param     $user_id
      * @param int $agent_flag
      * @param int $amount
-     * @throws ApiException
+     * @throws
      */
     public function riskControl($user_id, int $agent_flag = 0, int $amount = 0, $card_id, $payway): void
     {
@@ -115,69 +108,6 @@ class RechargeService extends BaseService
         if ($inBlacklist) {
             throw new ApiException(__('Payment failure'), 441);
         }
-        return;
-        // 支付频率超限，请稍后再试或选择其它金额
-        // 120 秒时间段只能下单2次，每次隔间不能小于30秒。
-        $count = db('user_recharge')->where(['user_id' => $user_id, 'status' => 1])
-            ->whereTime('create_time', '-' . get_site_config('recharge_frequent_range') . 'second')->count(1);
-        if ($count >= get_site_config('recharge_frequent_limit')) {
-            throw new ApiException('支付频率超限，请稍后再试或选择其它面额', 446);
-        }
-        $count = db('user_recharge')
-            ->where(['user_id' => $user_id, 'card_id' => $card_id, 'payway' => $payway, 'status' => 1])
-            ->whereTime('create_time', '-' . get_site_config('recharge_interval_limit') . 'second')->count(1);
-        if ($count) {
-            throw new ApiException('支付频率超限，请稍后再试或选择其它面额', 447);
-        }
-        // 1个小时内调起未支付的订单超过5则将用户加入黑名单
-        if (get_site_config('recharge_failed_limit') > 0) {
-            $range = get_site_config('recharge_failed_check_range');
-            $exist = db('user_recharge')->where([
-                'user_id'     => $user_id,
-                'create_time' => ['egt', datetime(strtotime("-{$range}minute"))],
-                'status'      => ['neq', 1],
-            ])->count();
-            if ($exist >= get_site_config('recharge_failed_limit')) {
-                db('recharge_blacklist')->insert(
-                    ['user_id' => $user_id, 'admin_id' => 0, 'comment' => '系统判定'],
-                    true
-                );
-                // Enigma::send_check_message("订单中心--->充值黑名单  - 用户: $user_id 被系统判定进入, 请核对!");
-                throw new ApiException('支付故障', 444);
-            }
-        }
-
-        return;
-        // if (Env::get('app.server') == 'test') {
-        //     return;
-        // }
-        // 黑名单检测
-        $user = db('user')->where('id', $user_id)->field('loginip,imei')->find();
-        $exist = db('recharge_blacklist')
-            ->where("(type=1 and number = '{$user_id}') OR (type = 2 and number = '" . ($user['loginip']) . "') or (type=3 and number='" . ($user['imei']) . "')")
-            ->order('id desc')->find();
-        if ($exist) {
-            throw new ApiException($exist['form'], 445);
-        }
-        // 单个用户单日累计充值成功总额不超过2w
-        $total = db('user_recharge')->where(['user_id' => $user_id, 'status' => 1])
-            ->whereTime('create_time', 'd')->sum('pay_amount');
-        if (($total + $amount) >= 10000) {
-            throw new ApiException('超出当日限额，请明日再试', 440);
-        }
-
-        if ($agent_flag) {  // 代充 检测到此为止
-            return;
-        }
-        // 检测充值IP是否与登录IP一致
-        if (get_site_config('recharge_ip_limit')) {
-            $ip = db('user')->where('id', $user_id)->value('loginip');
-            if ($ip != request()->ip()) {
-                throw new ApiException('支付故障', 442);
-            }
-        }
-
-
     }
 
     /**
@@ -259,95 +189,24 @@ class RechargeService extends BaseService
             throw new ApiException('该支付方式已停止');
         }
         if (strtoupper($payWay) == 'ALIPAY') {
-            if (in_array(
-                strtoupper($companyCode),
-                ['SHANGXUEP', 'RONGKAIP', 'QINGSHENGP', 'TUYOUP', 'YIFANP', 'XINZHIYUNP', 'LYMMSZP']
-            )) {  // 支付宝原生
+            if (in_array(strtoupper($companyCode), ['ALI'])) {  // 支付宝原生
                 $pay = new AliPay($config);
                 if ($openWay == 'SDK') {
                     $result['pay_url'] = $pay->sdk_payment($order_no);
                 } elseif ($openWay == 'H5I' || $openWay == 'H5') {
                     $result['pay_url'] = $pay->h5_payment($order_no);
                 }
-            } elseif (in_array(strtoupper($companyCode), ['SHANGXUEXS', 'XINZHIYUNXS'])) {  //新生支付
-                if ($openWay == 'H5I' || $openWay == 'H5') {
-                    $pay = new NewPay($config);
-                    $result['pay_url'] = $pay->h5_payment($order_no);
-                }
-            } elseif (in_array(strtoupper($companyCode), ['SHANGXUEHF'])) {
-                $pay = new AdaPay($config);
-                $result['pay_url'] = $pay->payment($order);
-            } elseif (in_array(strtoupper($companyCode), ['QINGSHENGHM'])) {
-                $pay = new HmPay($config);
-
-                if ($openWay == 'H5I' || $openWay == 'H5') {
-                    $result['pay_url'] = $pay->h5_payment($order_no);
-                } else {
-                    $result['pay_way'] = implode('_', [$companyCode, 'HM', $openWay]);
-                    $result['pay_url'] = $pay->sdk_payment($order_no);
-                }
-            } elseif (in_array(strtoupper($companyCode), ['SANDERSX'])) {
-                $pay = new SanderPay($config);
-                $result['pay_way'] = implode('_', [$companyCode, 'SAND', $openWay]);
-                $result['pay_url'] = $openWay == 'SDK' ? $pay->sdk_payment($order_no) : $pay->h5_payment($order_no);
-            } elseif (in_array(strtoupper($companyCode), [
-                'SHANGXUETC',
-                'TUYOUTC',
-                'YIFANTC',
-                'QINGSHENGTC',
-                'XINZHIYUNTC'
-            ])) {  // TC
-                $pay = new TcPay($config);
-                $result['pay_url'] = $pay->payment($order_no, 1);
-            } elseif (in_array(strtoupper($companyCode), ['RANGSHANXHD'])) {
-                $pay = new XhdPay($config);
-                $result['pay_url'] = $pay->alipay_h5($order_no);
-            } elseif (in_array(strtoupper($companyCode), ['TUYOUQTK'])) {  // 图游-七淘卡
-                $result['pay_url'] = url('/pay/goback/qtk_jump', ['order_no' => $order_no], '', true);
             }
         } elseif (strtoupper($payWay) == 'WX') {
-            if (in_array(strtoupper($companyCode), ['SHANGXUESN'])) {  // 殇雪-苏宁
-                $pay = new SuningPay($config);
-                $result['pay_url'] = $pay->payment($order_no);
-            } elseif (in_array(strtoupper($companyCode), ['LYNSN', 'YIFANSN', 'QINGSHENGSN', 'TUYOUSN'])) {  // 乐佑宁-苏宁
-                $pay = new SuningPay($config);
-                $result['pay_url'] = $pay->payment($order_no);
-            } elseif (in_array(strtoupper($companyCode), [
-                'SHANGXUETC',
-                'TUYOUTC',
-                'YIFANTC',
-                'QINGSHENGTC',
-                'XINZHIYUNTC'
-            ])) {  // TC
-                $pay = new TcPay($config);
-                $result['pay_url'] = $pay->payment($order_no, 2);
-            } elseif (in_array(strtoupper($companyCode), ['SHANGXUEHF2'])) {  // 殇雪-汇付2
-                $pay = new HuifuPay($config);
-                $result['pay_url'] = url('pay/goback/huifu_jump', ['order_no' => $order_no], '', true);
-            } elseif (in_array(strtoupper($companyCode), ['SHANGXUE'])) {  // 殇雪 微信sdk
-                $pay = new WechatPayV3();
-                $result['pay_url'] = $pay->payment_sdk($order_no);
-            } elseif (in_array(strtoupper($companyCode), ['SHANGXUEXS'])) {  // 殇雪 新生微信
-                $result['pay_url'] = url('/pay/goback/newpay_jump', ['order_no' => $order_no], '', true);
-            } elseif (in_array(strtoupper($companyCode), ['SHANGXUELH'])) {  // 殇雪 联合
-                $result['pay_url'] = url('/pay/goback/umfpay_jump', ['order_no' => $order_no], '', true);
+            if (in_array(strtoupper($companyCode), ['WX'])) {  // 微信
+                $result['pay_url'] = url('/pay/goback/pay_jump', ['order_no' => $order_no], '', true);
             }
         } elseif (strtoupper($payWay) == 'BANK') {
-            if (in_array(strtoupper($companyCode), [
-                'SHANGXUEKJ',
-                'QINGSHENGKJ',
-                'YIFANKJ',
-            ])) {  // 杉德 殇雪-快捷 清晟-快捷 test
-                $result['pay_url'] = url('/pay/goback/sand_fast', ['order_no' => $order_no], '', true);
-            }
-        } elseif (strtoupper($payWay) == 'UNIONPAY') {
-            if (in_array(strtoupper($companyCode), ['SHANGXUESDKJ'])) {  // 杉德 殇雪-快捷-银联
-                $result['pay_url'] = url('/pay/goback/sand_h5', ['order_no' => $order_no], '', true);
-            }
+            $result['pay_url'] = url('/pay/goback/pay_jump', ['order_no' => $order_no], '', true);
         } elseif (strtoupper($payWay) == 'GOOGLE') {
-            $result['pay_url'] = '123';
+            $result['pay_url'] = 'GOOGLE';
         } elseif (strtoupper($payWay) == 'APPLE') {
-            $result['pay_url'] = '123';
+            $result['pay_url'] = 'APPLE';
         }
         if (empty($result['pay_url'])) {
             throw new ApiException('不支持的方式');
@@ -361,10 +220,8 @@ class RechargeService extends BaseService
      * @param $user_id
      * @return bool true=首充存在,false=无首充奖励
      */
-    public
-    static function isFirstRecharge(
-        $user_id
-    ) {
+    public static function isFirstRecharge($user_id)
+    {
         return !db('user_recharge')->where('user_id', $user_id)->where('status', 1)->find();
     }
 }

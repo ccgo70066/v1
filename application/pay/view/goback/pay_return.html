@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <link href="./css/pa.css" rel="stylesheet"> -->
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        font-size: 8px !important;
+    }
+
+    .box {
+        width: 100%;
+    }
+
+    .Pay {
+        width: 46.875rem;
+        height: 101.5rem;
+        /* background-color: #6ff; */
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
+    .head {
+        width: 46.875rem;
+        height: 2.5rem;
+        margin-top: 2rem;
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .head_pay {
+        width: 9.875rem;
+        height: 2rem;
+        color: #333333;
+        margin: 0 auto;
+        font-family: PingFang SC;
+        font-weight: bold;
+        text-align: center;
+        font-size: 2rem;
+    }
+
+    .head_img {
+        width: 1.375rem;
+        height: 2.5625rem;
+        position: absolute;
+        left: 1rem;
+    }
+
+    .content {
+        display: flex;
+        justify-content: center;
+        position: relative;
+    }
+
+    .content p {
+        position: absolute;
+        top: 37.9375rem;
+        left: 17rem;
+        font-size: 2.25rem;
+    }
+
+    .content_img {
+        margin-top: 22.9375rem;
+        width: 12.5rem;
+        height: 12.5rem;
+
+    }
+
+    .foot {
+        width: 31.25rem;
+        height: 5.5rem;
+        line-height: 5.5rem;
+        margin: 21.25rem auto 0;
+        /* position: absolute;
+        left: 7.5375rem;
+        bottom: 14rem; */
+        background-color: #01C801;
+        border-radius: 44px;
+        text-align: center;
+    }
+
+    .foot p {
+        font-size: 2.25rem;
+        color: #fff;
+
+    }
+
+    .content_cg {
+        display: none;
+    }
+
+    .content_sb {
+        display: none;
+    }
+</style>
+
+<body>
+<div>
+    <div class="Pay">
+        <div class="head">
+
+            <p class="head_pay">账单支付</p>
+        </div>
+        <div class="content">
+            <div class="content_cg">
+                <img class="content_img" src="/assets/pay/img/cg.png" alt="">
+                <p>支付成功</p>
+            </div>
+            <div class="content_sb">
+                <img class="content_img" src="/assets/pay/img/sb.png" alt="">
+                <p>支付失败</p>
+            </div>
+        </div>
+        <div class="foot android downBtn return_btn"><p>返回应用</p></div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" charset="UTF-8" src="https://web.cdn.openinstall.io/openinstall.js"></script>
+<script src="/assets/libs/jquery/dist/jquery.min.js"></script>
+<script>
+
+    $(function () {
+        let url = window.location.href;
+        let flag = '{$flag}';
+        if (flag) {
+            $(".content_cg").show();
+        } else {
+            $(".content_sb").show()
+        }
+        // console.log(url);
+        // $.ajax({
+        //   url:"http://localhost:3000/comments",
+        //   dataType:JSON,
+        //  success:(data)=>{
+        //    let data1=$.parseJSON(data)[0].postId
+        //    // console.log(data1);
+        //    // let data1=1
+        //    if (data1==1) {
+        //      $(".content_cg").show()
+        //    }else if(data1==2){
+        //      $(".content_sb").show()
+        //    }
+        //  }
+        // })
+
+        $('.return_btn').on('click', function () {
+            window.location.href = "cocoapp://task/";
+        });
+
+    });
+
+</script>
+
+</html>
