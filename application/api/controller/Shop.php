@@ -187,7 +187,6 @@ class Shop extends Base
         try {
             Db::startTrans();
             user_business_change($this->auth->id, 'shred', $amount, 'decrease', '能量礼物兑换', 1);
-            shred_log_add($this->auth->id, $gift['id'], $gift['price'], $count, $amount);
             user_gift_add($this->auth->id, $gift_id, $count);
             Db::commit();
         } catch (\Throwable $e) {
