@@ -122,7 +122,7 @@
             <div class="radio">
                 {foreach name="statusList" item="vo"}
                 <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio"
-                                                       value="{$key}" {in name="key" value="$row.status" }checked{/in}
+                                                       value="{$key}" {in name="key" value="$row.status|default=''" }checked{/in}
                     /> {$vo}</label>
                 {/foreach}
             </div>

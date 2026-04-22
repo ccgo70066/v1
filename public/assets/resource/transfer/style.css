@@ -1,0 +1,203 @@
+@charset "utf-8";
+img{border:0;vertical-align:middle;max-width:100%;}
+body {
+    font-size: 16px;
+    font-family: 'PingFang SC','Hiragino Sans GB','PingHei','Open Sans','sans-serif','Helvetica Neue','Helvetica','Microsoft YaHei','SimSun','Arial';
+    color: #666666;
+}
+html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,input,textarea,p,table,tr,th,td,span,strong,em{padding:0;margin:0;font-style:normal;font-size:16px;}
+input{
+    border:0;
+   padding: 0px;
+   font-size: 12px;
+   background: none;
+   font-family: "PingFang SC", "Hiragino Sans GB", "PingHei", "Open Sans", "sans-serif", "Helvetica Neue","Helvetica", "Microsoft YaHei", "SimSun", "Arial";
+}
+input:-webkit-autofill,
+ textarea:-webkit-autofill,
+ select:-webkit-autofill {
+        background-color: #fff;
+       -webkit-box-shadow: 0 0 0 1000px white inset;
+}
+input[type=text]:focus, input[type=password]:focus, textarea:focus {
+    /*background-color: #fff;
+      -webkit-box-shadow: 0 0 0 1000px white inset;*/
+}
+button, button:focus, button:active ,button:link{
+    -webkit-appearance:none;
+    outline:none;
+}
+ol,ul,li{list-style:no1ne;}
+h1,h2,h3,h4,h5,h6{font-weight:normal;font-size:100%;}
+table{border-collapse: collapse;border-spacing: 0;}
+a{text-decoration:none;outline:none;cursor: pointer;color: #333;}
+a:link,a:visited{text-decoration:none;}
+a:hover{text-decoration:none;}
+a:active{text-decoration:none;}
+.clearboth{clear:both;}
+.fl{float:left;}
+.fr{float:right;}
+.ml5{margin-left:5px;}
+.mt20{margin-top:13px;}
+.mt50{margin-top:20px;}
+.mt10{margin-top:10px;}
+.ml20{margin-left:20px;}
+.div-h,.ty-p{line-height:1.5;}
+.color9{color:#999;}
+.color-blue{color:#00a0e8;}
+.p16{padding:16px;}
+.p24{padding:24px;}
+.bgf7{padding:10px;background:#f7f7f7;}
+.bg999{padding:10px;background:#999;}
+.ty-relative{position:relative;}
+
+@charset "utf-8";
+
+.tyue-checkbox{
+   vertical-align: middle;
+   display: inline-block;
+   position: relative;
+   white-space: nowrap;
+}
+.tyue-checkbox-txt{margin-left: 6px;margin-right: 8px;}
+
+/*过滤*/
+.ty-transfer-list{width:220px;border:1px solid #d9d9d9;border-radius:3px;background:#fff;}
+.ty-transfer-list-head{height:32px;line-height:32px;text-align:center;font-size:14px;color:#666;font-weight: bold;}
+.ty-transfer-list-serach{width:auto;padding:0 15px 8px;position:relative;}
+.ty-transfer-list-serach input{display:block;width:100%;height:28px;line-height:28px;padding-left:30px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}
+
+.ty-transfer-list-serach input{
+     transition: all .3s linear;
+     -webkit-transition: all .3s linear;
+     -o-transition: all .3s linear;
+     -moz-transition: all .3s linear;
+}
+.ty-transfer-list-serach>input:focus,
+.ty-transfer-list-serach>input:hover{
+     border-color: #57c5f7;
+     border: 1px solid #57c5f7;
+     outline: 0;
+     box-shadow: 0 0 0 2px rgba(45,183,245,.2);
+}
+
+
+.ty-transfer-list-serach-icon{ width:17px;height:17px;display:block;position:absolute;top:4px;left:22px;z-index:10;}
+.ty-transfer-list-body{border-top:1px solid #d9d9d9;padding:4px 10px;overflow-y: scroll;height:150px;overflow-y:auto;box-sizing:border-box;}
+.ty-transfer .ty-tree-arrow-right span,.ty-transfer .ty-tree-arrow-bottom span{margin-left:0;}
+.ty-transfer .ty-tree-select-ul{padding-left:38px;}
+.ty-transfer .ty-tree-div .tyc-check-blue{margin:8px 6px;}
+.ty-transfer .ty-tree-div{height:30px;}
+.ty-transfer .ty-tree-text{height:30px;line-height:30px;line-height:30px; cursor: pointer;}
+.ty-transfer .ty-tree-switcher{height:28px;}
+.ty-transfer-list-foot{background:#f1f1f1;}
+.ty-transfer-list-serach+.ty-transfer-list-body{height:230px;}
+.ty-transfer-operation{padding:107px 20px 0 40px;}
+.ty-transfer-operation span{
+    display:block;
+    width:43px;
+    height:28px;
+    text-align: center;
+    position: relative;
+    cursor:pointer;
+    border:1px solid #d9d9d9;
+    border-radius:4px;
+    background-image:url("ue-icon-little.png");
+    background-repeat: no-repeat;
+    background-color:#f3f3f3;
+    transition: background-color 0.3s linear;
+    -moz-transition: background-color 0.3s linear;
+    -webkit-transition: background-color 0.3s linear;
+    -o-transition: background-color 0.3s linear;
+
+}
+
+.ty-transfer-operation span i{
+    font-size: 2em;
+    color: #bbb;
+}
+.ty-transfer-operation span+span{margin-top:25px;}
+.ty-transfer-operation span:hover{border:1px solid #3dadf2;background-color:#7AC7F8;}
+.ty-transfer-operation span:hover i{
+    color:#fff;
+}
+.ty-transfer-btn-toright,.ty-transfer-btn-toright.disabled:hover{background-position:17px -150px;}
+
+.ty-transfer-btn-toright:hover,.ty-transfer-btn-toright.active,.ty-transfer-btn-toright.active:hover{background-position:17px -175px; }
+
+.ty-transfer-btn-toleft,.ty-transfer-btn-toleft.disabled:hover{background-position:17px -206px;}
+.ty-transfer-btn-toleft:hover,.ty-transfer-btn-toleft.active,.ty-transfer-btn-toleft.active:hover{background-position:17px -231px;}
+.ty-transfer-operation span.active{border:1px solid #3dadf2;background-color:#00A0E8;}
+.ty-transfer-operation span.active i{color: #fff;}
+/*.ty-transfer-btn-toleft.disabled:hover,.ty-transfer-btn-toright.disabled:hover{cursor: not-allowed;border:1px solid #d9d9d9;;background-color:#f3f3f3;}*/
+
+.ty-transfer-operation .active:hover{
+    background-color: #7AC7F8;
+}
+
+
+
+/**未选中禁用**/
+.tyc-check-disabled span{
+     background:#f3f3f3;
+     width: 10px;
+     height: 10px;
+     display: block;
+     border: 1px solid #d8d8d8;
+     position: absolute;
+     top: 0;
+     left: 0;
+     z-index: 2;
+}
+/**选中禁用**/
+/*.tyc-check-disabled span:after{
+    content: "";
+    width: 10px;
+    height: 10px;
+    display: block;
+    border: 1px solid #d8d8d8;
+    display: block;
+    background: url(../images/table-icon.png) no-repeat 0 -410px #f3f3f3;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: none;
+}*/
+.tyc-check-checkall span{
+    width: 10px;
+    height: 10px;
+    display: block;
+    border: 1px solid #d8d8d8;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+
+}
+/**未选全**/
+.tyc-check-incomplete span{
+    width: 12px;
+    height: 12px;
+    border: 0;
+    display: block;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    z-index: 2;
+}
+
+/**展开**/
+.tyc-check-expand span{
+    width: 12px;
+    height: 12px;
+    border: 0;
+    display: block;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    z-index: 2;
+}
+
+
