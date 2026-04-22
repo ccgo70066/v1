@@ -1,6 +1,7 @@
 <?php
 
 namespace app\common\service;
+
 use app\common\exception\ApiException;
 use app\common\model\NoblePrivilege;
 use app\common\model\ShopItem as ShopModel;
@@ -29,17 +30,15 @@ class NobleService extends BaseService
             ->join('noble n', 'n.id=i.item_id', 'left')
             ->field("i.id,i.name,i.days,i.price,i.price as origin_price,'0' as is_discount,n.privilege_ids,n.speedup,n.shop_badge,n.id as noble_id")
             ->where([
-                'i.type' => ShopModel::TYPE_NOBLE,
+                'i.type'   => ShopModel::TYPE_NOBLE,
                 'i.status' => ShopModel::STATUS_ON,
-                'i.cate' => ShopModel::CATE_RED_DIAMOND
+                'i.cate'   => ShopModel::CATE_RED_DIAMOND
             ])
             ->where("find_in_set($system, `show`)")
             ->order('i.price asc')
             ->select();
 
-        $privilege = db('noble_privilege')
-            ->field("id,name,label,has_switch")
-            ->select();
+        $privilege = db('noble_privilege')->field("id,name,image,label,has_switch")->select();
 
         foreach ($data as &$datum) {
             if (isset($nobleInfo['noble_id']) && $nobleInfo['noble_id'] > $datum['noble_id']) {
@@ -98,7 +97,7 @@ class NobleService extends BaseService
     public static function setSwitch($userId, $privilegeId, $switch)
     {
         $userNoble = UserBusinessModel::getUserNobleInfoById($userId);
-        if (!$userNoble)  throw new ApiException(__('No permissions'));
+        if (!$userNoble) throw new ApiException(__('No permissions'));
 
         //如果用户开通了贵族等级，显示相应开关状态
         if ($privilegeId == NoblePrivilege::PERMISSION_ID_ROOM_HIDE && $userNoble['room_hide']) {

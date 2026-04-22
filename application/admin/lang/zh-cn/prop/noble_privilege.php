@@ -3,6 +3,7 @@
 return [
     'Id'           => 'id',
     'Name'         => '名称',
+    'Image'        => '图标',
     'Label'        => '说明',
     'Has_switch'   => '是否可开关控制',
     'Has_switch 1' => '是',

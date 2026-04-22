@@ -32,8 +32,10 @@ class NoblePrivilege extends Model
     protected static function init()
     {
         self::afterInsert(function ($row) {
-            $pk = $row->getPk();
-            //$row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
+            if (!$row['weigh']) {
+                $pk = $row->getPk();
+                $row->getQuery()->where($pk, $row[$pk])->update(['weigh' => $row[$pk]]);
+            }
         });
     }
 
@@ -46,9 +48,9 @@ class NoblePrivilege extends Model
 
     public function getHasSwitchTextAttr($value, $data)
     {
-        $value = $value ? $value : (isset($data['has_switch']) ? $data['has_switch'] : '');
+        $value = $value ?: ($data['has_switch'] ?? '');
         $list = $this->getHasSwitchList();
-        return isset($list[$value]) ? $list[$value] : '';
+        return $list[$value] ?? '';
     }
 
 

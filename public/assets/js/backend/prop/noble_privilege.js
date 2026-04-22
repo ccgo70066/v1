@@ -28,6 +28,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                        /* {checkbox: true},
                         {field: 'id', title: __('Id')},*/
                         {field: 'name', title: __('Name'), operate: 'LIKE'},
+                        {field: 'image', title: __('Image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         {field: 'label', title: __('Label'), operate: false},
                         {field: 'has_switch', title: __('Has_switch'), searchList: {"1":__('Has_switch 1'),"0":__('Has_switch 0')}, table: table, formatter: Table.api.formatter.toggle},
                         {field: 'weigh', title: __('Weigh'), operate: false,sortable: true},
