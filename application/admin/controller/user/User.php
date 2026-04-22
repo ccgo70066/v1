@@ -3,12 +3,11 @@
 namespace app\admin\controller\user;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\api\library\ImService;
-use app\api\library\RoomService;
 use app\common\controller\Backend;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\library\Yunxin;
+use app\common\service\ImService;
 use app\common\service\UserBusinessService;
 use fast\Random;
 use think\Db;
