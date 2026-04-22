@@ -85,7 +85,7 @@ class LogMongo extends Backend
                 return Cache::remember('wheel:log:load_gift', function () {
                     Cache::tag('small_data_wheel', 'wheel:log:load_gift');
                     $gift = db('gift')
-                        ->where(['type' => \app\common\model\Gift::GIFT_TYPE_BOOMERANG])
+                        ->where(['type' => \app\common\model\Gift::GIFT_TYPE_WHEEL])
                         ->order('price asc')
                         ->field('id,name,price')
                         ->select();
@@ -156,7 +156,7 @@ class LogMongo extends Backend
             array_push($totalPipeLine, ['$group' => ['_id' => null, 'total' => ['$sum' => 1]]]);
             \think\Log::error('查询耗时' . (microtime(true) - $t));
             $command = new Command([
-                'aggregate' => 'aa_wheel_log',
+                'aggregate' => 'fa_wheel_log',
                 'pipeline'  => $totalPipeLine,
                 'cursor'    => new \stdClass()// 指定返回类型为文档游标
             ]);
@@ -169,7 +169,7 @@ class LogMongo extends Backend
             \think\Log::error('查询耗时' . (microtime(true) - $t));
 
             $command = new Command([
-                'aggregate' => 'aa_wheel_log',
+                'aggregate' => 'fa_wheel_log',
                 'pipeline'  => $queryPipeLine,
                 'cursor'    => new \stdClass()// 指定返回类型为文档游标
             ]);
@@ -280,7 +280,7 @@ class LogMongo extends Backend
         $pipeLine = array_values($pipeLine);
         // dump($pipeLine);
         $command = new Command([
-            'aggregate' => 'aa_wheel_log',
+            'aggregate' => 'fa_wheel_log',
             'pipeline'  => $pipeLine,
             'cursor'    => new \stdClass()// 指定返回类型为文档游标
         ]);

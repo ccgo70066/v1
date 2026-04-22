@@ -170,7 +170,7 @@ class LogMongo extends Backend
             }
 
             $command = new Command([
-                'aggregate' => 'aa_egg_log',
+                'aggregate' => 'fa_egg_log',
                 'pipeline'  => $totalPipeLine,
                 'cursor'    => new \stdClass()// 指定返回类型为文档游标
             ]);
@@ -184,7 +184,7 @@ class LogMongo extends Backend
             //\think\Log::error($totalPipeLine);
 
             $command = new Command([
-                'aggregate' => 'aa_egg_log',
+                'aggregate' => 'fa_egg_log',
                 'pipeline'  => $queryPipeLine,
                 'cursor'    => new \stdClass()// 指定返回类型为文档游标
             ]);
@@ -295,7 +295,7 @@ class LogMongo extends Backend
         $pipeLine = array_values($pipeLine);
         // dump($pipeLine);
         $command = new Command([
-            'aggregate' => 'aa_egg_log',
+            'aggregate' => 'fa_egg_log',
             'pipeline'  => $pipeLine,
             'cursor'    => new \stdClass()// 指定返回类型为文档游标
         ]);
