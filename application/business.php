@@ -470,7 +470,7 @@ function shop_order_success($order_id, $pay_way = 2)
         board_notice(Message::CMD_SHOW_BUY_NOBLE, $data);
 
         //更新云信用户等级贵族装扮相关信息
-        send_im_msg_by_system_with_lang($order['user_id'], '您已成功购买%s', $item['name']);
+        send_im_msg_by_system_with_lang($order['user_id'], sprintf('您已成功购买%s', $item['name']));
     } elseif ($item['type'] == 6) {
         user_bubble_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
     } elseif ($item['type'] == 8) {
