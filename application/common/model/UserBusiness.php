@@ -281,10 +281,7 @@ class UserBusiness extends Model
         if (get_site_config('red_envelope') != 1) {
             return 1;
         }
-        if (db('union_user')->where('user_id', $user_id)->where('status', 'in', [2, 3, 6])->count(1)) {
-            return 1;
-        }
-        if (db('room_admin a')->where(['a.user_id' => $user_id, 'a.role' => 1])->find()) {
+        if (db('room_admin a')->where(['a.user_id' => $user_id, 'a.status' => 1, 'a.role' => 1])->count()) {
             return 1;
         }
         if (db('red_packet_whitelist')->where('user_id', $user_id)->count(1)) {
