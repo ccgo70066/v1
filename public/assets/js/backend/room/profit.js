@@ -7,8 +7,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 extend: {
                     index_url: 'room/profit/index' + location.search,
                     add_url: 'room/profit/add',
-                    edit_url: 'room/profit/edit',
-                    del_url: 'room/profit/del',
+                    // edit_url: 'room/profit/edit',
+                    // del_url: 'room/profit/del',
                     multi_url: 'room/profit/multi',
                     import_url: 'room/profit/import',
                     table: 'room_profit',
@@ -24,14 +24,14 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                 sortName: 'id',
                 columns: [
                     [
-                        {checkbox: true},
-                        {field: 'id', title: __('Id')},
+                        // {checkbox: true},
+                        // {field: 'id', title: __('Id')},
                         {field: 'room_id', title: __('Room_id')},
                         {field: 'val', title: __('Val'), operate:'BETWEEN'},
                         {field: 'reward_val', title: __('Reward_val'), operate:'BETWEEN'},
                         {field: 'used_reward_val', title: __('Used_reward_val'), operate:'BETWEEN'},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
-                        {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
+                        // {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
             });

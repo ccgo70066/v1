@@ -33,13 +33,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'type', title: __('Type'), searchList: {"1":__('Type 1')}, formatter: Table.api.formatter.normal},
                         {field: 'amount', title: __('Amount'), operate:'BETWEEN'},
                         {field: 'profit_val', title: __('Profit_val'), operate:'BETWEEN'},
-                        {field: 'rate', title: __('Rate'), operate:'BETWEEN'},
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2'),"3":__('Status 3')}, formatter: Table.api.formatter.status},
                         {field: 'update_time', title: __('Update_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
-                        {field: 'auditor', title: __('Auditor')},
-                        {field: 'audit_time', title: __('Audit_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
-                        {field: 'audit_comment', title: __('Audit_comment'), operate: 'LIKE', table: table, class: 'autocontent', formatter: Table.api.formatter.content},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
                     ]
                 ]
