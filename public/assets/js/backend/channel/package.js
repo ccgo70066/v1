@@ -30,7 +30,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                        /* {checkbox: true},
                         {field: 'id', title: __('Id')},*/
                         // {field: 'channel.name', title: __('Channel_id'), searchList: $.getJSON('channel/channel/searchList/key/name')},
-                        {field: 'appid', title: __('Appid'), operate: 'LIKE'},
+                        // {field: 'appid', title: __('Appid'), operate: 'LIKE'},
                         {field: 'system', title: __('System'), searchList: {"ANDROID":__('System android'),"IOS":__('System ios')}, formatter: Table.api.formatter.normal},
                         {field: 'version', title: __('Version'), operate: 'LIKE'},
                         {field: 'download', title: __('Download'), operate: false},

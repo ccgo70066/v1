@@ -29,8 +29,8 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'id', title: __('Id')},*/
                         {field: 'system', title: __('System'), searchList: {"1":__('System 1'),"2":__('System 2')}, formatter: Table.api.formatter.normal},
                         {field: 'version', title: __('Version'), operate: 'LIKE'},
-                        {field: 'channel.name', title: __('渠道名称'), operate: 'LIKE'},
-                        {field: 'appid', title: __('Appid'), operate: 'LIKE'},
+                        // {field: 'channel.name', title: __('渠道名称'), operate: 'LIKE'},
+                        // {field: 'appid', title: __('Appid'), operate: 'LIKE'},
                         {
                             field: 'item_code', title: __('Item_code'), searchList: {
                                 "ITEM_002": __('Item_code item_002'),
