@@ -226,7 +226,9 @@ class UserInfo extends Base
      */
     public function ident()
     {
-        db('user_ident')->strict(false)->insert(input());
+        $data = input();
+        $data['user_id'] = $this->auth->id;
+        db('user_ident')->strict(false)->insert($data);
         $this->success();
     }
 }
