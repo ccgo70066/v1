@@ -2,6 +2,8 @@
 
 namespace app\common\service;
 
+use addons\socket\library\GatewayWorker\Applications\App\Message;
+use app\common\library\rabbitmq\WheelMQ;
 use fast\Http;
 use think\Cache;
 use think\Db;
@@ -15,6 +17,7 @@ use util\Util;
  */
 class WheelService extends BaseService
 {
+
 
     public function open_wheel($user_id, $box_type, $count, $room_id)
     {
@@ -80,24 +83,6 @@ class WheelService extends BaseService
             $this->process_gift($gift, $index, $count, $room_id);
             $this->process_limit_log($gift, $user_id, $box_type, $count, $room_id, $time);
 
-            foreach ($gift as $item) {
-                if (!in_array($item['gift_id'], $log_gift_ids)) {
-                    Log::error('游戏数据不一致');
-                    Log::error($gift);
-                    Log::error($log_gift_ids);
-                    throw new \Exception('网络请求异常,请重试');
-                }
-            }
-            $intact_gift_ids = array_column($gift, 'gift_id');
-            foreach ($log_gift_ids as $log_gift_id) {
-                if (!in_array($log_gift_id, $intact_gift_ids)) {
-                    Log::error('游戏数据不一致');
-                    Log::error($gift);
-                    Log::error($log_gift_ids);
-                    throw new \Exception('网络请求异常,请重试');
-                }
-            }
-
             //数据存储
             MongoService::dataStore([
                 'user_id'     => (int)$user_id,
@@ -108,30 +93,18 @@ class WheelService extends BaseService
                 'room_id'     => (int)$room_id,
                 'level_id'    => (int)$index['level_id'],
                 'create_time' => $time,
-                'log'         => array_reverse(array_columns($log_data, [
-                    'weigh_name',
-                    'jump_status',
-                    'pool_sys_before',
-                    'pool_sys_after',
-                    'pool_sys_diff',
-                    'pool_pub_after',
-                    'pool_pub_before',
-                    'pool_pub_diff',
-                    'pool_pubn_after',
-                    'pool_pubn_before',
-                    'pool_pubn_diff',
-                    'pool_per_after',
-                    'pool_per_before',
-                    'pool_per_diff',
-                    'box_index',
-                    'level_id',
-                    'gift_id',
-                    'gift_value',
-                    'used_amount'
-                ]))
+                'log'         => array_reverse(array_columns($log_data, ['weigh_name', 'jump_status', 'pool_sys_before', 'pool_sys_after', 'pool_sys_diff', 'pool_pub_after', 'pool_pub_before', 'pool_pub_diff', 'pool_pubn_after', 'pool_pubn_before', 'pool_pubn_diff', 'pool_per_after', 'pool_per_before', 'pool_per_diff', 'box_index', 'level_id', 'gift_id', 'gift_value', 'used_amount']))
             ]);
-            MongoService::dataInsert('aa_wheel_log');
+            MongoService::dataInsert('fa_wheel_log');
             Db::commit();
+            $arr = [
+                'gift'    => $gift,
+                'count'   => $count,
+                'index'   => $index,
+                'room_id' => $room_id,
+            ];
+            mq_publish(WheelMQ::instance(), $arr);
+            //self::process_mq($arr);
             return array_values($gift);
         } catch (\Throwable $e) {
             Db::rollback();
@@ -140,6 +113,70 @@ class WheelService extends BaseService
             Log::error($e->getTraceAsString());
             return false;
         }
+    }
+
+    public static function process_mq(array $info)
+    {
+        $gift = $info['gift'];
+        $count = $info['count'];
+        $index = $info['index'];
+        $room_id = $info['room_id'];
+        $info['sleep']++;  // 增加一秒延时
+        $sleep = 7;
+
+        // todo
+        $screen_notice_switch = 1;
+        $room_notice_switch = 1;
+
+        $all_room_notice_gift = [];
+        $current_room_notice_gift = [];
+        $screen_notice_gift = [];
+        $count = 0;
+        foreach ($gift as $item) {
+            $count += $item['count'];
+            $info = [
+                'gift_id' => $item['gift_id'],
+                'name'    => $item['name'],
+                'image'   => $item['image'],
+                'price'   => (float)$item['price'],
+                'count'   => $item['count'],
+            ];
+            isset($item['is_max_gift']) && $info['is_max_gift'] = $item['is_max_gift'];
+            $gift_info = $info;
+
+            $current_room_notice_gift[] = $gift_info;
+            if ($item['room_notice'] == 1) {
+                $all_room_notice_gift[] = $gift_info;
+            }
+            if ($item['broadcast']) {
+                $screen_notice_gift[] = $gift_info;
+            }
+        }
+        $user_info = get_user_info($index['user_id'], ['level']);
+
+        if ($room_notice_switch && !empty($all_room_notice_gift)) {
+            $msg_data = array_merge([
+                'ignore_room_id' => $room_id,
+                'game_id'        => '2',
+                'box_type'       => $index['box_type'],
+                'gift'           => $all_room_notice_gift,
+            ], get_user_info($index['user_id'], ['level', 'noble']) ?? []);
+            board_notice_delay(Message::CMD_SCREEN_ALL_ROOM, $msg_data, '', $sleep);
+        }
+        if ($screen_notice_switch) {
+            //  需要飘屏的礼物
+            foreach ($screen_notice_gift as $item) {
+                $data = array_merge($user_info, [
+                    'box_type'   => (int)$index['box_type'],
+                    'gift_name'  => $item['name'],
+                    'gift_image' => $item['image'],
+                    'gift_price' => (string)($item['price'] + 0),
+                    'count'      => $item['count'],
+                ], isset($item['is_max_gift']) ? ['is_max_gift' => $item['is_max_gift']] : []);
+                board_notice_delay(Message::CMD_BOARD_WHEEL, $data, '', $sleep);
+            }
+        }
+        user_adornment_add($index['user_id'], get_site_config('wheel_gift_adornment'), -1);
     }
 
 
@@ -575,17 +612,6 @@ class WheelService extends BaseService
         }
         $this->clear_gift_process($index, array_column($gift, 'gift_id'), $count);
         $this->upgrade_level($index, array_column($gift, 'gift_id'));
-        !Env::get('app.dev_mode') &&
-        false &&
-        Http::sendAsyncRequest(Env::get('app.lan_api_url') . '/wheel/notice', [
-            'info' => json_encode([
-                'sleep'   => 5,
-                'gift'    => $gift,
-                'count'   => $count,
-                'index'   => $index,
-                'room_id' => $room_id,
-            ])
-        ], 'post');
     }
 
     /**

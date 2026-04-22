@@ -138,8 +138,8 @@ class EggService extends BaseService
         }, array_values($gift));
 
         $info = compact('gift', 'count', 'index', 'room_id', 'reward', 'intact_log_id', 'group_flag');
-        //mq_publish(EggMQ::instance(), $info);
-        self::process_mq($info);
+        mq_publish(EggMQ::instance(), $info);
+        //self::process_mq($info);
         return $result;
     }
 
