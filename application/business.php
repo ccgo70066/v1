@@ -761,3 +761,9 @@ function get_new_expiry_days($expiry_date)
     $obj->hours = ceil(($diff % (60 * 60 * 24)) / 3600);
     return $obj;
 }
+
+
+function user_blacklist_after($user_id)
+{
+    db('user')->where(['id' => $user_id])->setField(['status' => 'hidden']);
+}
