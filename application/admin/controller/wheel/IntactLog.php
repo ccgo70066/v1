@@ -56,7 +56,7 @@ class IntactLog extends Backend
 
             $with = [
                 'user' => function ($query) {
-                    $query->withField('nickname,actor_status');
+                    $query->withField('nickname');
                 }
             ];
             $total = $this->model
