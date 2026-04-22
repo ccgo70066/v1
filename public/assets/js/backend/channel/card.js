@@ -30,8 +30,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'id', title: __('Id')},
                         {field: 'code', title: __('Code'), operate: 'LIKE'},
                         {field: 'price', title: __('Price'), operate:false},
-                        {field: 'unit', title: __('Unit'), searchList: {"1":__('Unit 1'),"2":__('Unit 2')}, formatter: Table.api.formatter.normal},
-
                         {field: 'amount', title: __('Amount')},
                         {field: 'give_amount', title: __('额外赠送钻石')},
                         {field: 'system', title: __('System'), searchList: {"Android":__('System android'),"iOS":__('System ios'),"Web":__('System web')}, formatter: Table.api.formatter.normal},
