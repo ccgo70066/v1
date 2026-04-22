@@ -484,7 +484,6 @@ class Room extends Base
         $user_id = $this->auth->id;
         $room_id = input('room_id');
         $comment = input('comment');
-        BaseService::operateCheck(__CLASS__ . __METHOD__ . $user_id, 2);
 
         db('feedback')->insert([
             'user_id'      => $user_id,

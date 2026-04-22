@@ -2,27 +2,12 @@
 
 namespace app\common\service;
 
-use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\common\exception\ApiException;
-use app\common\library\Auth;
-use app\common\library\ChinaName;
-use app\common\library\rabbitmq\EggMQ;
-use app\common\model\AnchorRecommend as AnchorRecommendModel;
-use app\common\model\Gift as GiftModel;
-use app\common\model\User;
-use app\common\model\UserBlacklist;
-use app\common\model\UserBusiness;
 use fast\Http;
-use fast\Random;
 use think\Cache;
 use think\Db;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\ModelNotFoundException;
 use think\Env;
 use think\Exception;
-use think\exception\DbException;
 use think\Log;
-use think\Model;
 use util\Util;
 
 /**
@@ -542,8 +527,6 @@ class WheelService extends BaseService
             $pool_sys_diff,
             bcmul($gift_price, $sys_gift_percent)
         );
-        t($gift_price);
-        t($pub_gift_percent);
         in_array($weigh['weigh_type'], [2, 3, 5, 10]) && $pool_pub_diff = bcsub(
             $pool_pub_diff,
             bcmul($gift_price, $pub_gift_percent)
@@ -593,6 +576,7 @@ class WheelService extends BaseService
         $this->clear_gift_process($index, array_column($gift, 'gift_id'), $count);
         $this->upgrade_level($index, array_column($gift, 'gift_id'));
         !Env::get('app.dev_mode') &&
+        false &&
         Http::sendAsyncRequest(Env::get('app.lan_api_url') . '/wheel/notice', [
             'info' => json_encode([
                 'sleep'   => 5,
