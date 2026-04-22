@@ -54,7 +54,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {
                             field: 'type',
                             title: __('Type'),
-                            searchList: {"1": __('Type 1'),"2": __('Type 2'),"3": __('Type 3'), "4": __('Type 4')},
+                            searchList: {"1": __('Type 1'),"2": __('Type 2'), "4": __('Type 4')},
                             formatter: Table.api.formatter.normal
                         },
                         { field: 'room_reward_rate', title: __('厅主收益率'), formatter: function (value, row, index) {

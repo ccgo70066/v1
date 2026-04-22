@@ -37,7 +37,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user_id', title: __('User_id')},
                         {field: 'user.nickname', title: __('用户昵称'),operate: false},
                         {field: 'shop.name', title: __('Item_id'),operate: false},
-                        {field: 'shop.type', title: __('Item_type'), searchList: {"2":__('Item_type 2'),"3":__('Item_type 3'),"6":__('Item_type 6'),"8":__('Item_type 8')}, formatter: Table.api.formatter.normal},
+                        {field: 'shop.type', title: __('Item_type'), searchList: {"2":__('Item_type 2'),"3":__('Item_type 3'),"6":__('Item_type 6'),}, formatter: Table.api.formatter.normal},
                         // {field: 'price', title: __('Price'), operate: false},
                         {field: 'price', title: __('数量'), operate: false},
                         // {field: 'count', title: __('Count'), operate: false},

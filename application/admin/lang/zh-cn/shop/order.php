@@ -33,7 +33,5 @@ return [
     'Item_type 2'        => '头像框',
     'Item_type 3'        => '坐骑',
     'Item_type 4'        => '贵族',
-//    'Item_type 5'        => '个人守护',
     'Item_type 6'        => '聊天气泡',
-    'Item_type 8'        => '铭牌',
 ];

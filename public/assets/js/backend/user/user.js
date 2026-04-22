@@ -180,7 +180,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                                 confirm: '确认操作吗?',
                                 refresh: true,
                                 visible: function (row) {
-                                    return row.business.role != 1;
+                                    return row.business.role == 4;
                                 }
                             }, {
                                 dropdown: '操作',

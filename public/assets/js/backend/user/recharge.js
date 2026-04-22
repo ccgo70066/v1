@@ -37,7 +37,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user_id', title: __('用户ID')},
                         {field: 'user.nickname', title: __('User_id'), operate: false},
                         {field: 'pay_amount', title: __('Pay_amount'), operate:'BETWEEN'},
-                        {field: 'card.unit', title: __('Unit'), searchList: {"1":__('Unit 1'),"2":__('Unit 2')}, formatter: Table.api.formatter.normal},
 
                         {field: 'amount', title: __('Amount')},
                         {field: 'give_amount', title: __('额外赠送钻石')},
@@ -61,7 +60,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'pay_channel', title: __('支付渠道'), operate: false},
                         {field: 'pay_channel_id', title: __('支付渠道'), visible: false,searchList: $.getJSON('user/recharge/get_pay_channel'), operate: '='},
                         //{field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate}
-                        {field: 'extend', title: __('扩展字段'), operate: 'like'},
                         {field: 'operate', title: __('Operate'), table: table, events: Table.api.events.operate, formatter: Table.api.formatter.operate,
                             buttons: [
 
