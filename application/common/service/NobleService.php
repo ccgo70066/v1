@@ -106,9 +106,6 @@ class NobleService extends BaseService
         if ($privilegeId == NoblePrivilege::PERMISSION_ID_NAME_COLOR && $userNoble['name_color']) {
             $result = db('user_noble')->where('id', $userNoble['id'])->setField('name_color', $switch);
         }
-        if (!$result) {
-            throw new ApiException(__('Operation failed'));
-        }
     }
 
     /**
