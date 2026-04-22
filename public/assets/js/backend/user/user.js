@@ -38,7 +38,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'business.role', title: __('Role'), formatter: Table.api.formatter.normal, searchList: {1: __('Role1'), 2: __('Role2'), 3: __('Role3'), 4: __('Role4')}},
                         {field: 'mobile', title: __('Mobile'), operate: 'LIKE'},
                         {field: 'avatar', title: __('Avatar'), events: Table.api.events.image, formatter: Table.api.formatter.image, operate: false},
-                        {field: 'business.amount', title: __('金幣'), operate: false, sortable: true},
+                        {field: 'business.amount', title: __('钻石'), operate: false, sortable: true},
                         {
                             field: 'business.reward_amount', title: __('收益'), operate: false,
                             formatter: function (value, row, index) {

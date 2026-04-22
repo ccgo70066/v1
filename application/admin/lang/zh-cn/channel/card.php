@@ -7,7 +7,7 @@ return [
     'Unit'           => '单位',
     'Unit 1'         => '美金',
     'Unit 2'         => '台币',
-    'Amount'         => '金幣',
+    'Amount'         => '钻石',
     'System'         => '平台',
     'System ios'     => '苹果',
     'System android' => '安卓',

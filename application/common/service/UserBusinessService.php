@@ -77,7 +77,7 @@ class UserBusinessService extends BaseService
                 'sub'  => [
                     ['type' => 4, 'form' => '4', 'name' => '打赏礼物'],
                     ['type' => 4, 'form' => '13', 'name' => '收益提现'],
-                    ['type' => 4, 'form' => '8', 'name' => '兑换金幣'],
+                    ['type' => 4, 'form' => '8', 'name' => '兑换钻石'],
                     ['type' => 4, 'form' => '10', 'name' => '个人守护分成'],
                     ['type' => 4, 'form' => '11', 'name' => '家族收益取领'],
                     ['type' => 4, 'form' => '12', 'name' => '流水奖励'],
@@ -95,7 +95,7 @@ class UserBusinessService extends BaseService
             [
                 'name' => '兑换记录',
                 'sub'  => [
-                    ['type' => 2, 'form' => '8', 'name' => '兑换金幣'],
+                    ['type' => 2, 'form' => '8', 'name' => '兑换钻石'],
                     ['type' => 2, 'form' => '9', 'name' => '兑换游戏券'],
                 ]
             ],

@@ -13,7 +13,7 @@ return [
     'Type 5'             => 'IM送礼',
     'Room_id'            => '房间ID',
     'Price_type'         => '价格类型',
-    'Price_type 1'       => '金幣',
+    'Price_type 1'       => '钻石',
     'Price_type 2'       => '豆',
     'Gift.name'          => '物品名称',
     'givers.nickname'    => '送礼人',

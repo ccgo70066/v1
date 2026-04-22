@@ -41,7 +41,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'user.nickname', title: __('User_id'), operate: false},
                         {field: 'pay_amount', title: __('Pay_amount'), operate:'BETWEEN'},
                         {field: 'amount', title: __('Amount')},
-                        {field: 'give_amount', title: __('额外赠送金幣')},
+                        {field: 'give_amount', title: __('额外赠送钻石')},
                         // {field: 'payway', title: __('Payway'), operate: 'LIKE'},
                         //{field: 'currency', title: __('Currency'), operate: 'LIKE'},
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1'),"3":__('Status 3'),"4":__('Status 4'),"5":__('Status 5')}, formatter: Table.api.formatter.status},

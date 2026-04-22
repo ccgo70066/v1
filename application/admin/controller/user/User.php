@@ -228,7 +228,7 @@ class User extends Backend
             try {
                 Db::startTrans();
                 user_business_change($ids, $params['type'], $params['number'], 'increase', $params['comment'], 0);
-                $type_arr = ['amount' => '金幣', 'reward_amount' => '收益'];
+                $type_arr = ['amount' => '钻石', 'reward_amount' => '收益'];
                 db('admin_option_log')->insert([
                     'admin_id' => session('admin.id'),
                     'user_id'  => $ids,
@@ -270,7 +270,7 @@ class User extends Backend
                 }
 
                 user_business_change($ids, $params['type'], $params['number'], 'decrease', $params['comment'], 0);
-                $type_arr = ['amount' => '金幣', 'reward_amount' => '收益'];
+                $type_arr = ['amount' => '钻石', 'reward_amount' => '收益'];
                 db('admin_option_log')->insert([
                     'admin_id' => session('admin.id'),
                     'user_id'  => $ids,

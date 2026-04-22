@@ -11,7 +11,7 @@ return [
     'Image'         => 'icon图',
     'Animate'       => '动画',
     'Price_type'    => '价格类型',
-    'Price_type 1'  => '金幣',
+    'Price_type 1'  => '钻石',
     'Price_type 2'  => '红豆',
     'Price_type 3'  => '能量',
     'Price'         => '价格',

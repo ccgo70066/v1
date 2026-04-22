@@ -211,7 +211,7 @@ class UserBusiness extends Model
             error_log_out($e);
             throw new \Exception('充值回调报错');
         }
-        send_im_msg_by_system1($order['user_id'], '您于%s充值成功，到账%s金幣，请到钱包查看余额。');
+        send_im_msg_by_system1($order['user_id'], '您于%s充值成功，到账%s钻石，请到钱包查看余额。');
     }
 
     /**
@@ -228,7 +228,7 @@ class UserBusiness extends Model
         }
         foreach ($rewardJsonArr as $v) {
             switch ($v['type']) {
-                case 'amount'://金幣
+                case 'amount'://钻石
                     user_business_change($userId, 'amount', $v['count'], 'increase', $remark, 2);
                     break;
                 case 'gift':  //礼物

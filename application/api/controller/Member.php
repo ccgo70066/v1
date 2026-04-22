@@ -214,7 +214,7 @@ class Member extends Base
     /**
      * @ApiTitle    (流水奖励兑换)
      * @ApiParams   (name="reward_val",   type="int",     required=true,rule="between:1,9999999", description="申请兑换的流水奖励值")
-     * @ApiParams   (name="type",         type="int",     required=true,rule="in:1,2", description="兑换类型:1=转为收益,2=转为金幣")
+     * @ApiParams   (name="type",         type="int",     required=true,rule="in:1,2", description="兑换类型:1=转为收益,2=转为钻石")
      **/
     public function withdraw()
     {

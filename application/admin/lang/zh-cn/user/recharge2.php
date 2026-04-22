@@ -7,7 +7,7 @@ return [
     'User_id'       => '用户',
     'Card_id'       => '充值卡',
     'Pay_amount'    => '金额',
-    'Amount'        => '金幣',
+    'Amount'        => '钻石',
     'Payway'        => '支付方式',
     'Currency'      => '币种',
     'Status'        => '状态',

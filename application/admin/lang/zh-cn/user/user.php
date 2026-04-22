@@ -51,7 +51,7 @@ return [
     'Reward_amount'                               => '可提现数量',
     'Lock_amount'                                 => '锁定数量',
     'Rewarded_amount'                             => '累计已提现数量',
-    'Amount'                                      => '金幣',
+    'Amount'                                      => '钻石',
     'Shred'                                       => '能量',
     'Is_online'                                   => '是否在线',
     'Is_online 0'                                 => '离线',

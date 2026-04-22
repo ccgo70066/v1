@@ -25,7 +25,7 @@ class Shop extends Base
      * @ApiParams   (name="page", type="int",  required=false, rule="", description="页码")
      * @ApiParams   (name="size", type="int",  required=false, rule="", description="每頁數量")
      *
-     * @ApiReturnParams  (name="cate", type="string", description="分类:1=金币,2=红豆")
+     * @ApiReturnParams  (name="cate", type="string", description="分类:1=钻石,2=红豆")
      * @ApiReturnParams  (name="show", type="string", description="显示系统:1=iOS,2=Android")
      * @ApiReturnParams  (name="is_buy", type="string", description="是否已购买:0=未购买,1=已购买")
      */
@@ -140,7 +140,7 @@ class Shop extends Base
             }
         }
 
-        if ($item['cate'] == 1) {  // 金幣
+        if ($item['cate'] == 1) {  // 钻石
             if ($user_business['amount'] >= $data['amount']) {
                 user_business_change($this->auth->id, 'amount', $data['amount'], 'decrease', '商城兑换', 1);
                 $data['status'] = 1;

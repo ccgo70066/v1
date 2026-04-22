@@ -1,6 +1,7 @@
 <?php
 
 namespace app\admin\model;
+
 use think\Model;
 
 class Gift extends Model
@@ -46,7 +47,11 @@ class Gift extends Model
 
     public function getPriceTypeList()
     {
-        return ['1' => __('Price_type 1'), '2' => __('Price_type 2'), '3' => __('Price_type 3')];
+        return [
+            '1' => __('Price_type 1'),
+            //'2' => __('Price_type 2'),
+            //'3' => __('Price_type 3')
+        ];
     }
 
     public function getScreenShowList()

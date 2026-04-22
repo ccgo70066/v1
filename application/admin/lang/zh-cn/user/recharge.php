@@ -10,7 +10,7 @@ return [
     'Unit'            => '单位',
     'Unit 1'          => '美金',
     'Unit 2'          => '台币',
-    'Amount'          => '金幣',
+    'Amount'          => '钻石',
     'Payway'          => '支付方式',
     'Currency'        => '币种',
     'Status'          => '状态',

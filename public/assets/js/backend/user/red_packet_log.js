@@ -39,7 +39,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'touser.nickname', title: __('接受者昵称'),operate: false},
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
                         {field: 'service_charge', title: __('Service_charge'), operate: false},
-                        {field: 'amount', title: __('金幣'), operate: false},
+                        {field: 'amount', title: __('钻石'), operate: false},
                         {field: 'remarks', title: __('Remarks'), operate: false},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         // {field: 'update_time', title: __('领取时间'), operate: false, addclass:'datetimerange', autocomplete:false, formatter: Table.api.formatter.datetime},

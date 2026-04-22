@@ -33,7 +33,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'unit', title: __('Unit'), searchList: {"1":__('Unit 1'),"2":__('Unit 2')}, formatter: Table.api.formatter.normal},
 
                         {field: 'amount', title: __('Amount')},
-                        {field: 'give_amount', title: __('额外赠送金幣')},
+                        {field: 'give_amount', title: __('额外赠送钻石')},
                         {field: 'system', title: __('System'), searchList: {"Android":__('System android'),"iOS":__('System ios'),"Web":__('System web')}, formatter: Table.api.formatter.normal},
                         {field: 'bage', title: __('Bage'), searchList: {"0":__('Bage 0'),"1":__('Bage 1'),"2":__('Bage 2')}, formatter: Table.api.formatter.normal},
                         {field: 'weigh', title: __('Weigh'), operate: false},

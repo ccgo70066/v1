@@ -79,7 +79,7 @@ class RedPacket extends Base
         if (!$result) {
             throw new ApiException(__('Send failed'));
         }
-        send_im_msg_by_system_with_lang($to_user_id, '%s给你发了%s金币红包', $this->auth->nickname, $amount);
+        send_im_msg_by_system_with_lang($to_user_id, '%s给你发了%s钻石红包', $this->auth->nickname, $amount);
         board_notice_delay(Message::CMD_REFRESH_USER, ['user_id' => $to_user_id]);
         $this->success('', $data);
     }

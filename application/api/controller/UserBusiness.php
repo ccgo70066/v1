@@ -164,7 +164,7 @@ class UserBusiness extends Base
 
 
     /**
-     * 会员可提现收益兑换金幣
+     * 会员可提现收益兑换钻石
      * @ApiMethod   (post)
      * @ApiParams (name="amount",  type="int",  required=true, rule="between:1,9999999", description="兌換數量")
      */
@@ -182,8 +182,8 @@ class UserBusiness extends Base
 
         try {
             Db::startTrans();
-            user_business_change($userId, 'reward_amount', $amount, 'decrease', '收益兑换金幣到余额', 8);
-            user_business_change($userId, 'amount', $amount, 'increase', '收益兑换金幣到余额', 8);
+            user_business_change($userId, 'reward_amount', $amount, 'decrease', '收益兑换钻石到余额', 8);
+            user_business_change($userId, 'amount', $amount, 'increase', '收益兑换钻石到余额', 8);
             Db::commit();
         } catch (\Exception $e) {
             Db::rollback();
@@ -196,7 +196,7 @@ class UserBusiness extends Base
 
 
     /**
-     * 获取收益兑换金幣配置
+     * 获取收益兑换钻石配置
      * @ApiMethod   (get)
      * @ApiSummary  ("reward_any_amount=是否可自定义兑换额度，user_reward_amount=用户可提现收益")
      */
@@ -612,7 +612,7 @@ class UserBusiness extends Base
     }
 
     /**
-     * @ApiTitle    (获取金幣流水)
+     * @ApiTitle    (获取钻石流水)
      * @ApiMethod   (get)
      * @ApiParams   (name="type", type="int", required=true, rule="in:0,1,2", description="收益类型：0=全部、1=收入、2=支出")
      * @ApiParams   (name="start_id", type="int", required=false, rule="", description="起始id")
@@ -687,7 +687,7 @@ class UserBusiness extends Base
     }
 
     /**
-     * @ApiTitle    (获取收益兑换金幣流水)
+     * @ApiTitle    (获取收益兑换钻石流水)
      * @ApiMethod   (get)
      * @ApiParams   (name="start_id", type="int", required=false, rule="", description="起始id")
      * @ApiParams   (name="start_time", type="str", required=false, rule="", description="开始时间")
@@ -698,7 +698,7 @@ class UserBusiness extends Base
      * @ApiReturnParams    (name="create_time", type="str", description="时间")
      * @ApiReturnParams    (name="val", type="str", description="消耗-收益数量")
      * @ApiReturnParams    (name="cate", type="int", description="变化类型:1=增加,0=减少")
-     * @ApiReturnParams    (name="diamond_val", type="str", description="得到-金幣数量")
+     * @ApiReturnParams    (name="diamond_val", type="str", description="得到-钻石数量")
      */
     public function incomeExchangeLogs()
     {

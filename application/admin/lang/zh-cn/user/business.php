@@ -2,7 +2,7 @@
 
 return [
     'Id'              => '用户id,关联用户主键',
-    'Amount'          => '金幣',
+    'Amount'          => '钻石',
     'Lock_amount'     => '锁定金额',
     'Reward_amount'   => '收益(可提现)',
     'Pledge_amount'   => '押金',

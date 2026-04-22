@@ -6,7 +6,7 @@ use think\Env;
 return [
     'cdn_url'               => Env::get('app.cdn_url'),
     'icon'                  => [
-        'diamond' => 'assets/icon/diamond.png',   // 金幣
+        'diamond' => 'assets/icon/diamond.png',   // 钻石
     ],
     'default_avatar_gender' => [
         ['gender' => 0, 'avatar' => '/assets/avatar/f_1.jpg',],

@@ -26,7 +26,7 @@ class RewardJson extends Backend
     public function type()
     {
         $data = [
-            'amount'    => '金幣',
+            'amount'    => '钻石',
             'gift'      => '礼物',
             'adornment' => '头像框',
             'car'       => '坐骑',
@@ -56,7 +56,7 @@ class RewardJson extends Backend
     public function type_sign()
     {
         $data = [
-            'amount' => '金幣',
+            'amount' => '钻石',
 
             'adornment' => '头像框',
             'car'       => '坐骑',
@@ -90,7 +90,7 @@ class RewardJson extends Backend
             $pagesize = $this->request->request("pageSize");
             switch ($this->request->request('type')) {
                 case 'amount':
-                    $list = [['id' => 0, 'name' => '金幣']];
+                    $list = [['id' => 0, 'name' => '钻石']];
                     $total = count($list);
                     break;
                 case 'gift':

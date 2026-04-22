@@ -102,7 +102,7 @@ class Order extends Backend
 
         //已支付订单总数
         $pay_count = $this->model->where(['status' => 1])->count();
-        //金幣支付成功金额总计
+        //钻石支付成功金额总计
         $money_pay_sum = $this->model->where(['pay_way' => 1, 'status' => 1,])->sum('amount');
 
         $result = [
