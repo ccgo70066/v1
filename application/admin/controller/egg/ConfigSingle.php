@@ -72,7 +72,7 @@ class ConfigSingle extends Backend
             $list = collection($list)->toArray();
             $level = db('egg_level')->column('name', 'id');
             foreach ($list as &$item) {
-                $item['level_name'] = $level[$item['level_id'] ?? 0];
+                //$item['level_name'] = $level[$item['level_id'] ?? 0];
                 if ($item['config']) {
                     $configs = json_decode($item['config'], true);
                     if (!$configs) {
@@ -123,8 +123,8 @@ class ConfigSingle extends Backend
                         $this->model->validateFailException(true)->validate($validate);
                     }
                     EggService::weigh_title_unique($params['title'], 'single', $ids ?? 0);
-                    $params['range_start'] == '' && $params['range_start'] = null;
-                    $params['range_end'] == '' && $params['range_end'] = null;
+                    isset($params['range_start']) && $params['range_start'] == '' && $params['range_start'] = null;
+                    isset($params['range_end']) && $params['range_end'] == '' && $params['range_end'] = null;
                     $list = db('egg_gift b')
                         ->field('g.id,g.image,g.name,g.price,"0" as weight')
                         ->join('gift g', 'g.id=b.gift_id', 'left')
@@ -189,8 +189,8 @@ class ConfigSingle extends Backend
                         $row->validateFailException(true)->validate($validate);
                     }
                     EggService::weigh_title_unique($params['title'], 'single', $ids ?? 0);
-                    $params['range_start'] == '' && $params['range_start'] = null;
-                    $params['range_end'] == '' && $params['range_end'] = null;
+                    isset($params['range_start']) && $params['range_start'] == '' && $params['range_start'] = null;
+                    isset($params['range_end']) && $params['range_end'] == '' && $params['range_end'] = null;
                     $params['title'] = trim($params['title']);
                     $result = $row->allowField(true)->save($params);
 

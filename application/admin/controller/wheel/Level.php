@@ -122,8 +122,8 @@ class Level extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                         $this->model->validateFailException(true)->validate($validate);
                     }
-                    //$params['range_start'] == '' && $params['range_start'] = null;
-                    //$params['range_end'] == '' && $params['range_end'] = null;
+                    //isset($params['range_start']) && $params['range_start'] == '' && $params['range_start'] = null;
+                    //isset($params['range_end']) && $params['range_end'] == '' && $params['range_end'] = null;
                     $result = $this->model->allowField(true)->save($params);
                     Db::commit();
                     Cache::clear('small_data_wheel');
@@ -177,8 +177,8 @@ class Level extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
                     }
-                    //$params['range_start'] == '' && $params['range_start'] = null;
-                    //$params['range_end'] == '' && $params['range_end'] = null;
+                    //isset($params['range_start']) && $params['range_start'] == '' && $params['range_start'] = null;
+                    //isset($params['range_end']) && $params['range_end'] == '' && $params['range_end'] = null;
                     //$params['title'] = trim($params['title']);
                     $result = $row->allowField(true)->save($params);
 

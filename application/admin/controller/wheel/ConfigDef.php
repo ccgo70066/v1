@@ -119,8 +119,8 @@ class ConfigDef extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                         $this->model->validateFailException(true)->validate($validate);
                     }
-                    $params['range_start'] == '' && $params['range_start'] = null;
-                    $params['range_end'] == '' && $params['range_end'] = null;
+                    isset($params['range_start']) && $params['range_start'] == '' && $params['range_start'] = null;
+                    isset($params['range_end']) && $params['range_end'] == '' && $params['range_end'] = null;
                     $list = db('wheel_gift b')
                         ->field('g.id,g.image,g.name,g.price,"0" as weight')
                         ->join('gift g', 'g.id=b.gift_id', 'left')
