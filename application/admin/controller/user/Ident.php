@@ -57,6 +57,8 @@ class Ident extends Backend
             $this->error(__('Parameter %s can not be empty', ''));
         }
         $params = $this->preExcludeFields($params);
+        if ($params['status'] == -1 && $params['comment'] == '')
+            $this->error(__('请填写拒绝理由'));
         $result = false;
         Db::startTrans();
         try {
@@ -67,6 +69,7 @@ class Ident extends Backend
                 $row->validateFailException()->validate($validate);
             }
             $result = $row->allowField(true)->save($params);
+            $params['status'] != 0 &&
             send_im_msg_by_system($row->user_id, $params['status'] == -1 ? ($params['comment'] ?: '您的实名认证审核未通过') : '您的实名认证审核通过');
             Db::commit();
         } catch (ValidateException|PDOException|Exception $e) {
