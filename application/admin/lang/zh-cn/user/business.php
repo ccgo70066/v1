@@ -12,7 +12,6 @@ return [
     'Rewarded_amount' => '累计已提现',
     'Payword'         => '支付密码',
     'Safe_code'       => '安全码',
-    'Shred'           => '能量',
     'Proom_no'        => '个人房间号',
     'Create_time'     => '创建时间',
     'Update_time'     => '修改时间',

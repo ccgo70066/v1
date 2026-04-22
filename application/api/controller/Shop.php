@@ -40,7 +40,7 @@ class Shop extends Base
         input('type') && $where['type'] = input('type');
         $data = db('shop_item')
             ->field('create_time,update_time', true)
-            ->where('type', 'in', [2, 3, 6, 8])  //1=能量礼物,2=头像框,3=坐骑,6=聊天气泡,8=铭牌
+            ->where('type', 'in', [2, 3, 6, 8])  //2=头像框,3=坐骑,6=聊天气泡
             ->where("find_in_set({$system}, `show`)")
             ->where($where)
             ->order('type asc,weigh asc')
@@ -123,7 +123,7 @@ class Shop extends Base
         $data['diss_amount'] = $data['diss_amount'] ?? 0;
         $data['amount'] = $data['orig_amount'] - $data['diss_amount'];
 
-        // 类型:1=能量礼物,2=头像框,3=坐骑,4=贵族,6=聊天气泡
+        // 类型:2=头像框,3=坐骑,4=贵族,6=聊天气泡
         if ($item['type'] == 4) {
             //购买贵族
             $noble_info = UserBusiness::getUserNobleInfoById($this->auth->id);
@@ -155,74 +155,7 @@ class Shop extends Base
         $this->success(__('Operation completed'));
     }
 
-    /**
-     * 能量兑换
-     * @ApiParams   (name="gift_id", type="int",  required=true, rule="", description="礼物ID")
-     * @ApiParams   (name="count", type="int",  required=true, rule="", description="數量:1=1,-1=全部")
-     */
-    public function shred_exchange()
-    {
-        $this->operate_check('shop_order_lock:' . $this->auth->id, 2);
-        $gift_id = input('gift_id');
-        $count = (int)input('count');
-        if ($count <> 1 && $count <> -1) {
-            $this->error(__('Parameter %s can not be empty', 'count'));
-        }
 
-        $gift = Db::name('gift')->where('type', 8)->where('price_type', 3)->where('id', $gift_id)->where('status', 1)->find();
-        if (!$gift) {
-            $this->error(__('The gift does not exist'));
-        }
-        $user_business = db('user_business')->find($this->auth->id);
-        if ($count == -1) {
-            $count = floor($user_business['shred'] / $gift['price']);
-            if ($count < 1) {
-                $this->error(__('Insufficient energy'));
-            }
-        }
-        $amount = bcmul($gift['price'], $count);
-        if ($user_business['shred'] < $amount) {
-            $this->error(__('Insufficient energy'));
-        }
-        try {
-            Db::startTrans();
-            user_business_change($this->auth->id, 'shred', $amount, 'decrease', '能量礼物兑换', 1);
-            user_gift_add($this->auth->id, $gift_id, $count);
-            Db::commit();
-        } catch (\Throwable $e) {
-            error_log_out($e);
-            Db::rollback();
-            $this->error(__('Network busy'));
-        }
-        $this->success(__('Operation completed'));
-    }
-
-    /**
-     * 获取能量列表
-     */
-    public function get_shred_list()
-    {
-        $list = Db::name('gift')->where('type', 8)->where('price_type', 3)->where('status', 1)
-            ->field('id,name,image,animate,price,note')
-            ->order('weigh', 'asc')->select();
-        $this->success('', $list);
-    }
-
-    /**
-     * 能量礼物兑换记录
-     * @ApiParams   (name="page", type="int",  required=true, rule="", description="页码")
-     * @ApiParams   (name="size", type="int",  required=true, rule="", description="每頁數量")
-     */
-    public function shred_exchange_log()
-    {
-        $page = input('page');
-        $size = input('size');
-        $list = Db::name('shred_shop_log')->alias('l')
-            ->join('gift g', 'l.gift_id = g.id')
-            ->page($page, $size)
-            ->where('user_id', $this->auth->id)->field('g.name,l.count,l.amount,l.create_time')->order('l.id desc')->select();
-        $this->success('', $list);
-    }
 
     /**
      * 装扮续费

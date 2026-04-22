@@ -64,7 +64,7 @@ function user_business_change($user_id, $type, $amount, $flow = 'increase', $not
 
 /**
  * @param int    $user_id       用户名
- * @param int    $type          类型:1=积分,2=钻石,3=钻石,4=可提现收益(币),5=锁定金额,6=魅力值,7=能量
+ * @param int    $type          类型:1=积分,2=钻石,3=钻石,4=可提现收益(币),5=锁定金额,6=魅力值
  * @param string $cate          变化类型:increase=增加,decrease=减少
  * @param double $origin_amount 原始数值
  * @param double $later_amount  结果数值

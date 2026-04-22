@@ -29,7 +29,7 @@ class ShopItem extends Model
     const TYPE_NAMEPLATE= 7;
     const TYPE_TAIL= 8;
 
-    //分类:1=钻,2=红豆,3=能量
+    //分类:1=钻,2=红豆
     const CATE_RED_DIAMOND = 1;
     const CATE_BLUE_DIAMOND= 2;
     const CATE_FRAGMENT = 3;
