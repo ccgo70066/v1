@@ -37,7 +37,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'aa_egg_log.id', title: __('Id'), formatter: function (value, row, index) { return row.id; }},
                         {field: 'user_id', title: __('用户ID')},
                         {field: 'nickname', title: __('用户昵称'), operate: false},
-                        // {field: 'actor_status', title: __('Actor_status'), searchList: {"1":__('Actor_status 1'),"2":__('Actor_status 2'),"3":__('Actor_status 3')}, formatter: Table.api.formatter.normal},
 
                         {field: 'box_type', title: __('Box_type'), searchList: {"1":__('Box_type 1'),"2":__('Box_type 2')}, formatter: Table.api.formatter.normal},
                         {field: 'count_type', title: __('Count_type'), searchList: {"1":__('Count_type 1'),"10":__('Count_type 10'),"100":__('Count_type 100')}, formatter: Table.api.formatter.normal},
@@ -59,18 +58,18 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'log.pool_sys_before', title: __('Pool_sys_before'),  operate: false},
                         {field: 'log.pool_sys_after', title: __('Pool_sys_after'),  operate: false},
                         {field: 'log.pool_sys_diff', title: __('Pool_sys_diff'),  operate: false},
-                   
+
                         {field: 'log.pool_pubn_before', title: __('pool_pubn_before'),  operate: false},
                         {field: 'log.pool_pubn_after', title: __('Pool_pubn_after'),  operate: false},
                         {field: 'log.pool_pubn_diff', title: __('Pool_pubn_diff'),  operate: false},
                         {field: 'log.pool_pub_before', title: __('Pool_pub_before'),  operate: false, sortable: true},
                         {field: 'log.pool_pub_after', title: __('Pool_pub_after'),  operate: false},
                         {field: 'log.pool_pub_diff', title: __('Pool_pub_diff'),  operate: false},
-                        
+
                         {field: 'log.pool_per_before', title: __('Pool_per_before'),  operate: false},
                         {field: 'log.pool_per_after', title: __('Pool_per_after'),  operate: false},
                         {field: 'log.pool_per_diff', title: __('Pool_per_diff'),  operate: false},
-                        
+
                         {field: 'ip', title: __('登录ip'),  operate: false},
                         {field: 'ip_count', title: __('ip数量'),  operate: false},
                         {field: 'imei', title: __('登录imei'),  operate: false},

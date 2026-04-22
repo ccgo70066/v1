@@ -73,7 +73,6 @@ class IntactLog extends Backend
                 ->select();
 
             $list = collection($list)->toArray();
-//            $user = db('user')->where('id', 'in', array_column($list, 'user_id'))->column('nickname,actor_status', 'id');
 //            $diff = 1000;
             $diff = 1;
             foreach ($list as &$item) {

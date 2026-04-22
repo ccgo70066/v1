@@ -54,7 +54,7 @@ class IntactLog extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $with = [
                 'user' => function ($query) {
-                    $query->withField('nickname,actor_status');
+                    $query->withField('nickname');
                 }
             ];
 
@@ -72,12 +72,10 @@ class IntactLog extends Backend
                 ->select();
 
             $list = collection($list)->toArray();
-//            $user = db('user')->where('id', 'in', array_column($list, 'user_id'))->column('nickname,actor_status', 'id');
 //            $diff = 1000;
             $diff = 1;
             foreach ($list as &$item) {
                 // $item['nickname'] = $user[$item['user_id']]['nickname'];
-                // $item['actor_status'] = $user[$item['user_id']]['actor_status'];
                 $item['amount'] /= $diff;
                 $item['use_amount'] /= $diff;
             }

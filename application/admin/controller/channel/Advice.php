@@ -4,6 +4,7 @@ namespace app\admin\controller\channel;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\controller\Backend;
+use Exception;
 use think\Db;
 use think\exception\DbException;
 use think\exception\PDOException;
@@ -104,7 +105,7 @@ class Advice extends Backend
             $params['operator'] = session('admin.id');
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
-            board_notice(Message::CMD_ADVICE, ['content' => $params['content']]);
+            board_notice(Message::CMD_NOTICE, ['content' => $params['content']]);
         }catch (ValidateException|PDOException|Exception $e){
             Db::rollback();
             $this->error($e->getMessage());

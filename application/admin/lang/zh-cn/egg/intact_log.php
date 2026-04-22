@@ -16,8 +16,4 @@ return [
     'Count_type 1'   => '单抽',
     'Count_type 10'  => '十抽',
     'Count_type 100' => '百抽',
-    'Actor_status'       => '用户标识',
-    'Actor_status 1'     => '正常',
-    'Actor_status 2'     => '关注',
-    'Actor_status 3'     => '演员',
 ];

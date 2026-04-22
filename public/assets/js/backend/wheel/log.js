@@ -42,7 +42,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'aa_egg_log.id', title: __('Id'), formatter: function (value, row, index) { return row.id; }},
                         {field: 'user_id', title: __('User_id')},
                         {field: 'user.nickname', title: __('用户昵称'), operate: false},
-                        // {field: 'user.actor_status', title: __('Actor_status'), searchList: {"1":__('Actor_status 1'),"2":__('Actor_status 2'),"3":__('Actor_status 3')}, formatter: Table.api.formatter.normal},
                         // {field: 'box_type', title: __('Box_type'), searchList: {"1":__('Box_type 1'),"2":__('Box_type 2')}, formatter: Table.api.formatter.normal},
                         {field: 'count_type', title: __('Count_type'), searchList: {"1":__('Count_type 1'),"10":__('Count_type 10'),"100":__('Count_type 100')}, formatter: Table.api.formatter.normal},
                         {field: 'level_id', title: __('Level_id'), operate: '=', searchList: $.getJSON('wheel/log/index/option/load_level/'), formatter: function (value, row, index) {

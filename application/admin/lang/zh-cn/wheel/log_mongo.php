@@ -36,8 +36,4 @@ return [
     'Reward'          => '奖励倍数',
     'Create_time'     => '创建时间',
     'Update_time'     => '修改时间',
-    'Actor_status'       => '用户标识',
-    'Actor_status 1'     => '正常',
-    'Actor_status 2'     => '关注',
-    'Actor_status 3'     => '演员',
 ];

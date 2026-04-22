@@ -294,25 +294,6 @@ class User extends Backend
         return $this->view->fetch();
     }
 
-    /**
-     * 设置行为
-     * @param null $ids
-     * @return string
-     * @throws Exception
-     */
-    public function set_behaviour($ids = null)
-    {
-        $row = $this->model->find($ids);
-        if ($this->request->isPost()) {
-            $params = input('row/a');
-            if ($params['actor_status'] && $params['actor_status'] <> $row['actor_status']) {
-                db('user')->where('id', $ids)->setField('actor_status', $params['actor_status']);
-            }
-            $this->success();
-        }
-        $this->assign('row', $row);
-        return $this->view->fetch();
-    }
 
 
     /**

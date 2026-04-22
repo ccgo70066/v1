@@ -29,7 +29,6 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'id', title: __('Id')},
                         {field: 'user_id', title: __('User_id')},
                         {field: 'user.nickname', title: __('用户')+'昵称', operate: false},
-                        {field: 'user.actor_status', title: __('Actor_status'), searchList: {"1":__('Actor_status 1'),"2":__('Actor_status 2'),"3":__('Actor_status 3')}, formatter: Table.api.formatter.normal},
                         {field: 'level.name', title: __('Level_id'), operate: 'like'},
                         // {field: 'level.box_type', title: __('Box_type'), searchList: {"1":__('Box_type 1'),"2":__('Box_type 2')}, formatter: Table.api.formatter.normal},
                         {field: 'pool', title: __('Pool'), operate:'BETWEEN', operate: false},

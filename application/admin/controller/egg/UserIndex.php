@@ -30,7 +30,7 @@ class UserIndex extends Backend
         $this->model = new \app\admin\model\EggUserIndex;
         $this->view->assign("boxTypeList", $this->model->getBoxTypeList());
     }
-    
+
 
 
     /**
@@ -47,7 +47,7 @@ class UserIndex extends Backend
             }
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $with = ['user' => function ($query) {
-                $query->withField('nickname,actor_status');
+                $query->withField('nickname');
             }];
             $total = $this->model
                 ->with($with)

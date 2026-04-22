@@ -93,7 +93,7 @@ class Log extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $with = [
                 'user' => function ($query) {
-                    $query->withField('nickname,actor_status');
+                    $query->withField('nickname');
                 }
             ];
             $total = $this->model
@@ -110,12 +110,10 @@ class Log extends Backend
                 ->select();
 
             $list = collection($list)->toArray();
-//            $user = db('user')->where('id', 'in', array_column($list, 'user_id'))->column('nickname，actor_status', 'id');
             $gift = db('gift')->cache('wheel:backend:gift_info', 0, 'small_data_wheel')->column('name,price', 'id');
             $level = db('wheel_level')->column('name', 'id');
             foreach ($list as &$item) {
 //                $item['nickname'] = $user[$item['user_id']]['nickname'];
-//                $item['actor_status'] = $user[$item['user_id']]['actor_status'];
                 $item['gift_name'] = $gift[$item['gift_id']]['name'];
                 $item['gift_price'] = (float)$gift[$item['gift_id']]['price'];
                 $item['level_name'] = $level[$item['level_id']];
