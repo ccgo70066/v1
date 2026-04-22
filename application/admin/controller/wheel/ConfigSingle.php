@@ -70,7 +70,6 @@ class ConfigSingle extends Backend
             $list = collection($list)->toArray();
             $level = db('wheel_level')->column('name', 'id');
             foreach ($list as &$item) {
-                $item['level_name'] = $level[$item['level_id']];
                 if ($item['config']) {
                     $configs = json_decode($item['config'], true);
                     if (!$configs) {
