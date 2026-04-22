@@ -80,7 +80,7 @@ class RechargeBlacklist extends Backend
     public function add()
     {
         if (false === $this->request->isPost()) {
-            return $this->view->fetch('edit');
+            return $this->view->fetch('edit', ['row' => null]);
         }
         $params = $this->request->post('row/a');
         if (empty($params)) {
@@ -106,7 +106,7 @@ class RechargeBlacklist extends Backend
         }
         $result = false;
         Db::startTrans();
-        try{
+        try {
             //是否采用模型验证
             if ($this->modelValidate) {
                 $name = str_replace("\\model\\", "\\validate\\", get_class($this->model));
@@ -116,7 +116,7 @@ class RechargeBlacklist extends Backend
             $params['admin_id'] = session('admin.id');
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
-        }catch (ValidateException|PDOException|Exception $e){
+        } catch (ValidateException|PDOException|Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }

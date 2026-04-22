@@ -50,9 +50,9 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                             buttons: [
                                 {
                                     name: 'edit',
-                                    text: '编辑',
-                                    title: '编辑',
-                                    classname: 'btn btn-xs btn-info btn-dialog',
+                                    text: '处理',
+                                    title: '处理',
+                                    classname: 'btn btn-xs btn-warning btn-dialog',
                                     extend: 'data-toggle="tooltip"',
                                     icon: 'fa fa-check',
                                     url: 'user/feedback/edit',

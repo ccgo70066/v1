@@ -23,21 +23,21 @@ class UserFeedback extends Base
     {
         if (input('type') == 1) {
             $tab = [
-                ['id' => '1', 'name' => __('Fraud')],
-                ['id' => '2', 'name' => __('Politics')],
-                ['id' => '3', 'name' => __('Insult and defamation')],
-                ['id' => '4', 'name' => __('Pornography')],
-                ['id' => '5', 'name' => __('Advertising')],
-                ['id' => '6', 'name' => __('Infringement')],
-                ['id' => '7', 'name' => __('Gambling')],
-                ['id' => '8', 'name' => __('Game disruption')],
+                ['id' => '1', 'name' => __('欺诈')],
+                ['id' => '2', 'name' => __('政治敏感')],
+                ['id' => '3', 'name' => __('侮辱诽谤')],
+                ['id' => '4', 'name' => __('色情低俗')],
+                ['id' => '5', 'name' => __('广告引流')],
+                ['id' => '6', 'name' => __('侵权')],
+                ['id' => '7', 'name' => __('赌博')],
+                ['id' => '8', 'name' => __('破坏游戏环境')],
             ];
         } else {
             $tab = [
-                ['id' => '1', 'name' => __('Function abnormality')],
-                ['id' => '2', 'name' => __('Experience Issue')],
-                ['id' => '3', 'name' => __('Product Suggestion')],
-                ['id' => '4', 'name' => __('Other')],
+                ['id' => '1', 'name' => __('功能异常')],
+                ['id' => '2', 'name' => __('体验问题')],
+                ['id' => '3', 'name' => __('产品建议')],
+                ['id' => '4', 'name' => __('其他')],
             ];
         }
 

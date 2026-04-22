@@ -7,7 +7,7 @@
 
             <select  id="c-type" data-rule="required" class="form-control selectpicker" name="row[type]">
                 {foreach name="typeList" item="vo"}
-                    <option value="{$key}" {in name="key" value="$row.type"}selected{/in}>{$vo}</option>
+                    <option value="{$key}" {in name="key" value="$row.type|default=''"}selected{/in}>{$vo}</option>
                 {/foreach}
             </select>
 
