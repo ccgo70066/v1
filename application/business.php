@@ -462,7 +462,6 @@ function shop_order_success($order_id, $pay_way = 2)
     } elseif ($item['type'] == 3) {
         user_car_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
     } elseif ($item['type'] == 4) {
-        $extend = json_decode($order['extend_data'], true);
         user_noble_add($order['user_id'], $item['item_id'], $item['days'] * $order['count']);
 
         $data = get_user_info($order['user_id'], ['level']);
