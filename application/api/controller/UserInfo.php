@@ -216,5 +216,17 @@ class UserInfo extends Base
         $this->success('ok');
     }
 
-
+    /**
+     * 实名认证
+     * @ApiMethod   (post)
+     * @ApiParams   (name="real_name",    type="str",  required=true, description="真实姓名")
+     * @ApiParams   (name="card_number",  type="str",  required=true, description="身份证号")
+     * @ApiParams   (name="front_image",type="str", required=true, description="身份证正面图")
+     * @ApiParams   (name="back_image",type="str", required=true, description="身份证反面图")
+     */
+    public function ident()
+    {
+        db('user_ident')->strict(false)->insert(input());
+        $this->success();
+    }
 }
