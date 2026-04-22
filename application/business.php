@@ -674,7 +674,7 @@ function user_noble_add($user_id, $noble_id, $days, $from_by = 1)
     } else {
         db('user_noble')->insert([
             'user_id'    => $user_id,
-            'noble_id'   => $noble,
+            'noble_id'   => $noble_id,
             'start_time' => datetime(),
             'end_time'   => datetime(strtotime("+$days day"))
         ]);
