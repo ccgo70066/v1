@@ -667,7 +667,7 @@ function user_bubble_add($user_id, $bubble_id, $days, $from_by = 1)
  */
 function user_noble_add($user_id, $noble_id, $days, $from_by = 1)
 {
-    $noble = db('user_noble')->where(['user_id' => $user_id, 'noble' => $noble_id,])->find();
+    $noble = db('user_noble')->where(['user_id' => $user_id, 'noble_id' => $noble_id,])->find();
     if ($noble) {
         $noble['end_time'] = date('Y-m-d H:i:s', strtotime("+{$days}day", strtotime($noble['end_time'])));
         db('user_noble')->update($noble);
