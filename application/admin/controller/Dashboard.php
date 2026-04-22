@@ -103,20 +103,18 @@ class Dashboard extends Backend
         }, 1);
 
         $this->view->assign([
-            'totaluser'          => User::count(),
-            'today_user_reg'     => User::where(['jointime' => ['>=', strtotime(date('Y-m-d'))]])->count(),
-            'total_recharge_usd' => (Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')->where('r.status', 1)->where('c.unit', 1)->sum('pay_amount')),
-            'total_recharge_twd' => (Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')->where('r.status', 1)->where('c.unit', 2)->sum('pay_amount')),
-            'total_withdraw'     => (Db("user_withdraw")->where('status', 2)->sum('payment_amount')),
+            'totaluser'      => User::count(),
+            'today_user_reg' => User::where(['jointime' => ['>=', strtotime(date('Y-m-d'))]])->count(),
+            'total_recharge' => (Db("user_recharge")->alias('r')->where('r.status', 1)->sum('pay_amount')),
+            'total_withdraw' => (Db("user_withdraw")->where('status', 2)->sum('payment_amount')),
         ]);
 
         $this->assignconfig('chart', [
-            'column'       => array_keys($chart),
-            'user_reg'     => array_column($chart, 'user_reg'),
-            'user_login'   => array_column($chart, 'user_login'),
-            'recharge_usd' => array_column($chart, 'recharge_usd'),
-            'recharge_twd' => array_column($chart, 'recharge_twd'),
-            'withdraw'     => array_column($chart, 'withdraw'),
+            'column'     => array_keys($chart),
+            'user_reg'   => array_column($chart, 'user_reg'),
+            'user_login' => array_column($chart, 'user_login'),
+            'recharge'   => array_column($chart, 'total_recharge'),
+            'withdraw'   => array_column($chart, 'withdraw'),
         ]);
 
         return $this->view->fetch();
