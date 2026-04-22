@@ -100,11 +100,15 @@ class NobleService extends BaseService
         if (!$userNoble) throw new ApiException(__('No permissions'));
 
         //如果用户开通了贵族等级，显示相应开关状态
-        if ($privilegeId == NoblePrivilege::PERMISSION_ID_ROOM_HIDE && $userNoble['room_hide']) {
+        if ($privilegeId == NoblePrivilege::PERMISSION_ID_ROOM_HIDE && isset($userNoble['room_hide'])) {
             $result = db('user_noble')->where('id', $userNoble['id'])->setField('room_hide', $switch);
         }
-        if ($privilegeId == NoblePrivilege::PERMISSION_ID_NAME_COLOR && $userNoble['name_color']) {
+        if ($privilegeId == NoblePrivilege::PERMISSION_ID_NAME_COLOR && isset($userNoble['name_color'])) {
             $result = db('user_noble')->where('id', $userNoble['id'])->setField('name_color', $switch);
+        }
+
+        if (!$result) {
+            throw new ApiException(__('Operation failed'));
         }
     }
 
