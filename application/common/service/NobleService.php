@@ -51,7 +51,7 @@ class NobleService extends BaseService
                 $datum['is_open'] = 1;
                 $datum['end_time'] = substr($nobleInfo['end_time'], 0, 10) ?? '';
                 $datum['end_time_hour'] = get_expiry_days($nobleInfo['end_time'])->hours ?? '';
-                $datum['price'] = round($datum['price'] * get_site_config('renewal_noble')); //续费价格
+                //$datum['price'] = round($datum['price'] * get_site_config('renewal_noble')); //续费价格
                 if (get_site_config('renewal_noble') < 1) {
                     $datum['is_discount'] = 1;
                 }
