@@ -50,7 +50,7 @@ class ShopItem extends Model
             //'4' => __('Type 4'),
 //            '5' => __('Type 5'),
             '6' => __('Type 6'),
-            '8' => __('Type 8'),
+            //'8' => __('Type 8'),
         ];
     }
 
