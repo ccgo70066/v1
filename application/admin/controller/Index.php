@@ -51,7 +51,7 @@ class Index extends Backend
         $moment = db('moment')->where(['status' => 2])->count();
         $room_user = db('room_admin')->where('status', 'in', [0, 2])->count();
         $feedback = db('user_feedback')->where('audit_status', 1)->count();
-        $verify = db('user_verify')->where('check_status', 0)->count();
+        $ident = db('user_ident')->where('status', 0)->count();
         $room_audit = db('room')->where('status', 1)->count();
         $anchor_audit = db('anchor')->where('status', 1)->count();
         list($menulist, $navlist, $fixedmenu, $referermenu) = $this->auth->getSidebar([
@@ -59,10 +59,10 @@ class Index extends Backend
             // 'dashboard/index'     => ['new', 'red', 'badge'],
             // 'auth/rule' => __('Menu'),
             // 'general'   => ['new', 'purple'],
-            'task'             => $audit_image + $moment + $feedback + $verify,
+            'task'             => $audit_image + $moment + $feedback + $ident,
             'user/audit_image' => $audit_image,
             'moment/moment'    => $moment,
-            'user/verify'      => $verify,
+            'user/ident'       => $ident,
             'user/feedback'    => $feedback,
             'order'            => $withdraw,
             'user/withdraw'    => $withdraw,
