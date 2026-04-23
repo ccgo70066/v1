@@ -30,7 +30,7 @@ class Sms extends Base
         $event = $event ? $event : 'register';
 
         if (!$mobile || !\think\Validate::regex($mobile, "^1\d{10}$")) {
-            //$this->error(__('Incorrect mobile phone number'));
+            $this->error(__('Incorrect mobile phone number'));
         }
         $last = Smslib::get($mobile, $event);
         if ($last && time() - $last['createtime'] < 60) {
