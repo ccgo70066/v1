@@ -239,6 +239,7 @@ class UserInfo extends Base
     {
         $data = input();
         $data['user_id'] = $this->auth->id;
+        db('user_ident')->where('user_id', $this->auth->id)->delete();
         db('user_ident')->strict(false)->insert($data);
         $this->success();
     }
