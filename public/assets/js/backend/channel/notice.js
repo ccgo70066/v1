@@ -35,7 +35,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'icon', title: __('icon'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         {field: 'action', title: __('Action'), searchList: {"1":__('Action 1'),"2":__('Action 2')}, formatter: Table.api.formatter.normal},
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"0":__('Status 0')}, formatter: Table.api.formatter.status},
-                        {field: 'show_type', title: __('Show_type'), searchList: {"1":__('Show_type 1'),"2":__('Show_type 2')}, operate:'FIND_IN_SET', formatter: Table.api.formatter.label},
+                        {field: 'show_type', title: __('Show_type'), searchList: {"1":__('Show_type 1'),}, operate:'FIND_IN_SET', formatter: Table.api.formatter.label},
                         {field: 'show_start_time', title: __('Show_start_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         {field: 'show_end_time', title: __('Show_end_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},
                         {field: 'create_time', title: __('Create_time'), operate:'RANGE', addclass:'datetimerange', autocomplete:false},

@@ -20,7 +20,6 @@ return [
     'Set status to 0' => '设为禁用',
     'Show_type'       => '悬浮图标展示位置',
     'Show_type 1'     => '首页',
-    'Show_type 2'     => '房间',
     'Show_start_time' => '开始展示时间',
     'Show_end_time'   => '结束展示时间',
     'Create_time'     => '创建时间',

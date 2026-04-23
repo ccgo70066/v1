@@ -8,13 +8,13 @@ use think\Model;
 class ChannelNotice extends Model
 {
 
-    
 
-    
+
+
 
     // 表名
     protected $name = 'channel_notice';
-    
+
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 
@@ -30,9 +30,9 @@ class ChannelNotice extends Model
         'status_text',
         'show_type_text'
     ];
-    
 
-    
+
+
     public function getTypeList()
     {
         return ['1' => __('Type 1'), '2' => __('Type 2')];
@@ -50,7 +50,7 @@ class ChannelNotice extends Model
 
     public function getShowTypeList()
     {
-        return ['1' => __('Show_type 1'), '2' => __('Show_type 2')];
+        return ['1' => __('Show_type 1')];
     }
 
 
