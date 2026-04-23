@@ -210,7 +210,7 @@ class GiftService extends BaseService
      */
     public static function getGiftsWall($where, $page = 1, $size = 15)
     {
-        $typeArr = [GiftModel::GIFT_TYPE_BOARD];
+        $typeArr = [GiftModel::GIFT_TYPE_BOARD, 3, 4];
         $data = db('gift')->where('status', GiftModel::STATUS_ON)
             ->whereIn('type', $typeArr)
             ->where($where)
