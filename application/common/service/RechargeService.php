@@ -196,14 +196,11 @@ class RechargeService extends BaseService
             }
         } elseif (strtoupper($payWay) == 'BANK') {
             $result['pay_url'] = url('/pay/goback/pay_jump', ['order_no' => $order_no], '', true);
-        } elseif (strtoupper($payWay) == 'GOOGLE') {
-            $result['pay_url'] = 'GOOGLE';
-        } elseif (strtoupper($payWay) == 'APPLE') {
-            $result['pay_url'] = 'APPLE';
+        } else {
+            $result['pay_url'] = 'http://baidu.com';
         }
         if (empty($result['pay_url'])) {
-            $result['pay_url'] = 'http://baidu.com';
-            //throw new ApiException('不支持的方式');
+            throw new ApiException('不支持的方式');
         }
 
         return $result;
