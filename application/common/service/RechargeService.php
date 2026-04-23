@@ -20,9 +20,7 @@ class RechargeService extends BaseService
     /**
      * 获取充值项及对应的充值渠道
      * @param $appid
-     * @throws DataNotFoundException
-     * @throws DbException
-     * @throws ModelNotFoundException
+     * @throws
      */
     public function getCard($appid, $system)
     {
@@ -30,9 +28,7 @@ class RechargeService extends BaseService
         $versionThreshold = '1.0.5';
         $showStoreFlag = $version >= $versionThreshold;
         $channel = db('channel')->where(['appid' => $appid])->find();
-        if (!$channel) {
-            return;
-        }
+        if (!$channel) throw new ApiException(__('Channel not found'));
         $payway = db('channel_payway')->alias('p')
             ->join('channel_company c', 'p.company_id = c.id', 'left')
             ->join('pay_way pw', 'pw.id = p.pay_way_id', 'left')
@@ -58,9 +54,7 @@ class RechargeService extends BaseService
             ->where('id', 'in', implode(',', array_column($payway, 'card_ids')))
             ->order('weigh asc')
             ->select();
-        if (!$cards) {
-            return;
-        }
+        if (!$cards) throw new ApiException(__('Card not found'));
         // $this->auth = Auth::instance();
         $isFirstCharge = 0;
         foreach ($cards as $k => &$card) {
