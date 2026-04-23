@@ -58,6 +58,7 @@ class Auth
         'hidden_noble',
         //'edit_gender_num',
         'imei_limit',
+        'safe_code',
     ];
 
     public function __construct($options = [])
@@ -510,6 +511,7 @@ class Auth
         $userinfo['shutup'] = db('user_shutup')->where('user_id', $userinfo['id'])->find() ? 1 : 0;
         $userinfo['room_id'] = db('room_admin')->where('user_id', $userinfo['id'])->where('status', 1)->value('room_id') ?? 0;
         $userinfo['safe_code_flag'] = $userinfo['safe_code'] ? 1 : 0;
+        unset($userinfo['safe_code']);
 
         return $userinfo;
     }
