@@ -71,13 +71,13 @@ class User extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             $with = [
                 'business' => function ($query) {
-                    $query->withField('amount,reward_amount,role');
+                    $query->withField('amount,reward_amount,role,level');
                 },
                 'group'    => function ($query) {
                     $query->withField('name');
                 },
             ];
-            $level = db('level')->where('grade', '>', 0)->column('icon', 'grade');
+            $level = db('level')->column('icon', 'grade');
             $list = $this->model
                 ->with($with)
                 ->where($where)
@@ -90,7 +90,7 @@ class User extends Backend
             }
             $items = $list->items();
             foreach ($items as &$item) {
-                $item['level_icon'] = $level[$item['level']] ?? '';
+                $item['level_icon'] = $level[$item['business']['level']] ?? '';
             }
             $result = [
                 "total"  => $list->total(),
