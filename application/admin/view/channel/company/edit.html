@@ -80,7 +80,7 @@
 
             <select  id="c-sign_type" class="form-control selectpicker" name="row[sign_type]">
                 {foreach name="signTypeList" item="vo"}
-                <option value="{$key}" {in name="key" value="$row.sign_type"}selected{/in}>{$vo}</option>
+                <option value="{$key}" {in name="key" value="$row.sign_type|default=''"}selected{/in}>{$vo}</option>
                 {/foreach}
             </select>
 
@@ -144,7 +144,7 @@
 
             <div class="radio">
             {foreach name="statusList" item="vo"}
-            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status"}checked{/in} /> {$vo}</label>
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status|default=''"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
 
