@@ -52,7 +52,7 @@ class RechargeService extends BaseService
             // $pay_way[$item['pay_way_code']] = $item['payway_image'];
         }
         $cards = db('channel_card')
-            ->field('id,code,price,unit,amount,give_amount,bage,item_code')
+            ->field('id,code,price,amount,give_amount,bage,item_code')
             ->where('system', $system)
             ->where('status', 1)
             ->where('id', 'in', implode(',', array_column($payway, 'card_ids')))
