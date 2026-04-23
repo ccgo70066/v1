@@ -247,6 +247,7 @@ class App extends Base
             'kf_id'           => config('app.kf_id'),
             'request_key'     => Env::get('api.request_encode_key'),
             'response_key'    => Env::get('api.response_encode_key'),
+            'sign_key'        => Env::get('api.sign_key'),
             'document_prefix' => Env::get('app.page_url', $self_url),
             'safety_reminder' => get_site_config('safety_reminder') ?: "",   //私聊安全提醒
             'grey_mode'       => get_site_config('grey_mode'),//哀悼灰色模式
