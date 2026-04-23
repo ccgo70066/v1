@@ -80,7 +80,6 @@ class RechargeService extends BaseService
                 $card['bage'] = 0;
             }
             $card['bage_text'] = $this->bageMap()[$card['bage']] ?? '';
-            $card['unit'] = [1 => 'USD', 2 => 'NTD'][$card['unit']];
             if (empty($card['payway'])) {
                 unset($cards[$k]);
             }
