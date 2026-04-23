@@ -63,7 +63,6 @@ class Dashboard extends Backend
             $recharge_usd = Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')
                 ->where('r.create_time', 'between time', [datetime($starttime), datetime($endtime)])
                 ->where('r.status', 1)
-                ->where('c.unit', 1)
                 ->field('sum(pay_amount) as amount, DATE_FORMAT(r.create_time, "%Y-%m-%d") AS join_date')
                 ->group('join_date')
                 ->select();
