@@ -47,7 +47,7 @@ class ShopItem extends Model
 //            '1' => __('Type 1'),
             '2' => __('Type 2'),
             '3' => __('Type 3'),
-            //'4' => __('Type 4'),
+            '4' => __('Type 4'),
 //            '5' => __('Type 5'),
             '6' => __('Type 6'),
             //'8' => __('Type 8'),
