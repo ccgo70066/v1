@@ -126,14 +126,17 @@ class Member extends Base
         $room_id = input('room_id', 0);
         $user_id = $this->auth->id;
         if (db('user_business')->where('id', $user_id)->value('role') == 4) $this->error(__('You have no permission'));
+        $room = db('room')->where('id', $room_id)->find();
         $exist = db('room_admin')->where(['user_id' => $user_id, 'status' => 1])->find();
         if ($type == 1) {
             if ($exist) $this->error(__('You are already in the room'));
             db('room_admin')->insert(['room_id' => $room_id, 'user_id' => $user_id, 'role' => 2,]);
+            send_im_msg_by_system($room['owner_id'], '有新用户申请加入厅,请查看');
         } else {
             if (!$exist) $this->error(__('You are not in the room'));
             if (!input('reason')) $this->error(__('Please enter the reason'));
             db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id,])->update(['status' => 2, 'reason' => input('reason', ''),]);
+            send_im_msg_by_system($room['owner_id'], '有成员申请退出厅,请查看');
         }
 
         $this->success();
@@ -156,6 +159,7 @@ class Member extends Base
         if (in_array($status, [1, -2])) {
             UserBusinessService::set_user_role(input('user_id'), $status == 1 ? 3 : 1);
         }
+        send_im_msg_by_system(input('user_id'), '您的申请已处理,请查看');
 
         $this->success();
     }
