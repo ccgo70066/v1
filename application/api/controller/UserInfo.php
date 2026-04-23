@@ -217,6 +217,17 @@ class UserInfo extends Base
     }
 
     /**
+     * 获取实名认证状态
+     * @ApiMethod   (post)
+     * @ApiReturnParams    (name="data", type="str", description="状态:null=未实名,0=审核中,1=已实名,-1=已驳回")
+     */
+    public function get_ident()
+    {
+        $status = db('user_ident')->where('user_id', $this->auth->id)->value('status');
+        $this->success('', $status);
+    }
+
+    /**
      * 实名认证
      * @ApiMethod   (post)
      * @ApiParams   (name="real_name",    type="str",  required=true, description="真实姓名")
