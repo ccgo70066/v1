@@ -37,10 +37,4 @@ class Vest extends Backend
      */
 
 
-    public function create_vest()
-    {
-        UserService::instance()->cron_vest();
-
-        $this->success();
-    }
 }
