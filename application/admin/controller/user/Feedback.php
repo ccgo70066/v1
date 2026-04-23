@@ -128,9 +128,9 @@ class Feedback extends Backend
                         $info1 = db('room')->where('id', $row['target_id'])->field('id,name')->find();
                         $name = $info1['name'] . '(' . $info1['id'] . ')' . $row['tag'];
                     }
-                    send_im_msg_by_system_with_lang($row['user_id'], '您%s提交的关于%s的举报已处理：%s', $row['create_time'], $name, $params['audit_remark']);
+                    send_im_msg_by_system_with_lang($row['user_id'], sprintf('您%s提交的关于%s的举报已处理：%s', $row['create_time'], $name, $params['audit_remark']));
                 } else {
-                    send_im_msg_by_system_with_lang($row['user_id'], '您%s提交的关于%s的反馈已处理：%s', $row['create_time'], $row['tag'], $params['audit_remark']);
+                    send_im_msg_by_system_with_lang($row['user_id'], sprintf('您%s提交的关于%s的反馈已处理：%s', $row['create_time'], $row['tag'], $params['audit_remark']));
                 }
             }
             if ($params['audit_status'] == 4) {
