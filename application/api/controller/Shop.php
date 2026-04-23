@@ -36,7 +36,6 @@ class Shop extends Base
         $size = input('size') ?: 10;
 
         $where = ['status' => 1];
-//        input('cate') && $where['cate'] = input('cate');
         input('type') && $where['type'] = input('type');
         $data = db('shop_item')
             ->field('create_time,update_time', true)
