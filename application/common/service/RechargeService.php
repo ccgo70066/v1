@@ -176,6 +176,8 @@ class RechargeService extends BaseService
         $order_no = $order['order_no'];
         [$companyCode, $payWay, $openWay,] = explode('_', $order['payway']);
         $result = ['order_no' => $order_no, 'pay_way' => $order['payway'], 'source' => $openWay,];
+        $result['pay_url'] = 'http://baidu.com';
+        return $result;
         //获取支付配置信息
         $config = db('channel_company')->where('code', $companyCode)->find();
         if (!$config) {
