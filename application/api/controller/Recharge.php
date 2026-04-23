@@ -41,12 +41,11 @@ class Recharge extends Base
     /**
      * app获取充值卡
      *
-     * @ApiParams   (name="appid", type="string", required=false, rule="", description="渠道号")
      * @ApiParams   (name="system", type="string", required=false, rule="in:1,2,3", description="平台:1=iOS,2=Android,3=Web")
      */
     public function get_card()
     {
-        $appid = input('appid') ?? $this->appid;
+        $appid = $this->appid;
         $system = $this->system ?? 2;
         $systemArr = [
             '1' => 'iOS',
