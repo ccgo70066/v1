@@ -39,7 +39,7 @@
 
             <select id="c-system" data-rule="required" class="form-control selectpicker" name="row[system]">
                 {foreach name="systemList" item="vo"}
-                <option value="{$key}" {in name="key" value="$row.system"}selected{/in}>{$vo}</option>
+                <option value="{$key}" {in name="key" value="$row.system|default=''"}selected{/in}>{$vo}</option>
                 {/foreach}
             </select>
 
@@ -51,50 +51,12 @@
 
             <select  id="c-bage" data-rule="required" class="form-control selectpicker" name="row[bage]">
                 {foreach name="bageList" item="vo"}
-                    <option value="{$key}" {in name="key" value="$row.bage"}selected{/in}>{$vo}</option>
+                    <option value="{$key}" {in name="key" value="$row.bage|default=''"}selected{/in}>{$vo}</option>
                 {/foreach}
             </select>
 
         </div>
     </div>
-<!--    <div class="form-group">-->
-<!--        <label class="control-label col-xs-12 col-sm-2">{:__('Intro')}:</label>-->
-<!--        <div class="col-xs-12 col-sm-8">-->
-<!--            <textarea id="c-intro" class="form-control " rows="5" name="row[intro]" cols="50">{$row.intro|htmlentities}</textarea>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="form-group">-->
-<!--        <label class="control-label col-xs-12 col-sm-2">{:__('Extend_json')}:</label>-->
-<!--        <div class="col-xs-12 col-sm-8">-->
-
-<!--            <dl class="fieldlist" data-template="eventtpl" data-name="row[extend_json]">-->
-<!--                <dd>-->
-<!--                    <ins>{:__('类型')}</ins>-->
-<!--                    <ins>{:__('名称')}</ins>-->
-<!--                    <ins>{:__('数量')}</ins>-->
-<!--                </dd>-->
-<!--                <dd><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></dd>-->
-<!--                <textarea name="row[extend_json]" class="form-control hidden" cols="30" rows="5">{$row.extend_json|htmlentities}</textarea>-->
-<!--            </dl>-->
-<!--            <script id="eventtpl" type="text/html">-->
-<!--                <dd class="form-inline">-->
-<!--                    <ins><input  id="reward-type-ids-<%=index%>" data-rule="" data-source="general/reward_json/type_sign"-->
-<!--                                 data-multiple="false" data-field="name" data-pagination="true" class="form-control selectpage"-->
-<!--                                 name="<%=name%>[<%=index%>][type]" type="text" value="<%=row.type%>" placeholder="类型"></ins>-->
-
-<!--                    <ins><input id="reward-name-ids-<%=index%>" data-rule="" data-source="general/reward_json/index"-->
-<!--                                data-multiple="false" data-field="name" data-pagination="true" data-page-size="10" class="form-control selectpage"-->
-<!--                                name="<%=name%>[<%=index%>][id]" type="text" value="<%=row.id%>" placeholder="名称"></ins>-->
-
-<!--                    <ins><input type="text" name="<%=name%>[<%=index%>][count]" class="form-control" value="<%=row.count%>" placeholder="数量"></ins>-->
-<!--                    &lt;!&ndash;                下面两个按钮必须保留&ndash;&gt;-->
-<!--                    <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>-->
-<!--                    <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>-->
-<!--                </dd>-->
-<!--            </script>-->
-
-<!--        </div>-->
-<!--    </div>-->
     <div class="form-group">
         <label class="required control-label col-xs-12 col-sm-2">{:__('Weigh')}:</label>
         <div class="col-xs-12 col-sm-8">
@@ -107,7 +69,7 @@
 
             <div class="radio">
             {foreach name="statusList" item="vo"}
-            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status"}checked{/in} /> {$vo}</label>
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status|default=''"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
 

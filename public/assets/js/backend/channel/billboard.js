@@ -33,7 +33,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'position', title: __('Position'), searchList: {"1":__('Position 1'),"6":__('Position 6')}, operate: false, formatter: Table.api.formatter.label},
                         {field: 'title', title: __('Title'), operate: 'LIKE'},
                         {field: 'image', title: __('Image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
-                        {field: 'action', title: __('Action'), searchList: {"0":__('Action 0'),"1":__('Action 1'),"7":__('Action 7'),"5":__('Action 5'),"8":__('Action 8')}, formatter: Table.api.formatter.normal},
+                        {field: 'action', title: __('Action'), searchList: {"0":__('Action 0'),"1":__('Action 1'),"7":__('Action 7'),"5":__('Action 5')}, formatter: Table.api.formatter.normal},
                         {field: 'action_url', title: __('Action_url'), operate: false, formatter: Table.api.formatter.url},
                         //{field: 'ios_action_url', title: __('Ios_action_url'), operate: false, formatter: Table.api.formatter.url},
                         {field: 'show_start_time', title: __('Show_start_time'), operate: false, addclass:'datetimerange', autocomplete:false},

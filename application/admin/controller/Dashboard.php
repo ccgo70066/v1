@@ -68,19 +68,8 @@ class Dashboard extends Backend
                 ->group('join_date')
                 ->select();
             foreach ($recharge_usd as $k => $v) {
-                $temp[$v['join_date']]['recharge_usd'] = ($v['amount']);
+                $temp[$v['join_date']]['recharge'] = ($v['amount']);
             }
-            $recharge_twd = Db("user_recharge")->alias('r')->join('channel_card c', 'r.card_id=c.id', 'left')
-                ->where('r.create_time', 'between time', [datetime($starttime), datetime($endtime)])
-                ->where('r.status', 1)
-                ->where('c.unit', 2)
-                ->field('sum(pay_amount) as amount, DATE_FORMAT(r.create_time, "%Y-%m-%d") AS join_date')
-                ->group('join_date')
-                ->select();
-            foreach ($recharge_twd as $k => $v) {
-                $temp[$v['join_date']]['recharge_twd'] = ($v['amount']);
-            }
-
             $withdraw = Db("user_withdraw")
                 ->where('create_time', 'between time', [datetime($starttime), datetime($endtime)])
                 ->where('status', 2)
@@ -94,8 +83,7 @@ class Dashboard extends Backend
             foreach ($chart as $k => $v) {
                 $chart[$k]['user_reg'] = $temp[$k]['user_reg'] ?? 0;
                 $chart[$k]['user_login'] = $temp[$k]['user_login'] ?? 0;
-                $chart[$k]['recharge_usd'] = $temp[$k]['recharge_usd'] ?? 0;
-                $chart[$k]['recharge_twd'] = $temp[$k]['recharge_twd'] ?? 0;
+                $chart[$k]['recharge'] = $temp[$k]['recharge'] ?? 0;
                 $chart[$k]['withdraw'] = $temp[$k]['withdraw'] ?? 0;
             }
 

@@ -63,20 +63,12 @@ define(['jquery', 'bootstrap', 'backend', 'addtabs', 'table', 'echarts', 'echart
                         data: Config.chart.user_login
                     },
                     {
-                        name: __('美金充值'),
+                        name: __('充值'),
                         type: 'line',
                         smooth: true,
                         areaStyle: {normal: {}},
                         lineStyle: {normal: {width: 1.5}},
-                        data: Config.chart.recharge_usd
-                    },
-                    {
-                        name: __('台币充值'),
-                        type: 'line',
-                        smooth: true,
-                        areaStyle: {normal: {}},
-                        lineStyle: {normal: {width: 1.5}},
-                        data: Config.chart.recharge_twd
+                        data: Config.chart.recharge
                     },
                     {
                         name: __('提现'),

@@ -50,7 +50,7 @@ class ChannelBillboard extends Model
 
     public function getActionList()
     {
-        return ['0' => __('Action 0'), '1' => __('Action 1'), '7' => __('Action 7'), '8' => __('Action 8'), '5' => __('Action 5'),];
+        return ['0' => __('Action 0'), '1' => __('Action 1'), '7' => __('Action 7'), '5' => __('Action 5'),];
     }
 
     public function getStatusList()

@@ -19,7 +19,6 @@ return [
     'Action 1'        => '内部H5',
     'Action 7'        => '外部H5',
     'Action 5'        => '充值页',
-    'Action 8'        => '首充活动',
     'Action_url'      => '动作地址',
     'Ios_action_url'  => 'ios下载地址',
     'Show_start_time' => '开始展示时间',
