@@ -168,7 +168,7 @@ class User extends Backend
         $ids = input('ids');
         $baseField = 'id,username,nickname,mobile,gender,birthday,bio,from_unixtime(jointime) as jointime,joinip,from_unixtime(logintime) as logintime,loginip,from_unixtime(createtime) as createtime';
         $operatorField = 'version,imei,system,model';
-        $businessField = 'level,integral,recharge_amount,reward_amount,amount';
+        $businessField = 'level,level_scope,recharge_amount,reward_amount,amount';
         $thirdField = 'user_id,platform';
 
         $row = [];

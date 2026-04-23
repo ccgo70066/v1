@@ -11,6 +11,7 @@ return [
     'Mobile'                                      => '手机号',
     'Avatar'                                      => '头像',
     'Level'                                       => '财富等级',
+    'Level_scope'                                       => '财富积分',
     'Gender'                                      => '性别',
     'Gender 1'                                    => '男',
     'Gender 0'                                    => '女',
