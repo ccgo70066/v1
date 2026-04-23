@@ -141,16 +141,6 @@ class RoomService extends BaseService
         ]);
     }
 
-    public function get_room_cate()
-    {
-        $data = db('room_theme_cate')
-            ->where('status', 1)
-            ->order('weigh desc')
-            ->column('name,color,image', 'id');
-        return $data;
-    }
-
-
     /**
      * 获取房间在线用户
      * @param $room_id

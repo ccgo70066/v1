@@ -6,7 +6,6 @@ return [
     'Owner_id'          => '房主ID',
     'Im_operator'       => '云信房主(不可变更)',
     'Name'              => '名称',
-    'Theme_id'          => '房间标签ID',
     'Notice'            => '公告',
     'Cover'             => '封面',
     'Hot'               => '热力值',

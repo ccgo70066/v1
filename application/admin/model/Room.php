@@ -255,12 +255,6 @@ class Room extends Model
         return $value === '' ? null : ($value && !is_numeric($value) ? strtotime($value) : $value);
     }
 
-
-    public function roomthemecate()
-    {
-        return $this->belongsTo('app\admin\model\RoomThemeCate', 'theme_id', 'id', [], 'LEFT')->setEagerlyType(0);
-    }
-
     public function roomadmin()
     {
         return $this->belongsTo('app\admin\model\RoomAdmin', 'id', 'room_id and roomadmin.role = 1', [], 'LEFT')->setEagerlyType(0);

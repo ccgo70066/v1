@@ -75,7 +75,6 @@ class Room extends Backend
                 ->count();
 
             $list = $this->model
-                //->with(['roomthemecate'])
                 ->where('room.status', '<>', 0)
                 ->where($where)
                 ->orderRaw('case room.status when 1 then 1 when 3 then 2 when 2 then 3 when 0 then 4 else 5 end')
@@ -87,9 +86,7 @@ class Room extends Backend
                     'beautiful_id',
                     'id',
                     'name',
-                    'theme_id',
                     'owner_id',
-                    'cate',
                     'cover',
                     'hot',
                     'password',

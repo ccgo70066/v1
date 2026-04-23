@@ -33,15 +33,6 @@ class Room extends Base
         $this->service = new RoomService;
     }
 
-    /**
-     * 获取房间分类
-     */
-    public function get_cate_column()
-    {
-        $res = db('room_theme_cate')->where(['status' => 1])->field('create_time,status,weigh', true)->order('weigh', 'desc')->select();
-        $this->success('', $res);
-    }
-
 
     /**
      * 创建房间申请
@@ -192,14 +183,13 @@ class Room extends Base
         }
         $room_id = input('room_id') ?: 0;
         $result = db('room r')
-            ->join('room_theme_cate t', 't.id=r.theme_id')
             ->where('r.status', 'in', [3, 2])
             ->where('r.is_show', 1)
             ->where($where)
             ->where('r.id', '<>', $room_id)
             ->where('is_close', 0)
             ->order('r.show_sort asc, r.hot desc,r.create_time')
-            ->field('r.id,r.beautiful_id,r.name,r.is_lock,hot,r.cover,r.owner_id,r.theme_id,t.name as theme_name,t.color as theme_color')
+            ->field('r.id,r.beautiful_id,r.name,r.is_lock,hot,r.cover,r.owner_id,r.theme_id')
             ->select();
         foreach ($result as $key => $value) {
             $result[$key]['hot'] = $room_hot[$value['id']] ?? 0;
@@ -395,9 +385,6 @@ class Room extends Base
         $data['room'] = db('room')->where('id', $room_id)
             ->field('welcome_msg,welcome_switch,way,id,beautiful_id,name,owner_id,screen_clear_time,theme_id,cover,notice,hot,bg_img,is_lock,is_show')
             ->find();
-        $theme = db('room_theme_cate')->where('id', $data['room']['theme_id'])->field('name,image')->find();;
-        $data['room']['theme_cate_name'] = $theme['name'] ?: '';
-        $data['room']['theme_cate_image'] = $theme['image'] ?: '';
         $data['room']['hot'] = $redis->hGet(RedisService::ROOM_HOT_KEY, $room_id) ?: 0;
         $data['owner'] = db('user')->where('id', $data['room']['owner_id'])->field('id,avatar,nickname')->find();
         $data['role'] = db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->value('role') ?: 0;
@@ -972,9 +959,8 @@ class Room extends Base
 
         $room = db('room r')
             ->where('r.id', $room_id)
-            ->join('room_theme_cate cate', 'r.theme_id = cate.id')
-            ->field('welcome_switch,password,welcome_msg,way,id,beautiful_id,name,owner_id,theme_id,cover,notice,hot,bg_img,is_lock,is_show', false, 'r')
-            ->field("cate.name as theme_cate_name")->find();
+            ->field('welcome_switch,password,welcome_msg,way,id,beautiful_id,name,owner_id,cover,notice,hot,bg_img,is_lock,is_show', false, 'r')
+            ->find();
 
         $data = [];
 

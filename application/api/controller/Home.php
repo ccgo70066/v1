@@ -18,17 +18,6 @@ class Home extends Base
     protected $noNeedLogin = ['room_list', 'anchor_list', 'search', 'vest'];
     protected $noNeedRight = '*';
 
-    /**
-     * @ApiTitle    (房间主题分类列表)
-     *
-     * @ApiReturnParams    (name="theme_name", type="str", description="派对分类名称")
-     * @ApiReturnParams    (name="theme_color", type="str", description="派对分类名称-颜色")
-     */
-    public function room_theme_list()
-    {
-        $result = RoomModel::getThemeList(1);
-        $this->success('', $result);
-    }
 
     /**
      * @ApiTitle    (房间列表[精选,派对])

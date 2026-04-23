@@ -43,14 +43,6 @@ class Room extends Model
         return $im_room_id;
     }
 
-    public static function getThemeList()
-    {
-        $query = db('room_theme_cate');
-        $list = $query->where('status', 1)->field('id,name,image,intro')
-            ->order('id', 'asc')->order('weigh', 'desc')->select();
-        return $list;
-    }
-
 
     /**
      * 获取可展示的房间列表
@@ -65,10 +57,10 @@ class Room extends Model
             $query->limit($limit);
         }
         // 个人房列表中，无人的过滤掉不在列表中展示
-        $map = ['status' => isset($where['theme_id']) && $where['theme_id'] == 12 ? 3 : ['in', [self::ROOM_STATUS_IDLE, self::ROOM_STATUS_PLAYING]]];
+        $map = ['status' => ['in', [self::ROOM_STATUS_IDLE, self::ROOM_STATUS_PLAYING]]];
         return $query->where($map)->where(['is_close' => 0,])
             ->order('show_sort asc,hot desc,create_time')
-            ->field('id,beautiful_id,name,is_lock,hot,cover,theme_id,owner_id')
+            ->field('id,beautiful_id,name,is_lock,hot,cover,owner_id')
             ->select();
     }
 

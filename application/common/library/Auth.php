@@ -491,13 +491,11 @@ class Auth
         $currentRoomId = redis()->hGet(RedisService::USER_NOW_ROOM_KEY, $userinfo['id']);
         $userinfo['is_on_room'] = $currentRoomId ?: 0;
         if ($currentRoomId) {
-            $currentRoom = Db::name('room')->alias('r')->join('room_theme_cate c', 'r.theme_id = c.id')
-                ->where('r.id', $currentRoomId)->field('c.name as theme_name,r.name,r.cover')->find();
+            $currentRoom = Db::name('room')->alias('r')->where('r.id', $currentRoomId)->field('r.name,r.cover')->find();
             $userinfo['current_room'] = [
                 'id'    => $currentRoomId,
                 'name'  => $currentRoom['name'],
                 'cover' => $currentRoom['cover'],
-                'cate'  => $currentRoom['theme_name'],
             ];
         } else {
             $userinfo['current_room'] = null;
