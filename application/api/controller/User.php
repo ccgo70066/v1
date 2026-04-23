@@ -5,6 +5,7 @@ namespace app\api\controller;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\library\ChinaName;
+use app\common\library\rabbitmq\VestMQ;
 use app\common\library\Sms;
 use app\common\model\Shield;
 use app\common\model\User as UserModel;
@@ -803,6 +804,7 @@ class User extends Base
         if ($total_count >= $total_limit) $this->error(__('The remaining numbers are insufficient'));
 
         db('user_vest')->where('id', 'in', array_column((array)$exist, 'id'))->setField(['status' => 1, 'receiver' => $receiver]);
+        mq_publish(VestMQ::instance(), []);
 
         $this->success();
     }
