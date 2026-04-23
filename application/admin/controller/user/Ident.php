@@ -70,7 +70,10 @@ class Ident extends Backend
             }
             $result = $row->allowField(true)->save($params);
             $params['status'] != 0 &&
-            send_im_msg_by_system($row->user_id, $params['status'] == -1 ? ($params['comment'] ?: '您的实名认证审核未通过') : '您的实名认证审核通过');
+            send_im_msg_by_system(
+                $row->user_id,
+                $params['status'] == -1 ? ($params['comment'] ? '您的实名认证审核未通过, 原因为: ' . $params['comment'] : '您的实名认证审核未通过') : '您的实名认证审核通过'
+            );
             Db::commit();
         } catch (ValidateException|PDOException|Exception $e) {
             Db::rollback();
