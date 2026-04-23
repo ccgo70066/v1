@@ -32,7 +32,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         {field: 'type', title: __('Type'), searchList: {"1":__('Type 1'),"2":__('Type 2')}, formatter: Table.api.formatter.normal},
                         {field: 'title', title: __('Title'), operate: 'LIKE'},
                         {field: 'cover_image', title: __('Cover_image'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
-                        {field: 'icon', title: __('Icon'), operate: 'LIKE', formatter: Table.api.formatter.icon},
+                        {field: 'icon', title: __('icon'), operate: false, events: Table.api.events.image, formatter: Table.api.formatter.image},
                         {field: 'action', title: __('Action'), searchList: {"1":__('Action 1'),"2":__('Action 2')}, formatter: Table.api.formatter.normal},
                         {field: 'status', title: __('Status'), searchList: {"1":__('Status 1'),"0":__('Status 0')}, formatter: Table.api.formatter.status},
                         {field: 'show_type', title: __('Show_type'), searchList: {"1":__('Show_type 1'),"2":__('Show_type 2')}, operate:'FIND_IN_SET', formatter: Table.api.formatter.label},

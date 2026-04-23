@@ -3,7 +3,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Type')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-type" data-rule="required" class="form-control selectpicker" name="row[type]">
                 {foreach name="typeList" item="vo"}
                     <option value="{$key}" {in name="key" value="$row.type|default=''"}selected{/in}>{$vo}</option>
@@ -35,7 +35,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Icon')}:</label>
         <div class="col-xs-12 col-sm-8">
-            <input id="c-icon" class="form-control" name="row[icon]" type="text" value="{$row.icon|htmlentities}">
+            {:Form::image('row[icon]', $row['icon']??'')}
         </div>
     </div>
     <div class="form-group">
@@ -47,7 +47,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Action')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-action" data-rule="required" class="form-control selectpicker" name="row[action]">
                 {foreach name="actionList" item="vo"}
                     <option value="{$key}" {in name="key" value="$row.action|default=''"}selected{/in}>{$vo}</option>
@@ -65,10 +65,10 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
+
             <div class="radio">
             {foreach name="statusList" item="vo"}
-            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status|default=''"}checked{/in} /> {$vo}</label> 
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status|default=''"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
 
@@ -77,7 +77,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Show_type')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-show_type" class="form-control selectpicker" multiple="" name="row[show_type][]">
                 {foreach name="showTypeList" item="vo"}
                     <option value="{$key}" {in name="key" value="$row.show_type|default=''"}selected{/in}>{$vo}</option>
