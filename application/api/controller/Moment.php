@@ -28,8 +28,8 @@ class Moment extends Base
      * 获取推荐动态列表
      * @ApiSummary  ("stutas=2:审核中的,status=1审核通过的")
      * @ApiMethod   (get)
-     * @ApiParams   (name="size", type="int",  required=true, rule="", description="每页数量")
-     * @ApiParams   (name="start_id", type="int",  required=true, rule="", description="起始id")
+     * @ApiParams   (name="size", type="int",  required=false, rule="", description="每页数量")
+     * @ApiParams   (name="start_id", type="int",  required=false, rule="", description="起始id")
      */
     public function get_commend()
     {
@@ -489,7 +489,7 @@ class Moment extends Base
             ])->column('a.face_image', 'ua.user_id');
         $date = new Date();
         foreach ($list as &$v) {
-            $v['create_time_text'] = $date->human_time(strtotime($v['create_time']), request()->langset()) ?? '';
+            $v['create_time_text'] = $date->human_time(strtotime($v['create_time'])) ?? '';
             $v['like_count'] = isset($countLike[$v['id']]) ? (int)$countLike[$v['id']] : 0;
             $v['comment_count'] = isset($countComment[$v['id']]) ? (int)$countComment[$v['id']] : 0;
             $v['nickname'] = $userInfo[$v['user_id']]['nickname'];

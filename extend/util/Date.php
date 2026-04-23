@@ -34,13 +34,13 @@ class Date
         if ($second <= 60) {
             $str = sprintf('%d' . __('seconds'), $second);
         } elseif ($second < 3600) {
-            $str = sprintf('%.2f' . __(' minutes'), ($second / 60));
+            $str = sprintf('%.2f ' . __('minutes'), ($second / 60));
         } elseif ($second < 86400) {
-            $str = sprintf('%.2f' . __(' hours'), ($second / 3600));
+            $str = sprintf('%.2f' . __('hours'), ($second / 3600));
         } elseif ($second < 1728000) {
-            $str = sprintf('%.2f' . __(' days'), ($second / 86400));
+            $str = sprintf('%.2f' . __('days'), ($second / 86400));
         } else {
-            $str = sprintf('%.2f' . __(' months'), ($second / 86400 * 30));
+            $str = sprintf('%.2f' . __('months'), ($second / 86400 * 30));
         }
         return $str;
     }

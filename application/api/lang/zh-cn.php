@@ -99,4 +99,13 @@ return [
     'You have no permission'                         => '你没有权限访问',
     'An unexpected error occurred'                   => '发生了一个意外错误,程序猿正在紧急处理中',
     'This page will be re-directed in %s seconds'    => '页面将在 %s 秒后自动跳转',
+    '%s seconds ago'                                 => '%s秒前',
+    '%s minutes ago'                                 => '%s分钟前',
+    '%s hours ago'                                   => '%s小时前',
+    '%s days ago'                                    => '%s天前',
+    'seconds'                                        => '秒',
+    'minutes'                                        => '分钟',
+    'hours'                                          => '小时',
+    'days'                                           => '天',
+    'months'                                         => '月',
 ];
