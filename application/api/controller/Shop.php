@@ -40,7 +40,7 @@ class Shop extends Base
         input('type') && $where['type'] = input('type');
         $data = db('shop_item')
             ->field('create_time,update_time', true)
-            ->where('type', 'in', [2, 3, 6, 8])  //2=头像框,3=坐骑,6=聊天气泡
+            ->where('type', 'in', [2, 3, 6])  //2=头像框,3=坐骑,6=聊天气泡
             ->where("find_in_set({$system}, `show`)")
             ->where($where)
             ->order('type asc,weigh asc')
@@ -154,7 +154,6 @@ class Shop extends Base
 
         $this->success(__('Operation completed'));
     }
-
 
 
     /**
