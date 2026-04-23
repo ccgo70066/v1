@@ -185,6 +185,7 @@ class User extends Base
 
             $this->check_blacklist($user->id, input('imei') ?: '');
             ($user->status == 'hidden') && $this->error(__('Account has been banned'));
+            $this->auth->checkImeiLimit($user->id, input('imei')) && $this->error(__('The device is error'));
             //如果已经有账号则直接登录
             $result = $this->auth->direct($user->id, $this->system != 3);
             $update = [
@@ -247,6 +248,7 @@ class User extends Base
                 $this->check_blacklist($user->id, input('imei') ?: '');
             }
             ($user->status == 'hidden') && $this->error(__('Account has been banned'));
+            $this->auth->checkImeiLimit($user->id, input('imei')) && $this->error(__('The device is error'));
             //如果已经有账号则直接登录
             $result = $this->auth->direct($user->id, $this->system != 3);
             $update = [
