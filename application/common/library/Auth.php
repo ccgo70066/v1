@@ -749,4 +749,13 @@ class Auth
 
         return $this->register($username, $password, $email, $mobile, $extend);
     }
+
+    public function checkImeiLimit($user_id, $imei)
+    {
+        $imei_limit = db('user_business')->where('id', $user_id)->value('imei_limit');
+        if ($imei_limit && db('user')->where('id', $user_id)->value('imei') != $imei) {
+            return true;
+        }
+        return false;
+    }
 }

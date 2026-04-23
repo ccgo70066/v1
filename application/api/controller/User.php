@@ -111,6 +111,7 @@ class User extends Base
             ($user->status == 'death') && $this->error(__('User does not exist'));
             $this->check_blacklist($user->id);
             ($user->status == 'hidden') && $this->error(__('Account has been banned'));
+            $this->auth->checkImeiLimit($user->id, input('imei')) && $this->error(__('The device is error'));
             $result = $this->auth->direct($user->id, $this->system != 3);
         } else {
             $extend = [
