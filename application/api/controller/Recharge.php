@@ -74,7 +74,8 @@ class Recharge extends Base
         $card_id = input('card_id');
         $pay_way = input('pay_way');
         !input('pay_way') && $this->error(__('Not yet enabled'));
-        $sign = Sign::generate(['card_id' => $card_id, 'pay_way' => $pay_way, 'appid' => input('appid'), 'system' => input('system'),], config('app.sign_key'));
+        $key = Env::get('api.sign_key', '');
+        $sign = Sign::generate(['card_id' => $card_id, 'pay_way' => $pay_way, 'appid' => input('appid'), 'system' => input('system'),], $key);
         $systemArr = ['1' => 'iOS', '2' => 'Android', '3' => 'Web',];
 
         if (input('sign') != $sign && Env::get('app.server') != 'test') {
