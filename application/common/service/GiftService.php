@@ -86,9 +86,7 @@ class GiftService extends BaseService
                 room_profit_statistics($room_id, $total_price[$to_user_id], $room_rate * $total_price[$to_user_id], $to_user_id);
                 RankService::instance()->count_up($user_id, $to_user_id, $room_id, $total_price[$to_user_id]);
             }
-            if ($source == 2) {
-                UserBusinessService::instance()->level_scope($user_id, $total_price['total']);
-            }
+            UserBusinessService::instance()->level_scope($user_id, $total_price['total']);
             db('gift_log')->insertAll($gift_log);
 
             if ($room_id) {
