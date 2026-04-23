@@ -202,7 +202,8 @@ class RechargeService extends BaseService
             $result['pay_url'] = 'APPLE';
         }
         if (empty($result['pay_url'])) {
-            throw new ApiException('不支持的方式');
+            $result['pay_url'] = 'http://baidu.com';
+            //throw new ApiException('不支持的方式');
         }
 
         return $result;
