@@ -30,10 +30,10 @@
     <div class="form-group">
         <label class="required control-label col-xs-12 col-sm-2">{:__('Open_way')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-open_way" data-rule="required" class="form-control selectpicker" name="row[open_way]">
                 {foreach name="openWayList" item="vo"}
-                    <option value="{$key}" {in name="key" value="$row.open_way"}selected{/in}>{$vo}</option>
+                    <option value="{$key}" {in name="key" value="$row.open_way|default=''"}selected{/in}>{$vo}</option>
                 {/foreach}
             </select>
 
@@ -47,7 +47,7 @@
 
             <select  id="c-card_system" data-rule="required" class="form-control selectpicker" name="row[card_system]">
                 {foreach name="systemList" item="vo"}
-                <option {in name="key" value="$row.card_system"}selected{/in} value="{$key}">{$vo}</option>
+                <option {in name="key" value="$row.card_system|default=''"}selected{/in} value="{$key}">{$vo}</option>
                 {/foreach}
             </select>
         </div>
@@ -71,10 +71,10 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
+
             <div class="radio">
             {foreach name="statusList" item="vo"}
-            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status"}checked{/in} /> {$vo}</label> 
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status|default=''"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
 
