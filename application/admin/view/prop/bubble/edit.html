@@ -41,7 +41,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_renew')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_renew" data-rule="required" class="form-control selectpicker" name="row[is_renew]">
                 {foreach name="isRenewList" item="vo"}
                     <option value="{$key}" {in name="key" value="$row.is_renew|default=1"}selected{/in}>{$vo}</option>
@@ -53,7 +53,7 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Is_sell')}:</label>
         <div class="col-xs-12 col-sm-8">
-                        
+
             <select  id="c-is_sell" data-rule="required" class="form-control selectpicker" name="row[is_sell]">
                 {foreach name="isSellList" item="vo"}
                     <option value="{$key}" {in name="key" value="$row.is_sell||default=1"}selected{/in}>{$vo}</option>
@@ -65,10 +65,10 @@
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Status')}:</label>
         <div class="col-xs-12 col-sm-8">
-            
+
             <div class="radio">
             {foreach name="statusList" item="vo"}
-            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status"}checked{/in} /> {$vo}</label> 
+            <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status|default=''"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
 

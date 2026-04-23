@@ -6,7 +6,7 @@ use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\controller\Backend;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
-use app\common\library\Yunxin;
+use app\common\model\UserBusiness;
 use app\common\service\ImService;
 use app\common\service\UserBusinessService;
 use fast\Random;
@@ -14,9 +14,6 @@ use think\Db;
 use think\Exception;
 use think\exception\PDOException;
 use think\exception\ValidateException;
-use think\Log;
-use think\Model;
-use app\common\model\UserBusiness;
 
 /**
  * 会员管理
@@ -295,7 +292,6 @@ class User extends Backend
     }
 
 
-
     /**
      * 封禁用户
      */
@@ -356,7 +352,7 @@ class User extends Backend
                     ]);
                 }
             }
-            $disableUserFlag && user_blacklist_after($user_id);
+            $disableUserFlag && db('user')->where(['id' => $user_id])->setField(['status' => 'hidden']);
             board_notice(Message::CMD_KICK_USER, ['user_id' => $user_id]);
             Db::name('user_token')->where('user_id', $user_id)->delete();
             $this->success();
@@ -389,7 +385,7 @@ class User extends Backend
                 db('blacklist')->where(['type' => 1, 'number' => $ids])->delete();
                 db('blacklist')->where(['type' => 2, 'number' => $user['imei']])->delete();
                 db('blacklist')->where(['type' => 3, 'number' => $user['mobile']])->delete();
-                user_unblacklist_after($ids);
+                db('user')->where(['id' => $ids])->setField(['status' => 'normal']);
             }
             $this->success();
         }
