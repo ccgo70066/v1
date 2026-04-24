@@ -6,7 +6,7 @@ return [
     'User_id'     => '用户ID',
     'Role'        => '角色',
     'Role 1'      => '房主',
-    'Role 2'      => '管理',
+    'Role 2'      => '主持',
     'Role 3'      => '主播',
     'Status'      => '状态',
     'Status 0'    => '申请加入',
