@@ -241,8 +241,6 @@ class Game1 extends Base
         $start = microtime(true);
         $box_type = input('box_type');
         (!get_site_config('egg_switch') || !get_site_config("egg_box{$box_type}_switch")) && $this->error(__('Not yet enabled'));
-        in_array(5, explode(',', get_site_config('business_limit'))) &&
-        $this->error(get_site_config('business_limit_msg'));
         $user_id = $this->auth->id;
         $count = abs((int)input('count'));
         if (!in_array($count, [1, 10, 100])) {
