@@ -121,7 +121,6 @@ class Game2Service extends BaseService
         $count = $info['count'];
         $index = $info['index'];
         $room_id = $info['room_id'];
-        $info['sleep']++;  // 增加一秒延时
         $sleep = 7;
 
         // todo
