@@ -159,7 +159,13 @@ class Member extends Base
         if (in_array($status, [1, -2])) {
             UserBusinessService::set_user_role(input('user_id'), $status == 1 ? 3 : 1);
         }
-        send_im_msg_by_system(input('user_id'), '您的申请已处理,请查看');
+        $text = [
+            1  => '厅主已同意加入',
+            -2 => '厅主已同意退出',
+            -1 => '厅主已拒绝加入',
+            -3 => '厅主已拒绝退出',
+        ];
+        send_im_msg_by_system(input('user_id'), $text[input('status')]);
 
         $this->success();
     }
