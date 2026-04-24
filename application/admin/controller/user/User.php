@@ -73,9 +73,9 @@ class User extends Backend
                 'business' => function ($query) {
                     $query->withField('amount,reward_amount,role,level');
                 },
-                'group'    => function ($query) {
+                'channel'  => function ($query) {
                     $query->withField('name');
-                },
+                }
             ];
             $level = db('level')->column('icon', 'grade');
             $list = $this->model

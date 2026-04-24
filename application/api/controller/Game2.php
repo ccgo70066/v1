@@ -4,17 +4,10 @@ namespace app\api\controller;
 
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\common\exception\ApiException;
-use app\common\service\MongoService;
-use app\common\service\RedisService;
 use app\common\service\Game2Service;
-use fast\Http;
-use think\Cache;
+use app\common\service\RedisService;
 use think\Db;
-use think\Env;
-use think\Exception;
 use think\Log;
-use util\Util;
 
 /**
  * 游戏二

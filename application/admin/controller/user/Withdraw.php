@@ -69,7 +69,7 @@ class Withdraw extends Backend
 
                 $items['operate_username'] = RedisService::getAdminCache($items['operate_id'], 'nickname');
                 $items['finance_username'] = RedisService::getAdminCache($items['finance_id'], 'nickname');
-                $items['payment_name'] = $items['payment_way_id'] ? RedisService::getPaymentWayCache($items['payment_way_id'], 'name') : '';
+                //$items['payment_name'] = $items['payment_way_id'] ? RedisService::getPaymentWayCache($items['payment_way_id'], 'name') : '';
                 $items['fee'] /= 15;
             }
 

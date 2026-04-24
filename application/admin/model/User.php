@@ -131,4 +131,9 @@ class User extends Model
         return $this->belongsTo('user_business', 'id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 
+    public function channel()
+    {
+        return $this->belongsTo('channel', 'appid', 'appid', [], 'left')->setEagerlyType(0);
+    }
+
 }

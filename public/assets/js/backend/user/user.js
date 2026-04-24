@@ -47,6 +47,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         },
                         {field: 'level_icon', title: __('Level'), operate: false, sortable: true, formatter: Table.api.formatter.image},
                         {field: 'gender', title: __('Gender'), visible: false, searchList: {1: __('Male'), 0: __('Female')}},
+                        {field: 'channel.name', title: __('Appid'), formatter: Table.api.formatter.label, operate: false},
                         {field: 'system', title: __('System'), searchList: {"1": __('System 1'), "2": __('System 2')}, formatter: Table.api.formatter.normal},
                         {field: 'logintime', title: __('Logintime'), formatter: Table.api.formatter.datetime, operate: 'RANGE', addclass: 'datetimerange', sortable: true},
                         {field: 'loginip', title: __('Loginip'), formatter: Table.api.formatter.search, operate: 'like', placeholder: '支持模糊搜索'},

@@ -120,6 +120,7 @@ class User extends Base
                 'avatar'   => input('avatar'),
                 'gender'   => input('gender') ?: 1,
                 'birthday' => input('birthday') ?: '2002-01-01',
+                'appid'    => $this->appid,
                 'system'   => $this->system,
                 'version'  => $this->version,
                 'imei'     => input('imei'),
