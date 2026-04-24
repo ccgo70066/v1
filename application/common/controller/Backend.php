@@ -61,7 +61,6 @@ class Backend extends Controller
 
     /**
      * 关联查询表
-     * @var string
      */
     protected $relationTable = '';
 
