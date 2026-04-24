@@ -212,10 +212,10 @@ class UserWithdraw extends Base
         //        $this->error(__('The number of withdrawals for that day has been exhausted'));
         //    }
         //}
-        //$min_withdraw_amount = get_site_config('min_withdraw_amount') ?: "1";   //最低提现(收益)
-        //$max_withdraw_amount = get_site_config('max_withdraw_amount') ?: "1";   //最高提现(收益)
-        //$amount < $min_withdraw_amount && $this->error(__('The withdrawal limit cannot be less than the minimum withdrawal (profit)'));
-        //$amount > $max_withdraw_amount && $this->error(__('The withdrawal limit cannot exceed the maximum withdrawal (profit)'));
+        $min_withdraw_amount = get_site_config('min_withdraw_amount') ?: "1";   //最低提现(收益)
+        $max_withdraw_amount = get_site_config('max_withdraw_amount') ?: "1";   //最高提现(收益)
+        $amount < $min_withdraw_amount && $this->error(__('The withdrawal limit cannot be less than the minimum withdrawal (profit)'));
+        $amount > $max_withdraw_amount && $this->error(__('The withdrawal limit cannot exceed the maximum withdrawal (profit)'));
         $withdraw_config = get_site_config('withdraw_fee') ?: "0"; //获取手续费
 
         $fee = bcmul($amount, $withdraw_config, 2);
@@ -298,7 +298,8 @@ class UserWithdraw extends Base
         $data['withdraw_fee'] = get_site_config('withdraw_fee') ?: "0";
         //是否支持自定义提现额度
         $data['withdraw_any_amount'] = get_site_config('withdraw_any_amount') ?: "0";
-        [$data['withdraw_amount_min'], $data['withdraw_amount_max']] = explode(',', get_site_config('withdraw_amount_min_max'));
+        $data['withdraw_amount_min'] = get_site_config('min_withdraw_amount') ?: "1";   //最低提现(收益)
+        $data['withdraw_amount_max'] = get_site_config('max_withdraw_amount') ?: "1";   //最低提现(收益)
         //用户可提现的收益
         $data['user_reward_amount'] = db('user_business')->where('id', $this->auth->id)->value('reward_amount');
         $data['account'] = null;
