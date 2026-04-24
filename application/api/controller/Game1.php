@@ -192,7 +192,7 @@ class Game1 extends Base
                 $item['gifts'] = $gifts;
                 unset($item['gift_json']);
 
-                $data = json_decode($item['gift_other']?:'', true);
+                $data = json_decode($item['gift_other'] ?: '[]', true);
                 $gifts = [];
                 foreach ($data as $key => $value) {
                     $temp = RedisService::getGiftCache($value['gift_id'], ['name', 'image', 'price'], request()->langset());
