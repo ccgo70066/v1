@@ -593,4 +593,13 @@ class RoomService extends BaseService
         else db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id])->setField(['status' => $status]);
     }
 
+    public function leave_room_timeout(array $message)
+    {
+        $exist = db('room_admin')->where(['room_id' => $message['room_id'], 'user_id' => $message['user_id'], 'status' => 2])->find();
+        if (!$exist) return;
+        db('room_admin')->where(['room_id' => $message['room_id'], 'user_id' => $message['user_id'], 'status' => 2])->delete();
+        UserBusinessService::set_user_role($message['user_id'], 1);
+        send_im_msg_by_system($message['user_id'], '厅主未及时处理你的退出申请，已自动退出!');
+    }
+
 }

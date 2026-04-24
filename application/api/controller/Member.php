@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\exception\ApiException;
 use app\common\library\agora\Agora;
+use app\common\library\rabbitmq\LeaveRoomMQ;
 use app\common\model\ChannelBlacklist;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
@@ -137,6 +138,7 @@ class Member extends Base
             if (!input('reason')) $this->error(__('Please enter the reason'));
             db('room_admin')->where(['room_id' => $room_id, 'user_id' => $user_id,])->update(['status' => 2, 'reason' => input('reason', ''),]);
             send_im_msg_by_system($room['owner_id'], '有成员申请退出厅,请查看');
+            mq_publish(LeaveRoomMQ::instance(), ['room_id' => $room_id, 'user_id' => $user_id], 604800000);
         }
 
         $this->success();
