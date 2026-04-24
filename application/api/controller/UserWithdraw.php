@@ -192,8 +192,6 @@ class UserWithdraw extends Base
         $amount = input('amount');
         $this->operate_check('withdraw_lock:' . $user_id, 2);
 
-        $amount_list = explode(',', get_site_config('list_withdraw_amount'));
-        !in_array($amount, $amount_list) && $this->error(__('Unsupported credit limit'));
         $business = db('user_business')->where('id', $user_id)->find();
         if ($amount > $business['reward_amount']) {
             $this->error(__('Insufficient withdrawal limit'));
@@ -300,12 +298,9 @@ class UserWithdraw extends Base
         $data['withdraw_fee'] = get_site_config('withdraw_fee') ?: "0";
         //是否支持自定义提现额度
         $data['withdraw_any_amount'] = get_site_config('withdraw_any_amount') ?: "0";
+        [$data['withdraw_amount_min'], $data['withdraw_amount_max']] = explode(',', get_site_config('withdraw_amount_min_max'));
         //用户可提现的收益
         $data['user_reward_amount'] = db('user_business')->where('id', $this->auth->id)->value('reward_amount');
-        $list = explode(',', get_site_config('list_withdraw_amount'));
-        foreach ($list as $item) {
-            $data['list'][] = ['amount' => $item, 'pay_amount' => bcdiv($item, 15, 0)];
-        }
         $data['account'] = null;
         $account = db('user_account')->where('user_id', $this->auth->id)->where('is_default', 1)->find();
         if ($account) {
