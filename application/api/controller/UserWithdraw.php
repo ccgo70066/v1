@@ -94,7 +94,7 @@ class UserWithdraw extends Base
     /**
      * @ApiTitle    (新增會員提現申請)
      * @ApiMethod   (post)
-     * @ApiParams   (name="account_id", type="int",  required=true, rule="", description="提现账户ID")
+     * @ApiParams   (name="account_type", type="int",  required=true, rule="", description="提现账户类型:1=支付宝,2=银行卡")
      * @ApiParams   (name="amount", type="string",  required=true, rule="", description="金额")
      */
     public function add()
@@ -104,13 +104,12 @@ class UserWithdraw extends Base
         $this->operate_check('withdraw_lock:' . $user_id, 2);
 
         $business = db('user_business')->where('id', $user_id)->find();
-        if ($amount > $business['reward_amount']) {
-            $this->error(__('Insufficient withdrawal limit'));
-        }
-        $account = db('user_account')->where('id', input('account_id'))->find();
-        if (empty($account)) {
-            $this->error(__('Withdrawal account does not exist'));
-        }
+        if ($amount > $business['reward_amount']) $this->error(__('Insufficient withdrawal limit'));
+        $account = db('user_account')->where('user_id', $user_id)->find();
+        if (empty($account)) $this->error(__('Withdrawal account does not exist'));
+        $account_info = input('account_type') == 2 ?
+            array_index_filter($account, ['account_name', 'bank_name', 'bank_number', 'branch_name',]) :
+            array_index_filter($account, ['alipay_name', 'alipay_number',]);
         //$list_user = explode(',', get_site_config('list_withdraw_user')); //不受限制提现次数用户
         //if (in_array($user_id, $list_user) === false) {
         //    $withdraw = db('user_withdraw')->where([
@@ -143,7 +142,7 @@ class UserWithdraw extends Base
                 'payment_amount' => $payment_amount,
                 'fee'            => $fee,
                 'status'         => 0,
-                'account_data'   => json_encode($account),
+                'account_data'   => json_encode($account_info),
             ];
             db('user_withdraw')->insert($data);
             user_business_change($user_id, 'reward_amount', $amount, 'decrease', '用户申请提现', 13);
