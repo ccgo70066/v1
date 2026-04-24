@@ -61,6 +61,8 @@ class Base extends Api
             //$code = $code >= 1000 || $code < 200 ? 200 : $code;
             $code = 200;
         }
+        //$result['code'] = 9999;
+        //$result['msg'] = '我顶你个肺,就问你爽不爽. ';
         if ($this->request->header('debug', 0) == 0) {
             if (Env::get('api.response_confuse_switch')) $result = $this->confuse($result);
             if (Env::get('api.response_encode_switch')) {
