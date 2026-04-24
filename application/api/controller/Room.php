@@ -499,12 +499,7 @@ class Room extends Base
             2 => '暂停了麦上打赏统计',
             3 => '清空了麦上打赏统计'
         ];
-        $explain_en = [
-            0 => ' disabled Mic gift statistics',
-            1 => ' dnabled Mic gift statistics',
-            2 => ' daused Mic gift statistics',
-            3 => ' dleared Mic gift statistics'
-        ];
+
         $check_auth = $this->service->checkRoomRole($room_id, $this->auth->id, [1, 2, 3]);
         if (!$check_auth) {
             throw new ApiException(__('No permissions'));
@@ -513,7 +508,7 @@ class Room extends Base
             db('room')->where('id', $room_id)->setField('pause', $pause);
         }
 
-        $this->service->add_room_log($room_id, $this->auth->id, $explain[$pause], $explain_en[$pause]);
+        $this->service->add_room_log($room_id, $this->auth->id, $explain[$pause]);
 
         if ($pause == 3 || $pause == 0) {
             $roomModel->sit_reset($room_id);
