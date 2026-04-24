@@ -15,29 +15,6 @@ class UserWithdraw extends Base
     protected $noNeedLogin = [];
     protected $noNeedRight = '*';
 
-    protected $bankLogo = [
-        '上海商業儲蓄銀行'   => 'assets/bank/1.png',
-        '中國信托商業銀行'   => 'assets/bank/2.png',
-        '元大商業銀行'       => 'assets/bank/3.png',
-        '兆豐國際商業銀行'   => 'assets/bank/4.png',
-        '华南银行'           => 'assets/bank/5.png',
-        '台北富邦商業銀行'   => 'assets/bank/6.png',
-        '台新國際商業銀行'   => 'assets/bank/7.png',
-        '台湾银行'           => 'assets/bank/8.png',
-        '台灣中小企業銀行'   => 'assets/bank/9.png',
-        '台灣土地銀行'       => 'assets/bank/10.png',
-        '合作金庫商業銀行'   => 'assets/bank/11.png',
-        '國泰世華商業銀行'   => 'assets/bank/12.png',
-        '彰化商業銀行'       => 'assets/bank/13.png',
-        '星展（台灣）商業銀行' => 'assets/bank/14.png',
-        '永豐商業銀行'       => 'assets/bank/15.png',
-        '渣打國際商業銀行'   => 'assets/bank/16.png',
-        '玉山商業銀行'       => 'assets/bank/17.png',
-        '第一商業銀行'       => 'assets/bank/18.png',
-        '聯邦商業銀行'       => 'assets/bank/19.png',
-        '花旗（台灣）商業銀行' => 'assets/bank/20.png',
-    ];
-
     public function __construct()
     {
         parent::__construct();
@@ -46,63 +23,27 @@ class UserWithdraw extends Base
 
 
     /**
-     * 获取银行列表
-     */
-    public function get_bank()
-    {
-        $data = [];
-        foreach ($this->bankLogo as $k => $v) {
-            $data[] = ['name' => $k, 'logo' => $v];
-        }
-        $this->success('', $data);
-    }
-
-
-    /**
-     * @ApiTitle    (添加/修改银行卡提现账号信息)
+     * 设置提现账户
      * @ApiMethod   (post)
-     * @ApiSummary  (添加银行)
-     * @ApiParams   (name="id",    type="str",  required=false, description="账号ID")
      * @ApiParams   (name="account_name",    type="str",  required=false, description="真实姓名")
-     * @ApiParams   (name="card_number",  type="str",  required=false, description="身份证号")
      * @ApiParams   (name="bank_number",  type="str",  required=false, description="银行卡号")
      * @ApiParams   (name="bank_name",  type="str",  required=false, description="银行名称")
-     * @ApiParams   (name="bank_img",  type="str",  required=false, description="银行卡图片")
      * @ApiParams   (name="branch_name", type="str",  required=false, description="开户支行名称")
-     * @ApiParams   (name="province_city",type="str", required=false, description="开户行省市名称")
-     * @ApiParams   (name="mobile",  type="str",  required=false, description="手机号")
      *
-     * @ApiParams   (name="card_front_img",type="str", required=false, description="身份证正面图")
-     * @ApiParams   (name="card_back_img",type="str", required=false, description="身份证反面图")
-     *
-     * @ApiParams   (name="is_default", type="int",  required=false, description="是否默认支付方式:1=是,0=否")
+     * @ApiParams   (name="alipay_number",  type="str",  required=false, description="支付宝账号")
+     * @ApiParams   (name="alipay_name",  type="str",  required=false, description="支付宝姓名")
      */
-    public function add_bank_account()
+    public function set_account()
     {
         $user_id = $this->auth->id;
         $this->operate_check('account_lock:' . $user_id, 2);
         $data = input();
+        $data['user_id'] = $user_id;
+        $exist = db('user_account')->where('user_id', $user_id)->count();
+        if (!$exist) db('user_account')->strict(false)->insert($data);
+        else db('user_account')->where('user_id', $data['id'])->strict(false)->update($data);
 
-        Db::startTrans();
-        try {
-            $data['user_id'] = $user_id;
-            if ($data['is_default']) {
-                db('user_account')->where('user_id', $user_id)->update(['is_default' => 0]);
-            }
-            if ($data['id']) {
-                db('user_account')->where('id', $data['id'])->strict(false)->update($data);
-            } else {
-                $data['id'] = db('user_account')->strict(false)->insertGetId($data);
-            }
-            Db::commit();
-        } catch (\Exception $e) {
-            Db::rollback();
-            Log::error($e->getMessage());
-            error_log_out($e);
-            $this->error($e->getMessage());
-        }
-
-        $this->success(__('Operation completed'), ['id' => $data['id']]);
+        $this->success();
     }
 
     /**
@@ -136,15 +77,11 @@ class UserWithdraw extends Base
      */
     public function get_account_info()
     {
-        //$data = $this->service->getAccountInfo($this->auth->id);
-        $data = db('user_account')
-            //->field('id,bank_name,bank_logo,bank_number,is_default')
-            ->where(['user_id' => $this->auth->id])->order('is_default', 'desc')->select();
-        foreach ($data as &$item) {
-            $item['bank_logo'] = @$this->bankLogo[$item['bank_name']];
-            //$item['bank_number'] = substr($item['bank_number'], 0, 4);
-        }
-        $this->success('', $data);
+        $data = db('user_account')->where(['user_id' => $this->auth->id])->find();
+        $alipay = array_index_filter($data, ['alipay_name', 'alipay_number']);
+        $bank = array_index_filter($data, ['account_name', 'bank_name', 'bank_number', 'branch_name',]);
+
+        $this->success('', compact('alipay', 'bank'));
     }
 
 
