@@ -47,7 +47,6 @@ class Game2 extends Base
             // ->orderRaw('field(e.id,'.$orderBy.')')
             ->orderRaw('rand()')
             ->select();
-
         $adornment = db('adornment')->where('id', get_site_config('egg_gift_adornment'))
             ->field('id,name,cover as image')->find();
         $result = [
@@ -57,7 +56,7 @@ class Game2 extends Base
                 'wheel_gift_adornment' => $adornment['image'],
                 'gift'                 => $list1,
             ],
-            'user_info' => $this->get_info($user_id),
+            'user_info' => Game2Service::instance()->get_info($user_id),
         ];
         // return $result;
         // }, 30);
