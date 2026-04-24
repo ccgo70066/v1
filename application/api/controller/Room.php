@@ -411,7 +411,6 @@ class Room extends Base
             'type'         => ImService::ROOM_ONLINE_USER_REFRESH,
             'online_count' => $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $room_id)
         ];
-        trace($message);
         $imService->roomSendNotice($room_id, $message);
         $this->success('', $data);
     }
@@ -1125,11 +1124,17 @@ class Room extends Base
         $list = db('room')->field('id,beautiful_id,name,is_lock,hot,cover,member_count')
             ->where(['name|id|beautiful_id' => ['like', '%' . input('keyword') . '%'], 'status' => ['in', [2, 3]]])
             ->page(input('page', 1), input('size', 10))->select();
+        $redis = redis();
+        foreach ($list as &$item) {
+            $item['member_count'] = $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $item['room_id']);
+        }
 
         $my = db('room r')->join('room_admin a', 'r.id = a.room_id', 'left')
             ->field('id,beautiful_id,name,is_lock,hot,cover,member_count,status', false, 'r')
             ->field('a.status as member_status,a.role')
             ->where('a.user_id', $user_id)->where('r.status', '>=', 0)->find();
+        $my['member_count'] = $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $my['id']);
+
         $this->success('', [
             'my'   => $my,
             'list' => $list,
