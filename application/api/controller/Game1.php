@@ -17,7 +17,7 @@ use think\Request;
  * 游戏一
  * @package app\api\controller
  */
-class Egg extends Base
+class Game1 extends Base
 {
     protected $noNeedLogin = ['notice', 'explain',];
     protected $noNeedRight = ['*'];

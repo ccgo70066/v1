@@ -20,7 +20,7 @@ use util\Util;
  * 游戏二
  * @package app\api\controller
  */
-class Wheel extends Base
+class Game2 extends Base
 {
     protected $noNeedLogin = ['notice', 'notice_debug'];
     protected $noNeedRight = ['*'];
