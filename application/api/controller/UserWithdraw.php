@@ -3,7 +3,7 @@
 
 namespace app\api\controller;
 
-use app\common\service\RedisService;
+use app\common\service\UserWithdrawService;
 use think\Db;
 use think\Log;
 
