@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace app\common\library\rabbitmq;
 
-use app\common\service\EggService;
-use app\common\service\WheelService;
+use app\common\service\Game1Service;
 use think\Db;
 
-class WheelMQ extends BaseHandler
+class Game1MQ extends BaseHandler
 {
     // 同时消费者数量
-    public static $consumes_count = 1;
+    public static $consumes_count = 2;
 
     // 消费回调
     public function handler(array $message): bool
     {
         Db::startTrans();
         try {
-            WheelService::process_mq($message);
+            Game1Service::process_mq($message);
             Db::commit();
             return true;
         } catch (\Throwable|\Exception $e) {

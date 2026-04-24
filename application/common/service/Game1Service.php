@@ -6,7 +6,7 @@ use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\library\ChinaName;
-use app\common\library\rabbitmq\EggMQ;
+use app\common\library\rabbitmq\Game1MQ;
 use app\common\model\AnchorRecommend as AnchorRecommendModel;
 use app\common\model\Gift as GiftModel;
 use app\common\model\User;
@@ -28,7 +28,7 @@ use util\Util;
 /**
  * 游戏一
  */
-class EggService extends BaseService
+class Game1Service extends BaseService
 {
 
 
@@ -138,7 +138,7 @@ class EggService extends BaseService
         }, array_values($gift));
 
         $info = compact('gift', 'count', 'index', 'room_id', 'reward', 'intact_log_id', 'group_flag');
-        mq_publish(EggMQ::instance(), $info);
+        mq_publish(Game1MQ::instance(), $info);
         //self::process_mq($info);
         return $result;
     }
@@ -971,8 +971,8 @@ class EggService extends BaseService
         $reward = $info['reward'];
         $group_flag = $info['group_flag'];
         $intact_log_id = $info['intact_log_id'];
-        $box_gift = EggService::get_gift($index['box_type']);
-        $count == 100 && EggService::upgrade_level($index, array_column($gift, 'gift_id'));
+        $box_gift = Game1Service::get_gift($index['box_type']);
+        $count == 100 && Game1Service::upgrade_level($index, array_column($gift, 'gift_id'));
         $box_type = $index['box_type'];
         $screen_notice_switch = in_array(1, explode(',', get_site_config('egg_box' . $box_type . '_board_switch')));
         $room_notice_switch = in_array(2, explode(',', get_site_config('egg_box' . $box_type . '_board_switch')));
@@ -981,7 +981,7 @@ class EggService extends BaseService
         if ($group_flag && $count == 100) {
             Db::startTrans();
             try {
-                EggService::open_free($intact_log_id, $index['user_id'], $box_type, $count, $room_id);
+                Game1Service::open_free($intact_log_id, $index['user_id'], $box_type, $count, $room_id);
                 Db::commit();
             } catch (\Exception $e) {
                 Db::rollback();

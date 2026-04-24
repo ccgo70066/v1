@@ -5,7 +5,7 @@ namespace app\api\controller;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\exception\ApiException;
-use app\common\service\EggService;
+use app\common\service\Game1Service;
 use app\common\service\MongoService;
 use app\common\service\RedisService;
 use think\Cache;
@@ -67,7 +67,7 @@ class Game1 extends Base
         }, 5);
 
         // fix 避免新用户第一次百抽时出雷霆一击的报错
-        EggService::instance()->get_user_index($this->auth->id, 1);
+        Game1Service::instance()->get_user_index($this->auth->id, 1);
 
         $this->success('', $config);
     }
@@ -250,7 +250,7 @@ class Game1 extends Base
 
         Db::startTrans();
         try {
-            $result = EggService::open($user_id, $box_type, $count, $room_id);
+            $result = Game1Service::open($user_id, $box_type, $count, $room_id);
             MongoService::dataInsert('fa_egg_log');
             Db::commit();
         } catch (\Exception $e) {

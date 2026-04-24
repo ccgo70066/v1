@@ -3,7 +3,7 @@
 namespace app\admin\controller\egg;
 
 use app\common\controller\Backend;
-use app\common\service\EggService;
+use app\common\service\Game1Service;
 use think\Cache;
 use think\Db;
 use Exception;
@@ -119,7 +119,7 @@ class ConfigBase extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.add' : $name) : $this->modelValidate;
                         $this->model->validateFailException(true)->validate($validate);
                     }
-                    EggService::weigh_title_unique($params['title'], 'base', $ids ?? 0);
+                    Game1Service::weigh_title_unique($params['title'], 'base', $ids ?? 0);
                     isset($params['range_start']) && $params['range_start'] == '' && $params['range_start'] = null;
                     isset($params['range_end']) && $params['range_end'] == '' && $params['range_end'] = null;
                     $list = db('egg_gift b')
@@ -186,7 +186,7 @@ class ConfigBase extends Backend
                         $validate = is_bool($this->modelValidate) ? ($this->modelSceneValidate ? $name . '.edit' : $name) : $this->modelValidate;
                         $row->validateFailException(true)->validate($validate);
                     }
-                    EggService::weigh_title_unique($params['title'], 'base', $ids ?? 0);
+                    Game1Service::weigh_title_unique($params['title'], 'base', $ids ?? 0);
                     isset($params['range_start']) && $params['range_start'] == '' && $params['range_start'] = null;
                     isset($params['range_end']) && $params['range_end'] == '' && $params['range_end'] = null;
                     $params['title'] = trim($params['title']);

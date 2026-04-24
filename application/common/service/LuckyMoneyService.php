@@ -6,7 +6,7 @@ use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\library\ChinaName;
-use app\common\library\rabbitmq\EggMQ;
+use app\common\library\rabbitmq\Game1MQ;
 use app\common\model\AnchorRecommend as AnchorRecommendModel;
 use app\common\model\Gift as GiftModel;
 use app\common\model\User;

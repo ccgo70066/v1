@@ -7,7 +7,7 @@ use addons\socket\library\GatewayWorker\Applications\App\Message;
 use app\common\exception\ApiException;
 use app\common\service\MongoService;
 use app\common\service\RedisService;
-use app\common\service\WheelService;
+use app\common\service\Game2Service;
 use fast\Http;
 use think\Cache;
 use think\Db;
@@ -154,12 +154,12 @@ class Game2 extends Base
         $count = abs((int)input('count'));
         $room_id = input('room_id') ?: '0';
 
-        $result = WheelService::instance()->open_wheel($user_id, $box_type, $count, $room_id);
+        $result = Game2Service::instance()->open_wheel($user_id, $box_type, $count, $room_id);
         if (!$result) {
             $this->error(__('Network busy'));
         }
         $data['result'] = $result;
-        $data['user_info'] = WheelService::instance()->get_info($user_id);
+        $data['user_info'] = Game2Service::instance()->get_info($user_id);
         $data['total_amount'] = 0;
         foreach ($data['result'] as $item) {
             $data['total_amount'] += $item['price'] * $item['count'];

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace app\common\library\rabbitmq;
 
-use app\common\service\EggService;
 use app\common\service\LuckyMoneyService;
 use think\Db;
 

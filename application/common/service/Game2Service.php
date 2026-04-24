@@ -3,7 +3,7 @@
 namespace app\common\service;
 
 use addons\socket\library\GatewayWorker\Applications\App\Message;
-use app\common\library\rabbitmq\WheelMQ;
+use app\common\library\rabbitmq\Game2MQ;
 use fast\Http;
 use think\Cache;
 use think\Db;
@@ -15,7 +15,7 @@ use util\Util;
 /**
  * 游戏二
  */
-class WheelService extends BaseService
+class Game2Service extends BaseService
 {
 
 
@@ -103,7 +103,7 @@ class WheelService extends BaseService
                 'index'   => $index,
                 'room_id' => $room_id,
             ];
-            mq_publish(WheelMQ::instance(), $arr);
+            mq_publish(Game2MQ::instance(), $arr);
             //self::process_mq($arr);
             return array_values($gift);
         } catch (\Throwable $e) {
