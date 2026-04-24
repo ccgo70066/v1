@@ -78,7 +78,7 @@ class ImService extends BaseService
      */
     public function checkChatAuth($user_id, $to_user_id, $type)
     {
-        t(func_get_args());
+        tt(func_get_args());
         //发送人为系统账号
         if (in_array($user_id, self::$KF_IDS) || $user_id === self::SYS_ID) {
             $to_user = db('user')->where('id', $to_user_id)->field('avatar,nickname')->find();

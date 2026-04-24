@@ -961,7 +961,7 @@ class Game1Service extends BaseService
      */
     public static function process_mq(array $info)
     {
-        t($info);
+        tt($info);
         $sleep = 4;
         $start = microtime(true);
         $gift = $info['gift'];

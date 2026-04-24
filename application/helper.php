@@ -14,7 +14,7 @@ function traceInDB($content)
 }
 
 /** trace log */
-function t($log = '[think]', $level = 'log')
+function tt($log = '[think]', $level = 'log')
 {
     if ('[think]' === $log) {
         return Log::getLog();
