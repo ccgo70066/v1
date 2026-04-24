@@ -87,7 +87,7 @@ class RedisService extends BaseService
     public static function getPaymentWayCache($id, $field)
     {
         $table = 'payment_way';
-        $data = db($table)->cache(cacheFlag(), 3600, $table)->field('id,name,fee,company_id,pay_way_id')->find($id);
+        $data = db($table)->cache(cacheFlag(), 3600, $table)->field('id,name,fee')->find($id);
         return self::returnDataField($data, $field);
     }
 

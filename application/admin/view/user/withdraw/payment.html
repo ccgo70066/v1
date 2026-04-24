@@ -19,61 +19,60 @@
             {:Form::text('', $row['user']['nickname']."(".$row['user_id'].")", ['readonly'=>true])}
         </div>
     </div>
-    <fieldset><legend>银行卡信息</legend>
+
+
+    {if isset($row['bank_number'])}
+    <fieldset>
+        <legend>銀行卡信息</legend>
         <div class="form-group">
-            <label class="control-label col-xs-12 col-sm-2">真实姓名:</label>
+            <label class="control-label col-xs-12 col-sm-2">真實姓名:</label>
             <div class="col-xs-10 col-sm-8">
-                <input id="c-nick" class="form-control" readonly="readonly"  name="id" type="text" value="{$row.account_name}">
+                <input id="c-nick" class="form-control" readonly="readonly" name="id" type="text"
+                       value="{$row.account_name}">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-xs-12 col-sm-2">银行名称:</label>
+            <label class="control-label col-xs-12 col-sm-2">卡號:</label>
             <div class="col-xs-10 col-sm-8">
-                <input id="c-nick" class="form-control" readonly="readonly"  name="id" type="text" value="{$row.bank_name}">
+                <input id="c-nick" class="form-control" readonly="readonly" name="id" type="text"
+                       value="{$row.bank_number}">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-xs-12 col-sm-2">银行卡号:</label>
+            <label class="control-label col-xs-12 col-sm-2">開戶銀行:</label>
             <div class="col-xs-10 col-sm-8">
-                <input id="c-nick" class="form-control" readonly="readonly"  name="id" type="text" value="{$row.bank_number}">
+                <input id="c-nick" class="form-control" readonly="readonly" name="id" type="text"
+                       value="{$row.bank_name}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-12 col-sm-2">開戶分行:</label>
+            <div class="col-xs-10 col-sm-8">
+                <input id="c-nick" class="form-control" readonly="readonly" name="id" type="text"
+                       value="{$row.branch_name}">
             </div>
         </div>
 
-
+    </fieldset>
+    {else}
+    <fieldset>
+        <legend>支付宝信息</legend>
         <div class="form-group">
-            <label class="control-label col-xs-12 col-sm-2">手机号:</label>
+            <label class="control-label col-xs-12 col-sm-2">支付宝实名:</label>
             <div class="col-xs-10 col-sm-8">
-                <input id="c-nick" class="form-control" readonly="readonly"  name="id" type="text" value="{$row.mobile}">
+                <input id="c-nick" class="form-control" readonly="readonly" name="id" type="text" value="{$row.alipay_name}">
             </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-xs-12 col-sm-2">身份证号:</label>
+            <label class="control-label col-xs-12 col-sm-2">支付宝账号:</label>
             <div class="col-xs-10 col-sm-8">
-                <input id="c-nick" class="form-control" readonly="readonly"  name="id" type="text" value="{$row.card_number}">
+                <input id="c-nick" class="form-control" readonly="readonly" name="id" type="text" value="{$row.alipay_number}">
             </div>
         </div>
     </fieldset>
-{/*     <fieldset><legend>支付宝信息</legend> */}
-{/*         <div class="form-group"> */}
-{/*             <label class="control-label col-xs-12 col-sm-2">支付宝实名:</label> */}
-{/*             <div class="col-xs-10 col-sm-8"> */}
-{/*                 {:Form::text('', $row['alipay_name'], ['readonly'=>true])&cc; */}
-{/*             </div> */}
-{/*         </div> */}
-{/*         <div class="form-group"> */}
-{/*             <label class="control-label col-xs-12 col-sm-2">支付宝帐户:</label> */}
-{/*             <div class="col-xs-10 col-sm-8"> */}
-{/*                 {:Form::text('', $row['alipay_number'], ['readonly'=>true])&cc; */}
-{/*             </div> */}
-{/*         </div> */}
-{/*         <div class="form-group"> */}
-{/*             <label class="control-label col-xs-12 col-sm-2">支付宝身份证:</label> */}
-{/*             <div class="col-xs-10 col-sm-8"> */}
-{/*                 <input id="c-nick" class="form-control" readonly="readonly"  name="id" type="text" value="{$row.alipay_card_number&cc;"> */}
-{/*             </div> */}
-{/*         </div> */}
-{/*         */}
-{/*     </fieldset> */}
+    {/if}
+
+
     <fieldset><legend>提现信息</legend>
     <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('提现收益')}:</label>
