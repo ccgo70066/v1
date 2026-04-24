@@ -2,6 +2,7 @@
 
 namespace app\admin\model;
 
+use app\admin\model\general\PaymentWay;
 use think\Model;
 
 
@@ -64,7 +65,7 @@ class UserWithdraw extends Model
 
     public function payment()
     {
-        return $this->belongsTo('payment_way', 'payment_way_id', 'id', [], 'LEFT')->setEagerlyType(0);
+        return $this->belongsTo(PaymentWay::class, 'payment_way_id', 'id', [], 'LEFT')->setEagerlyType(0);
     }
 
 
