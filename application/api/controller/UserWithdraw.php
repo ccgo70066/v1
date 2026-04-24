@@ -295,7 +295,7 @@ class UserWithdraw extends Base
      */
     public function config()
     {
-        $data = ['unit' => 'NT$'];
+        $data = [];
         //提现手续费
         $data['withdraw_fee'] = get_site_config('withdraw_fee') ?: "0";
         //是否支持自定义提现额度
@@ -315,18 +315,13 @@ class UserWithdraw extends Base
                 'logo' => @$this->bankLogo[$account['bank_name']],
             ];
         }
-        $data['explain_zh'] = [
+        $data['explain'] = [
             '1. 請選擇提領的收益數量',
             '2. 提領申請提交24小時内完成審核，節假日順延',
             '3. 每筆提領需收取3%服務費',
             '4. 如有其他問題，請咨詢客服',
         ];
-        $data['explain_en'] = [
-            '1. Please select the amount of earnings to be withdrawn',
-            '2. Submit the application and complete the review within 24 hours. Holidays will be postponed accordingly',
-            '3. Each withdrawal requires a 3% service fee',
-            '4. If you have any other questions, please consult customer service',
-        ];
+
 
         $this->success('', $data);
     }
