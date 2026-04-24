@@ -21,98 +21,89 @@ class Game2Service extends BaseService
 
     public function open_wheel($user_id, $box_type, $count, $room_id)
     {
-        Db::startTrans();
-        try {
-            $price = get_site_config('wheel_price' . $box_type);
-            user_business_change($user_id, 'amount', $count * $price, 'decrease', '兑换游戏券', 9);
-            if ($room_id) {
-                $redis = redis();
-                $redis->hIncrBy('room_egg', $room_id, $count * $price);
-            }
-            $gift = $this->get_gift($box_type);
-            $index = $this->get_user_index($user_id, $box_type, $room_id);
-            $user_level = $this->get_user_level($index);
-            $sys_config = $this->get_sys_config($index, $user_level, $count);
-
-            $time = time();
-            $log_data = [];
-            $total_value = 0;
-            $log_gift_ids = [];
-            for ($i = 0; $i < $count; $i++) {
-                $weigh = $this->get_weigh($index, $user_level, $count);
-                if ($sys_config['status'] == 1 && $i == $count - 1) {
-                    $weigh = $sys_config;
-                }
-                $weigh['level'] = $user_level;
-                $lottery_gift_id = $this->lottery($weigh);
-
-                $pool_info = $this->process_pool($weigh, $index, $gift[$lottery_gift_id]['price']);
-                $log_data[] = array_merge([
-                    'gift_value'  => $gift[$lottery_gift_id]['price'],
-                    'user_id'     => $user_id,
-                    'box_type'    => $box_type,
-                    'count_type'  => $count,
-                    'used_amount' => $price,
-                    'gift_id'     => $lottery_gift_id,
-                    'count'       => 1,
-                    'room_id'     => $room_id,
-                    'weigh_name'  => $weigh['title'],
-                    'jump_status' => $weigh['jump_status'],
-                    'level_id'    => $user_level['id'],
-                    'box_index'   => $index["count"] + 1,
-                    'create_time' => $time,
-                    'update_time' => $time,
-                ], $pool_info ?? []);
-
-                $index['pool'] = bcadd($index['pool'], $pool_info['pool_per_diff'] ?? 0);
-                $index['count']++;
-                $index['count_' . $count] = ($index['count_' . $count]) + 1;
-                $index['total_used'] += $price;
-                $index['total_lucre'] += $gift[$lottery_gift_id]['price'];
-                $index['today_used'] += $price;
-                $index['today_lucre'] += $gift[$lottery_gift_id]['price'];
-                $total_value += $gift[$lottery_gift_id]['price'];
-                $gift[$lottery_gift_id]['count']++;
-                $log_gift_ids[] = $lottery_gift_id;
-            }
-            $index['update_time'] = datetime(time());
-            $first_level = db('wheel_level')->where('box_type', $box_type)->order('weigh asc')->find();
-            $first_level['weigh'] != $user_level['weigh'] && $index['hammer_' . $count]++;
-            db('wheel_user_index')->update($index);
-            $gift = $this->intact_log($gift, $index, $count, $weigh['level']['name'] ?? '', $time);
-            $this->process_gift($gift, $index, $count, $room_id);
-            $this->process_limit_log($gift, $user_id, $box_type, $count, $room_id, $time);
-
-            //数据存储
-            MongoService::dataStore([
-                'user_id'     => (int)$user_id,
-                'box_type'    => (int)$box_type,
-                'count_type'  => (int)$count,
-                'used_amount' => (int)$count * (int)$price,
-                'total_value' => (int)$total_value,
-                'room_id'     => (int)$room_id,
-                'level_id'    => (int)$index['level_id'],
-                'create_time' => $time,
-                'log'         => array_reverse(array_columns($log_data, ['weigh_name', 'jump_status', 'pool_sys_before', 'pool_sys_after', 'pool_sys_diff', 'pool_pub_after', 'pool_pub_before', 'pool_pub_diff', 'pool_pubn_after', 'pool_pubn_before', 'pool_pubn_diff', 'pool_per_after', 'pool_per_before', 'pool_per_diff', 'box_index', 'level_id', 'gift_id', 'gift_value', 'used_amount']))
-            ]);
-            MongoService::dataInsert('fa_wheel_log');
-            Db::commit();
-            $arr = [
-                'gift'    => $gift,
-                'count'   => $count,
-                'index'   => $index,
-                'room_id' => $room_id,
-            ];
-            mq_publish(Game2MQ::instance(), $arr);
-            //self::process_mq($arr);
-            return array_values($gift);
-        } catch (\Throwable $e) {
-            Db::rollback();
-            error_log_out($e);
-            Log::error($e->getMessage());
-            Log::error($e->getTraceAsString());
-            return false;
+        $price = get_site_config('wheel_price' . $box_type);
+        user_business_change($user_id, 'amount', $count * $price, 'decrease', '兑换游戏券', 9);
+        if ($room_id) {
+            $redis = redis();
+            $redis->hIncrBy('room_egg', $room_id, $count * $price);
         }
+        $gift = $this->get_gift($box_type);
+        $index = $this->get_user_index($user_id, $box_type, $room_id);
+        $user_level = $this->get_user_level($index);
+        $sys_config = $this->get_sys_config($index, $user_level, $count);
+
+        $time = time();
+        $log_data = [];
+        $total_value = 0;
+        $log_gift_ids = [];
+        for ($i = 0; $i < $count; $i++) {
+            $weigh = $this->get_weigh($index, $user_level, $count);
+            if ($sys_config['status'] == 1 && $i == $count - 1) {
+                $weigh = $sys_config;
+            }
+            $weigh['level'] = $user_level;
+            $lottery_gift_id = $this->lottery($weigh);
+
+            $pool_info = $this->process_pool($weigh, $index, $gift[$lottery_gift_id]['price']);
+            $log_data[] = array_merge([
+                'gift_value'  => $gift[$lottery_gift_id]['price'],
+                'user_id'     => $user_id,
+                'box_type'    => $box_type,
+                'count_type'  => $count,
+                'used_amount' => $price,
+                'gift_id'     => $lottery_gift_id,
+                'count'       => 1,
+                'room_id'     => $room_id,
+                'weigh_name'  => $weigh['title'],
+                'jump_status' => $weigh['jump_status'],
+                'level_id'    => $user_level['id'],
+                'box_index'   => $index["count"] + 1,
+                'create_time' => $time,
+                'update_time' => $time,
+            ], $pool_info ?? []);
+
+            $index['pool'] = bcadd($index['pool'], $pool_info['pool_per_diff'] ?? 0);
+            $index['count']++;
+            $index['count_' . $count] = ($index['count_' . $count]) + 1;
+            $index['total_used'] += $price;
+            $index['total_lucre'] += $gift[$lottery_gift_id]['price'];
+            $index['today_used'] += $price;
+            $index['today_lucre'] += $gift[$lottery_gift_id]['price'];
+            $total_value += $gift[$lottery_gift_id]['price'];
+            $gift[$lottery_gift_id]['count']++;
+            $log_gift_ids[] = $lottery_gift_id;
+        }
+        $index['update_time'] = datetime(time());
+        $first_level = db('wheel_level')->where('box_type', $box_type)->order('weigh asc')->find();
+        $first_level['weigh'] != $user_level['weigh'] && $index['hammer_' . $count]++;
+        db('wheel_user_index')->update($index);
+        $gift = $this->intact_log($gift, $index, $count, $weigh['level']['name'] ?? '', $time);
+        $this->process_gift($gift, $index, $count, $room_id);
+        $this->process_limit_log($gift, $user_id, $box_type, $count, $room_id, $time);
+
+        //数据存储
+        MongoService::dataStore([
+            'user_id'     => (int)$user_id,
+            'box_type'    => (int)$box_type,
+            'count_type'  => (int)$count,
+            'used_amount' => (int)$count * (int)$price,
+            'total_value' => (int)$total_value,
+            'room_id'     => (int)$room_id,
+            'level_id'    => (int)$index['level_id'],
+            'create_time' => $time,
+            'log'         => array_reverse(array_columns($log_data, ['weigh_name', 'jump_status', 'pool_sys_before', 'pool_sys_after', 'pool_sys_diff', 'pool_pub_after', 'pool_pub_before', 'pool_pub_diff', 'pool_pubn_after', 'pool_pubn_before', 'pool_pubn_diff', 'pool_per_after', 'pool_per_before', 'pool_per_diff', 'box_index', 'level_id', 'gift_id', 'gift_value', 'used_amount']))
+        ]);
+        MongoService::dataInsert('fa_wheel_log');
+        Db::commit();
+        $arr = [
+            'gift'    => $gift,
+            'count'   => $count,
+            'index'   => $index,
+            'room_id' => $room_id,
+        ];
+        mq_publish(Game2MQ::instance(), $arr);
+        //self::process_mq($arr);
+        return array_values($gift);
     }
 
     public static function process_mq(array $info)

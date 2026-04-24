@@ -146,7 +146,14 @@ class Game2 extends Base
         $count = abs((int)input('count'));
         $room_id = input('room_id') ?: '0';
 
-        $result = Game2Service::instance()->open_wheel($user_id, $box_type, $count, $room_id);
+        try {
+            $result = Game2Service::instance()->open_wheel($user_id, $box_type, $count, $room_id);
+        } catch (\Exception $e) {
+            error_log_out($e);
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+            $this->error($e->getMessage());
+        }
         if (!$result) {
             $this->error(__('Network busy'));
         }
