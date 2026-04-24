@@ -53,8 +53,8 @@ class UserWithdraw extends Base
     {
         $data = db('user_account')->where(['user_id' => $this->auth->id])->find();
         if (!$data) $this->success();
-        $alipay = array_index_filter($data, ['alipay_name', 'alipay_number']);
-        $bank = array_index_filter($data, ['account_name', 'bank_name', 'bank_number', 'branch_name',]);
+        $bank = $data['bank_name'] ? array_index_filter($data, ['account_name', 'bank_name', 'bank_number', 'branch_name',]) : new \ArrayObject();
+        $alipay = $data['alipay_name'] ? array_index_filter($data, ['alipay_name', 'alipay_number']) : new \ArrayObject();
 
         $this->success('', compact('alipay', 'bank'));
     }
