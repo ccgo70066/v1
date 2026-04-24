@@ -430,14 +430,21 @@ class UserBusinessService extends BaseService
     {
         $level = db('level')->column('scope,name', 'grade');
         $user = db('user_business')->where('id', $user_id)->field('level,level_scope')->find();
-        $user['level_scope'] += $amount * 10;
+        $noble = db('user_noble')->where('id', $user_id)->where('end_time', '>', datetime())->find();
+        if ($noble) {
+            $speedup = db('noble')->where('id', $noble['noble_id'])->value('speedup');
+            $amount *= $speedup;
+        }
+        $user['level_scope'] += $amount;
         $flag = false;
 
         while (isset($level[$user['level'] + 1]) && $user['level_scope'] >= $level[$user['level'] + 1]['scope']) {
             $user['level'] += 1;
             $flag = true;
         }
-        $flag && send_im_msg_by_system($user_id, sprintf('恭喜,您的财富等级升級至%s,已解鎖更多專屬特權!', $level[$user['level']]['name']));
+        if ($flag) {
+            send_im_msg_by_system($user_id, sprintf('恭喜，您的财富等级升级至%s，已解锁更多专属特权！', $level[$user['level']]['name']));
+        }
         db('user_business')->where('id', $user_id)->setField($user);
     }
 
