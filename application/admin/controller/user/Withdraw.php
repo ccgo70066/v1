@@ -332,7 +332,10 @@ class Withdraw extends Backend
                 $result = db('user_withdraw')->update($data);
                 user_business_change($row['user_id'], 'reward_amount', $row['amount'], 'increase', '提现申请被驳回', 13, 0);
                 $row['amount'] = (int)$row['amount'];
-                send_im_msg_by_system_with_lang($row['user_id'], sprintf('您于%s提交的%s收益提现申请未通过,订单号:%s,原因: %s', $row['create_time'], $row['amount'], $row['withdraw_no'], $params['reject_comment']));
+                send_im_msg_by_system_with_lang(
+                    $row['user_id'],
+                    sprintf('您于%s提交的%s收益提现申请未通过,订单号:%s,原因: %s', $row['create_time'], $row['amount'], $row['withdraw_no'], $params['reject_comment'])
+                );
                 if ($result !== false) {
                     $this->success();
                 } else {
