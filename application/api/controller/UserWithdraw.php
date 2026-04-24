@@ -47,35 +47,9 @@ class UserWithdraw extends Base
     }
 
     /**
-     * @ApiTitle    (刪除银行卡提现账号信息)
-     * @ApiMethod   (post)
-     * @ApiSummary  (添加银行)
-     * @ApiParams   (name="id",    type="str",  required=true, description="ID")
-     */
-    public function del_bank_account()
-    {
-        $user_id = $this->auth->id;
-        $this->operate_check('account_lock:' . $user_id, 2);
-        $id = input('id', 0);
-        $account = db('user_account')->where('id', $id)->find();
-        db('user_account')->where('id', $id)->delete();
-        if ($account['is_default']) {
-            $accountOther = db('user_account')->where('user_id', $user_id)->find();
-            if ($accountOther) {
-                $accountOther['is_default'] = 1;
-                db('user_account')->update($accountOther);
-            }
-        }
-
-
-        $this->success(__('Operation completed'));
-    }
-
-
-    /**
      * 获取提现账户详情
      */
-    public function get_account_info()
+    public function get_account()
     {
         $data = db('user_account')->where(['user_id' => $this->auth->id])->find();
         $alipay = array_index_filter($data, ['alipay_name', 'alipay_number']);
