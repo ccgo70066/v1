@@ -181,7 +181,7 @@ class App extends Base
         $version = input('version');
 
         $data = db('channel_package')->alias('cp')->field('cp.id,cp.channel_id')
-            ->where(['cp.system' => $system, 'cp.version' => $version, 'cp.status' => 1,])->find();
+            ->where(['cp.appid' => $this->appid, 'cp.system' => $system, 'cp.version' => $version, 'cp.status' => 1,])->find();
         if ($data) {
             $lastData = db('channel_package')->field('version,download,force,comment')->where([
                 'channel_id' => $data['channel_id'],

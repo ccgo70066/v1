@@ -153,7 +153,7 @@ class Base extends Api
     {
         //if (Env::get('app.debug')) return;
         if (!Env::get('api.request_encode_switch')) return;
-        if ($this->auth->match($this->noNeedSign)) return;
+        //if ($this->auth->match($this->noNeedSign)) return;
 
         $vToken = $this->request->header('v-token', '');
         $rs = json_decode(ApiEnhance::instance()->requestDecode($vToken), true);
