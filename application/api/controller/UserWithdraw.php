@@ -220,7 +220,7 @@ class UserWithdraw extends Base
 
         $fee = bcmul($amount, $withdraw_config, 2);
         $less_amount = bcsub($business['reward_amount'], $amount, 2);
-        $payment_amount = bcdiv(bcsub($amount, $fee, 2), 15, 2);
+        $payment_amount = bcdiv(bcsub($amount, $fee, 2), 10, 2);
         try {
             Db::startTrans();
             $data = [
