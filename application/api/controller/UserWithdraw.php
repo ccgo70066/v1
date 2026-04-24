@@ -52,6 +52,7 @@ class UserWithdraw extends Base
     public function get_account()
     {
         $data = db('user_account')->where(['user_id' => $this->auth->id])->find();
+        if (!$data) $this->success();
         $alipay = array_index_filter($data, ['alipay_name', 'alipay_number']);
         $bank = array_index_filter($data, ['account_name', 'bank_name', 'bank_number', 'branch_name',]);
 
