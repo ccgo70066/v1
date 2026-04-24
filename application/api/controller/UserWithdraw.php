@@ -41,7 +41,7 @@ class UserWithdraw extends Base
         $data['user_id'] = $user_id;
         $exist = db('user_account')->where('user_id', $user_id)->count();
         if (!$exist) db('user_account')->strict(false)->insert($data);
-        else db('user_account')->where('user_id', $data['id'])->strict(false)->update($data);
+        else db('user_account')->where('user_id', $user_id)->strict(false)->update($data);
 
         $this->success();
     }
