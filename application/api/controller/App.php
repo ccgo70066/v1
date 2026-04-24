@@ -20,7 +20,6 @@ class App extends Base
 
     protected $noNeedLogin = ['*'];
     protected $noNeedRight = ['*'];
-    protected $noNeedSign = ['*'];
     protected $upload_scene = ['app_upload', 'avatar', 'moment', 'room', 'chat', 'sign_anchor', 'sign_union',];
 
     /**

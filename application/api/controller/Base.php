@@ -20,7 +20,7 @@ class Base extends Api
     protected $service;
     protected $noNeedSign = '';
 
-    protected $appid = 'a1';
+    protected $appid = '';
     protected $system = 1;
     protected $version = 1;
 
@@ -28,6 +28,7 @@ class Base extends Api
     protected function _initialize()
     {
         parent::_initialize();
+
 
         $this->sign_decode();
         $this->request->post($this->decodeRequest(input('raw')));
@@ -155,16 +156,17 @@ class Base extends Api
         if (!Env::get('api.request_encode_switch')) return;
         //if ($this->auth->match($this->noNeedSign)) return;
 
-        $vToken = $this->request->header('v-token', '');
+        $vToken = $this->request->header('v-token', '[]');
         $rs = json_decode(ApiEnhance::instance()->requestDecode($vToken), true);
-        if (!$rs) $this->error(__('Request sign failed'));
+        $actionname = strtolower($this->request->action());
+        if (!$rs && $actionname != 'config') $this->error(__('Request sign failed'));
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
         if (isset($rs['version'])) $this->version = $rs['version'];
         if (isset($rs['time']) && Env::get('api.request_encode_switch') && !Env::get('app.debug')) {
             $time = $rs['time'];
             $i = 15;
-            if ((time() - $i) > $time || (time() + $i) < $time) $this->error(__('Request timeout'));
+            //if ((time() - $i) > $time || (time() + $i) < $time) $this->error(__('Request timeout'));
         }
     }
 
