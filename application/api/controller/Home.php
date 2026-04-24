@@ -4,6 +4,7 @@ namespace app\api\controller;
 
 use app\common\model\Room as RoomModel;
 use app\common\service\HomeService;
+use app\common\service\LuckyMoneyService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
 use app\common\service\UserService;
@@ -15,8 +16,9 @@ use think\Db;
  */
 class Home extends Base
 {
-    protected $noNeedLogin = ['room_list', 'anchor_list', 'search', 'vest'];
+    protected $noNeedLogin = ['room_list', 'anchor_list', 'search', 'vest', 'lucky'];
     protected $noNeedRight = '*';
+    protected $noNeedSign = ['lucky'];
 
 
     /**
@@ -147,5 +149,10 @@ class Home extends Base
     public function vest()
     {
         UserService::instance()->cron_vest();
+    }
+
+    public function lucky()
+    {
+        LuckyMoneyService::instance()->push(13);
     }
 }

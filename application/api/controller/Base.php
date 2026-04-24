@@ -156,12 +156,11 @@ class Base extends Api
     {
         //if (Env::get('app.debug')) return;
         if (!Env::get('api.request_encode_switch')) return;
-        //if ($this->auth->match($this->noNeedSign)) return;
+        if ($this->auth->match($this->noNeedSign)) return;
 
         $vToken = $this->request->header('v-token', '[]');
         $rs = json_decode(ApiEnhance::instance()->requestDecode($vToken), true);
-        $actionname = strtolower($this->request->action());
-        if (!$rs && $actionname != 'config') $this->error(__('Request sign failed'));
+        if (!$rs) $this->error(__('Request sign failed'));
         if (isset($rs['appid'])) $this->appid = $rs['appid'];
         if (isset($rs['system'])) $this->system = $rs['system'];
         if (isset($rs['version'])) $this->version = $rs['version'];
