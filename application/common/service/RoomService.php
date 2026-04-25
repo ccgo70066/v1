@@ -314,8 +314,8 @@ class RoomService extends BaseService
             'room_id' => $room_id,
             'user_id' => $user_id,
             'role'    => ['in', $role]
-        ])->find();
-        return (bool)$result;
+        ])->count();
+        return $result > 0;
     }
 
     /** 是否是房间黑名单

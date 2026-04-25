@@ -1126,7 +1126,7 @@ class Room extends Base
             ->page(input('page', 1), input('size', 10))->select();
         $redis = redis();
         foreach ($list as &$item) {
-            $item['member_count'] = $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $item['room_id']);
+            $item['member_count'] = $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $item['id']);
         }
 
         $my = db('room r')->join('room_admin a', 'r.id = a.room_id', 'left')
