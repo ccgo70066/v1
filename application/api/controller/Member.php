@@ -169,7 +169,7 @@ class Member extends Base
         }
         if ($status == 1) {
             $im = ImService::instance();
-            $im->roomSetAuth(input('room_id'), input('user_id'), 3);
+            $im->roomSetAuth(input('room_id'), input('user_id'), true, 2);
         }
         $text = [
             1  => '厅主已同意加入',

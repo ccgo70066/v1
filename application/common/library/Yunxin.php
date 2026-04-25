@@ -7,8 +7,8 @@ use think\Env;
 /**
  * 网易云信接口
  * @link    https://doc.yunxin.163.com/messaging/server-apis?platform=server
- * @limit  普通消息: 单个应用默认最高调用频率：100 次/秒，如超限，将被屏蔽 10 秒。
- * @limit  广播消息: 单个应用默认最高调用频率：10 次/分，如超限，将被屏蔽 1 分钟。
+ * @limit   普通消息: 单个应用默认最高调用频率：100 次/秒，如超限，将被屏蔽 10 秒。
+ * @limit   广播消息: 单个应用默认最高调用频率：10 次/分，如超限，将被屏蔽 1 分钟。
  */
 class Yunxin
 {
@@ -474,7 +474,7 @@ class Yunxin
      * @param int $im_room_id 云信房间号
      * @param int $type       需要查询的成员类型,0:固定成员;1:非固定成员;2:仅返回在线的固定成员
      */
-    public function membersByPage($im_room_id, $type, $endtime)
+    public function membersByPage($im_room_id, $type, $endtime = '0')
     {
         $url = "/chatroom/membersByPage.action";
         $imData = [

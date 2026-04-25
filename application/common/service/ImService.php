@@ -252,16 +252,20 @@ class ImService extends BaseService
 
     /**
      * 设置IM聊天室权限
-     * @param $room_id int 房间ID
-     * @param $user_id int 被操作者
-     * @param $type    bool true=赋予权限(房主、房管、陪陪),false=取消权限
+     * @param         $room_id     int 房间ID
+     * @param         $user_id     int 被操作者
+     * @param         $type        bool true=赋予权限(房主、房管、陪陪),false=取消权限
+     * @param boolean $opt         1: 设置为管理员，operator必须是创建者
+     *                             2:设置普通等级用户，operator必须是创建者或管理员
+     *                             -1:设为黑名单用户，operator必须是创建者或管理员
+     *                             -2:设为禁言用户，operator必须是创建者或管理员
      */
-    public function roomSetAuth($room_id, $user_id, $type)
+    public function roomSetAuth($room_id, $user_id, $type = true, $opt = 1)
     {
         $roomModel = new Room();
         $im_room_id = $roomModel->getImRoomId($room_id);
         $operator = db('room')->where('id', $room_id)->value('owner_id');
-        return $this->im->set_room_role($operator, $user_id, $im_room_id, $type);
+        return $this->im->set_room_role($operator, $user_id, $im_room_id, $type ? 'true' : 'false', $opt);
     }
 
     //创建房间
