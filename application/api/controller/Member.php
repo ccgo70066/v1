@@ -74,8 +74,13 @@ class Member extends Base
             $item['age'] = date('Y') - substr($item['birthday'], 0, 4);
             $item['level_icon'] = RedisService::getLevelCache($item['level']);
         }
+        $rs = ['list' => $list];
+        if ($status == 1) {
+            $rs['join_count'] = db('room_admin')->where('room_id', $room_id)->where('status', 0)->count();
+            $rs['leave_count'] = db('room_admin')->where('room_id', $room_id)->where('status', 2)->count();
+        }
 
-        $this->success('', $list);
+        $this->success('', $rs);
     }
 
     /**
