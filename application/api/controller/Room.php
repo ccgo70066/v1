@@ -375,7 +375,7 @@ class Room extends Base
 
 
         $data = [];
-        $data['hiding'] = false;
+        $data['hiding'] = user_noble_switch($user_id, 9);
         $data['is_collect'] = db('room_collect')->where(['room_id' => $room_id, 'user_id' => $this->auth->id])->count();
         $data['blacklist'] = ChannelBlacklist::get_blacklist($this->appid, $this->system, $this->version);
         //声网token

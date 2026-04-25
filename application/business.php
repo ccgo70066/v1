@@ -276,6 +276,11 @@ function user_noble_switch($user_id, $switch_type)
 {
     $rs = db('user_noble')->where('id', $user_id)->where('end_time', '>', datetime())->find();
     if (!$rs) return 0;
+    $noble = db('noble')->where('id', $rs['noble_id'])->where("find_in_set($switch_type, `privilege_ids`)")->find();
+    if ($noble) {
+        if ($switch_type == 5) return 1;
+        if ($switch_type == 9) return $rs['room_hide'] == 1 ? 1 : 0;
+    }
     return 0;
 }
 

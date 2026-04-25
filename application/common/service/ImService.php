@@ -43,6 +43,8 @@ class ImService extends BaseService
     const CHAT_MESSAGE_GIFT = 'gift';   //送礼
     const CHAT_MESSAGE_RED_PACKET = 'red_packet';   //红包
     const CHAT_MESSAGE_ROOM_SHARE = 'room_share';  //邀请房间
+    const CHAT_MESSAGE_EMOJI = 'emoji';  //表情
+
     const CHAT_MESSAGE_TYPE_RANGE = [
         self::CHAT_MESSAGE_TEXT,
         self::CHAT_MESSAGE_IMAGE,
@@ -353,5 +355,10 @@ class ImService extends BaseService
     public function send_sms($phone, $code)
     {
         return $this->im->sendSMS($phone, $code);
+    }
+
+    public function room_send_notice($room_id, $data = [])
+    {
+        return $this->im->room_send_notice($room_id, $data);
     }
 }
