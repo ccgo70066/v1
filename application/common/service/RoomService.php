@@ -313,6 +313,7 @@ class RoomService extends BaseService
         $result = db('room_admin')->where([
             'room_id' => $room_id,
             'user_id' => $user_id,
+            'status'  => 1,
             'role'    => ['in', $role]
         ])->count();
         return $result > 0;

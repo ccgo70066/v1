@@ -736,12 +736,13 @@ class Room extends Base
         $room_id = input('room_id');
         $role = input('role');
 
-        if (!in_array($role, [0, RoomModel::ROOM_ROLE_MANAGE, RoomModel::ROOM_ROLE_ANCHOR])) {
+        if (!in_array($role, [0, RoomModel::ROOM_ROLE_MANAGE, RoomModel::ROOM_ROLE_ANCHOR]))
             throw new ApiException(__('Operation failed'));
-        }
+        if (!$this->service->checkRoomRole($room_id, $user_id, [1]))
+            throw new ApiException(__('No permissions'));
+        if (!$this->service->checkRoomRole($room_id, $to_user_id, [2, 3]))
+            throw new ApiException(__("This user is not a clan member"));
 
-        //房主或者族长才能设置身份
-        $check_auth = $this->service->checkRoomRole($room_id, $user_id, [1]);
         if ($role) {
             $this->service->roomRoleSet($room_id, $to_user_id, $role);
         } else {
