@@ -6,6 +6,7 @@ use app\common\exception\ApiException;
 use app\common\library\agora\Agora;
 use app\common\library\rabbitmq\LeaveRoomMQ;
 use app\common\model\ChannelBlacklist;
+use app\common\service\ImService;
 use app\common\service\RedisService;
 use app\common\service\RoomService;
 use app\common\service\UserBusinessService;
@@ -165,6 +166,10 @@ class Member extends Base
         $roomServer->check_member(input('room_id'), input('user_id'), $status);
         if (in_array($status, [1, -2])) {
             UserBusinessService::set_user_role(input('user_id'), $status == 1 ? 3 : 1);
+        }
+        if ($status == 1) {
+            $im = ImService::instance();
+            $im->roomSetAuth(input('room_id'), input('user_id'), 3);
         }
         $text = [
             1  => '厅主已同意加入',

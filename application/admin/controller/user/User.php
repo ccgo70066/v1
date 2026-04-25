@@ -8,6 +8,7 @@ use app\common\exception\ApiException;
 use app\common\library\Auth;
 use app\common\model\UserBusiness;
 use app\common\service\ImService;
+use app\common\service\RoomService;
 use app\common\service\UserBusinessService;
 use fast\Random;
 use think\Db;
@@ -783,13 +784,10 @@ class User extends Backend
             ->select();
 
 
+        // todo
         if ($this->request->isPost()) {
             try {
-                $current_role = db('user_business')->where('id', $user_id)->where(
-                    'role',
-                    'in',
-                    [2, 3, 4]
-                )->value('role');
+                $current_role = db('user_business')->where('id', $user_id)->where('role', 'in', [2, 3, 4])->value('role');
                 if (!$current_role) {
                     throw new \Exception('数据有更新,请刷新');
                 }
@@ -798,35 +796,8 @@ class User extends Backend
                 }
                 db()->startTrans();
 
-                $update1 = db('anchor')->where('user_id', $user_id)->where('status', 2)
-                    ->setField(['status' => 0, 'audit_admin' => session('admin.id'), 'audit_time' => datetime()]);
                 $update2 = db('user_business')->where('id', $user_id)->setField(['role' => 1, 'union_id' => 0]);
                 Db::name('room_admin')->where('user_id', $user_id)->delete();
-                Db::name('union_user')->where(['user_id' => $user_id])->delete();
-                $roomService = new RoomService();
-                foreach ($room_admin as $value) {
-                    $roomService->roomRoleRemove($value['room_id'], $user_id);
-                    //删除房主后,将新设置家族族长为房主
-                    if ($value['admin_role'] == 1) {
-                        $union_master = Db::name('union')->where('id', $user['union_id'])->value('owner_id');
-                        db('room_admin')
-                            ->insert([
-                                'room_id' => $value['room_id'],
-                                'role'    => 1,
-                                'user_id' => $union_master
-                            ]);
-
-
-                        db('room_master_log')->insert([
-                            'room_id'    => $value['room_id'],
-                            'user_id'    => $union_master,
-                            'to_user_id' => $union_master
-                        ]);
-                        //在云信中将新的房主设置为管理员
-                        $imService = new ImService();
-                        $imService->roomSetAuth($value['room_id'], $union_master, true);
-                    }
-                }
                 db()->commit();
                 board_notice(Message::CMD_REFRESH_USER, ['user_id' => $user_id]);
                 send_im_msg_by_system_with_lang($user_id, '您的身份已被重置为普通用户');
