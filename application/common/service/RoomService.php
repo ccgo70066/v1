@@ -117,8 +117,8 @@ class RoomService extends BaseService
         ];
         $log = [];
         foreach ($update as $key => $value) {
-            if ($room[$key] <> $value) {
-                if (isset($messages[$key])) {
+            if (isset($messages[$key]) && isset($room[$key])) {
+                if ($room[$key] <> $value) {
                     $temp = is_array($messages[$key]) ? ($messages[$key][$value] ?? '') : $messages[$key];
                     if ($temp) $log[] = ['user_id' => $operator_id, 'room_id' => $room['id'], 'action' => $temp,];
                 }
