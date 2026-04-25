@@ -150,13 +150,7 @@ class RoomService extends BaseService
     {
         $redis = redis();
         $user = $redis->zRevRange(RedisService::ROOM_USER_KEY_PRE . $room_id, 0, -1);
-        $hider_user = [];
-        //$user_noble = db('user_noble')->where('id', 'in', $user)->field('id,switch')->select();
-        $user_noble = [];
-        foreach ($user_noble as $item) {
-            $json = json_decode($item['switch'], true);
-            ($json['9'] ?? 0) == 1 && $hider_user[] = $item['id'];
-        }
+        $hider_user = db('user_noble')->where('user_id', 'in', $user)->where('room_hide', 1)->column('user_id');
         return [$user, $hider_user];
     }
 
