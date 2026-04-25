@@ -36,7 +36,7 @@ class Member extends Base
         $room_id = input('room_id');
         $redis = redis();
         $room = db('room r')->where('r.id', $room_id)
-            ->field('id,beautiful_id,name,owner_id,intro,cover,status,welcome_msg,welcome_switch', false, 'r')->find();
+            ->field('id,beautiful_id,name,owner_id,intro,cover,status,welcome_msg,welcome_switch,bg_img', false, 'r')->find();
         $role = db('room_admin')->where('user_id', $user_id)->where('room_id', $room_id)->where('status', '>=', 0)->find();
         $room['role'] = $role['role'] ?? null;
         $room['role_status'] = $role['status'] ?? null;
