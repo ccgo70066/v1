@@ -274,7 +274,7 @@ function send_im_msg_by_system_with_lang($user_id, $text, ...$var)
 
 function user_noble_switch($user_id, $switch_type)
 {
-    $rs = db('user_noble')->where('id', $user_id)->where('end_time', '>', datetime())->find();
+    $rs = db('user_noble')->where('user_id', $user_id)->where('end_time', '>', datetime())->find();
     if (!$rs) return 0;
     $noble = db('noble')->where('id', $rs['noble_id'])->where("find_in_set($switch_type, `privilege_ids`)")->find();
     if ($noble) {
