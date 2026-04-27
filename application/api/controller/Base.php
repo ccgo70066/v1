@@ -175,6 +175,7 @@ class Base extends Api
     {
         $diff = db('api_field_confuse')
             ->cache(true, 3600, 'api_field_confuse')
+            ->where('package_name', $this->appid)
             ->column('encrypt', 'name');
 
         foreach ($result as $key => $value) {
