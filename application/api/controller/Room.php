@@ -921,7 +921,7 @@ class Room extends Base
         [$user, $hider_user] = $this->service->getOnlineUser($room_id);
 
         $users = array_diff($user, $hider_user);
-        $users_info = array_values(get_user_info($users, ['adornment', 'level']));
+        $users_info = array_values(get_user_info($users, ['adornment', 'level', 'noble']));
 
         $this->success('', ['data' => $users_info, 'hider' => count($hider_user)]);
     }
