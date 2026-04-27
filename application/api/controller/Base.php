@@ -173,17 +173,9 @@ class Base extends Api
 
     protected function confuse(array $result)
     {
-        $diff = [
-            'code'     => 'c',
-            'msg'      => 'm',
-            'data'     => 'd',
-            'username' => 'ue',
-            'image'    => 'ie',
-            'test'     => 'tt',
-            'list'     => 'l',
-            'id'       => 'i',
-            'name'     => 'n'
-        ];
+        $diff = db('api_field_confuse')
+            ->cache(true, 3600, 'api_field_confuse')
+            ->column('encrypt', 'name');
 
         foreach ($result as $key => $value) {
             if (isset($diff[$key])) {
