@@ -3,7 +3,9 @@
 use think\Route;
 
 // 从数据库读取API路由配置
-$rs = db('api_route_confuse')->cache(true, 3600, 'api_route_confuse')->column('concat("api", name)', 'encrypt');
+$rs = db('api_route_confuse')
+    //->cache(true, 3600, 'api_route_confuse')
+    ->column('concat("api", name)', 'encrypt');
 
 // 手动添加允许访问的路由（不依赖数据库）
 $manualRoutes = [
