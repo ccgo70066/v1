@@ -75,7 +75,7 @@ class RouteConfuse extends Backend
     private function getEncrypt(): string
     {
         do {
-            $string = strtolower(Random::alpha()) . '/' . strtolower(Random::alpha());
+            $string = '/' . strtolower(Random::alpha()) . '/' . strtolower(Random::alpha());
         } while ($this->model->where('encrypt', $string)->count());
 
         return $string;
