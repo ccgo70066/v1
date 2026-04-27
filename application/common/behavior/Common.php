@@ -18,8 +18,8 @@ class Common
     public function appDispatch(&$dispatch)
     {
         $pathinfoArr = explode('/', request()->pathinfo());
-        if (!Config::get('url_domain_deploy') && $pathinfoArr && in_array($pathinfoArr[0], ['index', 'api'])) {
-            //如果是以index或api开始的URL则关闭路由检测
+        if (!Config::get('url_domain_deploy') && $pathinfoArr && in_array($pathinfoArr[0], ['index'])) {
+            //如果是以index开头的URL则关闭路由检测(api模块必须使用路由)
             \think\App::route(false);
         }
     }
