@@ -443,7 +443,7 @@ class UserBusinessService extends BaseService
             $flag = true;
         }
         if ($flag) {
-            send_im_msg_by_system($user_id, sprintf('恭喜，您的财富等级升级至%s，已解锁更多专属特权！', $level[$user['level']]['name']));
+            send_im_msg_by_system($user_id, sprintf('恭喜，您的财富等级升级至%s！', $level[$user['level']]['name']));
         }
         db('user_business')->where('id', $user_id)->setField($user);
     }
