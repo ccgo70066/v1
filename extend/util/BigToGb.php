@@ -25,13 +25,13 @@ class BigToGb
         $len = strlen($str);
         $a = 0;
         while ($a < $len) {
-            if (ord($str[$a]) >= 224 && ord($str{$a}) <= 239 &&
+            if (ord($str[$a]) >= 224 && ord($str[$a]) <= 239 &&
                 ($temp = strpos(static::$utf8_gb2312, $str[$a] . $str[$a + 1] . $str[$a + 2])) !== false) {
                 $str_t .= static::$utf8_big5[$temp] . static::$utf8_big5[$temp + 1] . static::$utf8_big5[$temp + 2];
                 $a += 3;
                 continue;
             }
-            $str_t .= $str{$a};
+            $str_t .= $str[$a];
             ++$a;
         }
 
@@ -57,7 +57,7 @@ class BigToGb
                 $a += 3;
                 continue;
             }
-            $str_t .= $str{$a};
+            $str_t .= $str[$a];
             ++$a;
         }
 
