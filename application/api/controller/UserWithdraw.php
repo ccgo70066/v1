@@ -71,7 +71,7 @@ class UserWithdraw extends Base
     public function list()
     {
         $user_id = $this->auth->id;
-        $list = db('user_withdraw')->field('id,payment_amount,status,account_data,create_time')
+        $list = db('user_withdraw')->field('id,payment_amount,status,account_data,create_time,reject_comment')
             ->where('user_id', $user_id)->page(input('page', 1), input('size', 10))->order('id desc')->select();
         foreach ($list as &$value) {
             if (in_array($value['status'], [0, 1])) {
