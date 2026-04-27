@@ -312,6 +312,7 @@ class Game2Service extends BaseService
     {
         $limit_log = [];
         $limit_price = get_site_config('wheel_log_limit');
+        tt($limit_price);
         foreach ($gift as $item) {
             if ($item['price'] > $limit_price) {
                 $limit_log[] = [
@@ -326,6 +327,7 @@ class Game2Service extends BaseService
                 ];
             }
         }
+        tt($limit_log);
         $limit_log && db('wheel_limit_log')->insertAll($limit_log);
     }
 
