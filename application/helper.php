@@ -32,7 +32,8 @@ function redis()
         $redis = new Redis();
         $redis->connect($config['host'], $config['port']);
         !empty($config['password']) && $redis->auth($config['password']);
-        $redis->select($config['select'] ?? 1);
+        $redis->select($config['select'] ?: 1);
+        tt($config);
     }
     return $redis;
 }
