@@ -724,7 +724,7 @@ class Room extends Base
     }
 
     /**
-     * @ApiTitle    (设置用户角色身份[公])
+     * 设置用户角色身份
      * @ApiParams   (name="user_id",    type="int",  required=true, rule="require", description="目标用户id")
      * @ApiParams   (name="role",       type="int",  required=true, rule="require", description="角色:0=取消角色,2=设为房管,3=设为陪陪")
      * @ApiParams   (name="room_id",    type="int",  required=true, rule="require", description="房间id")

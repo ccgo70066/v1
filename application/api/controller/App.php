@@ -34,6 +34,7 @@ class App extends Base
 
 
     /**
+     * 获取配置
      * @ApiInternal
      * @return void
      */
