@@ -59,6 +59,7 @@ class Auth
         //'edit_gender_num',
         'imei_limit',
         'safe_code',
+        'is_blacklist',
     ];
 
     public function __construct($options = [])
