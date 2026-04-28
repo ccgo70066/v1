@@ -31,7 +31,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         /*{field: 'id', title: __('Id')},*/
                         {field: 'user_id', title: __('User_id')},
                         {field: 'user_nickname', title: __('用户昵称') ,operate: false},
-                        {field: 'business.role', title: __('用户身份') ,operate: '=', searchList: {1:'用户',3:'家族成员',4:'族长'}, formatter: Table.api.formatter.label},
+                        {field: 'business.role', title: __('用户身份') ,operate: '=', searchList: {1:'用户',2:'厅主',3:'主播',4:'运营'}, formatter: Table.api.formatter.label},
                         {field: 'img_type', title: __('Img_type'), searchList: {"avatar":__('Img_type avatar'),"image":__('Img_type image')}, formatter: Table.api.formatter.normal},
                         {field: 'url', title: __('图片'), events: Table.api.events.image, formatter: Table.api.formatter.image,  operate: false},
                         {field: 'status', title: __('Status'), searchList: {"0":__('Status 0'),"1":__('Status 1'),"2":__('Status 2')}, formatter: Table.api.formatter.status},
