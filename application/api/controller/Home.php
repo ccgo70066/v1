@@ -132,9 +132,7 @@ class Home extends Base
 
         if ($this->auth->id) {
             foreach ($list['user'] as &$item) {
-                $item['follow'] = db('user_follow')
-                    ->where(['user_id' => $this->auth->id, 'to_user_id' => $item['id']])
-                    ->find() ? 1 : 0;
+                $item['follow'] = db('user_follow')->where(['user_id' => $this->auth->id, 'to_user_id' => $item['id']])->count();
             }
         }
 
