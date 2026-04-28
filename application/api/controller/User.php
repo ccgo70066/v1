@@ -799,7 +799,7 @@ class User extends Base
         $day_limit = 10;
         $total_limit = 100;
         $receiver = $this->auth->id;
-        if (db('user_business')->where('id', $receiver)->value('role') != 1) $this->error(__('You have no permission'));
+        if (db('user_business')->where('id', $receiver)->value('role') != 2) $this->error(__('You have no permission'));
         $exist = db('user_vest')->where('status', 0)->order('create_time asc')->limit($limit)->select();
         if (count($exist) < $limit) $this->error(__('The remaining numbers are insufficient'));
         $day_count = db('user_vest')->where(['receiver' => $receiver,])->wheretime('update_time', 'today')->count();
