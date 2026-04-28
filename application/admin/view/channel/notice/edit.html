@@ -33,12 +33,6 @@
         </div>
     </div>
     <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Icon')}:</label>
-        <div class="col-xs-12 col-sm-8">
-            {:Form::image('row[icon]', $row['icon']??'')}
-        </div>
-    </div>
-    <div class="form-group">
         <label class="control-label col-xs-12 col-sm-2">{:__('Content')}:</label>
         <div class="col-xs-12 col-sm-8">
             <textarea id="c-content" class="form-control editor" rows="5" name="row[content]" cols="50">{$row.content|htmlentities}</textarea>
@@ -71,18 +65,6 @@
             <label for="row[status]-{$key}"><input id="row[status]-{$key}" name="row[status]" type="radio" value="{$key}" {in name="key" value="$row.status|default=''"}checked{/in} /> {$vo}</label>
             {/foreach}
             </div>
-
-        </div>
-    </div>
-    <div class="form-group">
-        <label class="control-label col-xs-12 col-sm-2">{:__('Show_type')}:</label>
-        <div class="col-xs-12 col-sm-8">
-
-            <select  id="c-show_type" class="form-control selectpicker" multiple="" name="row[show_type][]">
-                {foreach name="showTypeList" item="vo"}
-                    <option value="{$key}" {in name="key" value="$row.show_type|default=''"}selected{/in}>{$vo}</option>
-                {/foreach}
-            </select>
 
         </div>
     </div>
