@@ -100,4 +100,9 @@ class LuckyMoneyService extends BaseService
         if (!$money) return;
         board_notice(Message::CMD_LUCKY_MONEY, ['id' => $money['id'], 'second' => strtotime($money['end_time']) - time()]);
     }
+
+    public function timeout(mixed $id)
+    {
+        db('lucky_money')->where('id', $id)->setField(['status' => 1]);
+    }
 }

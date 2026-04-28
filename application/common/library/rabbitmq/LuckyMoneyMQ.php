@@ -17,7 +17,10 @@ class LuckyMoneyMQ extends BaseHandler
     {
         Db::startTrans();
         try {
-            LuckyMoneyService::instance()->push($message['id']);
+            if ($message['type'] == 'push')
+                LuckyMoneyService::instance()->push($message['id']);
+            else
+                LuckyMoneyService::instance()->timeout($message['id']);
             Db::commit();
             return true;
         } catch (\Throwable|\Exception $e) {
