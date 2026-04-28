@@ -86,6 +86,7 @@ class UserWithdraw extends Base
             $info = json_decode($value['account_data'], true);
             $value['account_info'] = '';
             isset($info['bank_name']) && $info['bank_name'] && $value['account_info'] = $info['bank_name'] . '(' . substr($info['bank_number'], -4) . ')';
+            isset($info['alipay_name']) && $info['alipay_name'] && $value['account_info'] = $info['alipay_name'] . '(' . substr($info['alipay_number'], -4) . ')';
             unset($value['account_data']);
         }
         $this->success(__('Operation completed'), $list);
