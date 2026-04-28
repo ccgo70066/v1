@@ -9,9 +9,6 @@ use think\Db;
 
 class LuckyMoneyMQ extends BaseHandler
 {
-    // 同时消费者数量
-    public static $consumes_count = 1;
-
     // 消费回调
     public function handler(array $message): bool
     {
