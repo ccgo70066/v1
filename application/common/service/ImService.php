@@ -80,7 +80,6 @@ class ImService extends BaseService
      */
     public function checkChatAuth($user_id, $to_user_id, $type)
     {
-        tt(func_get_args());
         //发送人为系统账号
         if (in_array($user_id, self::$KF_IDS) || $user_id === self::SYS_ID) {
             $to_user = db('user')->where('id', $to_user_id)->field('avatar,nickname')->find();
@@ -91,28 +90,21 @@ class ImService extends BaseService
             $user = db('user')->where('id', $user_id)->field('avatar,nickname')->find();
             return [$user['nickname'], $user['avatar'], '', ''];
         }
-        if ($user_id == $to_user_id) {
-            throw new ApiException(__('Cannot send to yourself'));
-        }
-        if (in_array($to_user_id, $this->blacklist($user_id))) {
-            throw new ApiException(__('You have blocked this user, cannot send message!'));
-        }
-        if (in_array($user_id, $this->blacklist($to_user_id))) {
-            throw new ApiException(__('You have been blocked by this user, cannot send message!'));
-        }
+        if ($user_id == $to_user_id) throw new ApiException(__('Cannot send to yourself'));
+        if (in_array($to_user_id, $this->blacklist($user_id))) throw new ApiException(__('You have blocked this user, cannot send message!'));
+        if (in_array($user_id, $this->blacklist($to_user_id))) throw new ApiException(__('You have been blocked by this user, cannot send message!'));
+
         $user = db('user')->where('id', $user_id)->where('status', 'normal')->find();
         $to_user = db('user')->where('id', $to_user_id)->where('status', 'normal')->find();
-        if (!$user) {
-            throw new ApiException(__('Account abnormality!'));
-        }
-        if (!$to_user) {
-            throw new ApiException(__('Opposite party account abnormality!'));
-        }
-
-        //$list = ChannelBlacklist::get_blacklist($to_user['package_appid'], $to_user['system'], $to_user['version']);
-        //if (in_array(ChannelBlacklist::ITEM_CHAT, $list)) {
-        //    throw new ApiException('对方尚未实名认证');
-        //}
+        if (!$user) throw new ApiException(__('Account abnormality!'));
+        if (!$to_user) throw new ApiException(__('Opposite party account abnormality!'));
+        // 厅成员
+        $user_role = db('user_business')->where('id', 'in', [$user_id, $to_user_id])->column('role', 'id');
+        if ($user_role[$user_id] > 1 || $user_role[$to_user_id] > 1)
+            return [$user['nickname'], $user['avatar'], $to_user['nickname'], $to_user['avatar']];
+        // 充值超30
+        $user_pay = db('user_recharge')->where('user_id', $user_id)->where('status', 1)->sum('pay_amount');
+        if ($user_pay >= 30) return [$user['nickname'], $user['avatar'], $to_user['nickname'], $to_user['avatar']];
 
         if (in_array($type, [self::CHAT_MESSAGE_GIFT, self::CHAT_MESSAGE_RED_PACKET])) {
             return [$user['nickname'], $user['avatar'], $to_user['nickname'], $to_user['avatar']];
@@ -361,4 +353,11 @@ class ImService extends BaseService
     {
         return $this->im->room_send_notice($room_id, $data);
     }
+
+
+    public function membersByPage($im_room_id, $type)
+    {
+        return $this->im->membersByPage($im_room_id, $type);
+    }
+
 }
