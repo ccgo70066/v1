@@ -97,9 +97,8 @@ class RabbitMQ extends Command
             while ($consumes_count > 0) {
                 $consumes_count--;
                 $output->writeln('开启消费进程:' . $className);
-                // exec("cd " . ROOT_PATH . '&&' . 'php think rabbitmq -m consumesProcess -a ' . $className . " >/dev/null 2>&1 &");
+                exec("cd " . ROOT_PATH . '&&' . 'php think rabbitmq -m consumesProcess -a ' . $className . " >/dev/null 2>&1 &");
                 //exec("cd " . ROOT_PATH . '&&' . 'php think rabbitmq -m consumesProcess -a ' . $className . " >/dev/null");
-                exec("cd " . ROOT_PATH . '&&' . 'php think rabbitmq -m consumesProcess -a ' . $className);
             }
         }
         \think\Log::sql($datetime . 'rabbitmq-cron重启消费完成:' . datetime());
