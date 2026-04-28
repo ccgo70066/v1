@@ -672,10 +672,8 @@ class Room extends Base
                 db('room_blacklist')->insert(['room_id' => $room_id, 'user_id' => $to_user_id,]);
             }
             //给房主发消息
-            send_im_msg_by_system($room['owner_id'], '%s将*%s*踢出厅%s,并加入厅黑名单');
+            send_im_msg_by_system($room['owner_id'], sprintf('%s将*%s*踢出厅,并加入厅黑名单', $this->auth->getUserinfo()['nickname'], $nickname));
             $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了厅", " kicked *{$nickname}* out of the room", $to_user_id);
-            //移除房间角色
-            $this->service->roomRoleRemove($room_id, $to_user_id);
         }
 
         $this->service->quit_room($to_user_id, $room_id);
