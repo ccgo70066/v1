@@ -16,6 +16,7 @@ class LuckyMoneyMQ extends BaseHandler
     public function handler(array $message): bool
     {
         tt($message);
+        return true;
         Db::startTrans();
         try {
             if ($message['type'] == 'push')
