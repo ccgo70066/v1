@@ -46,7 +46,8 @@ class LuckyMoneyService extends BaseService
         $money = $redis->hGetAll($key);
         if (!$money) {
             $money = db('lucky_money')->where('id', $id)->find();
-            if (!$money || $money['status'] == 1) throw new  ApiException(__('has ended'));
+            if (!$money) return 0;
+            if ($money['status'] == 1) throw new  ApiException(__('has ended'));
             if ($money['open_time'] > datetime() || datetime() > $money['end_time']) throw new ApiException(__('The time is not right'));
             $redis->hMSet($key, (array)$money);
             $redis->expire($key, strtotime($money['end_time']) - time());
