@@ -219,7 +219,7 @@ class Yunxin
             'accid'        => $user_id,
             'targetAcc'    => $to_user_id,
             'relationType' => 1,
-            'value'        => (string)$type
+            'value'        => $type ? 1 : 0,
         ];
         return $this->im($url, $data);
     }
