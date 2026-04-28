@@ -462,6 +462,7 @@ class Auth
 
             $data = $data->toArray();
             $data['is_follow'] = (int)db('user_follow')->where(['user_id' => $this->_user->id, 'to_user_id' => $userId])->find();
+            $data['is_blacklist'] = db('user_blacklist')->where(['user_id' => $this->_user->id, 'to_user_id' => $userId])->count();
         }
         $business = UserBusiness::find($data['id']);
         $data += $business->toArray();
