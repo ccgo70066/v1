@@ -617,4 +617,33 @@ class RoomService extends BaseService
         send_im_msg_by_system($message['user_id'], '厅主未及时处理你的退出申请，已自动退出!');
     }
 
+
+    /**
+     * 热力值小时刷新,同步到MYSql
+     */
+    public function hot_in_mysql()
+    {
+        try {
+            $redis = redis();
+            $rooms_hot = $redis->hGetAll(RedisService::ROOM_HOT_KEY);
+            $rooms = db('room')->field('im_roomid,id,is_close,status')->where('status', '<>', 0)->select();
+            foreach ($rooms as $k => $v) {
+                $hot = $rooms_hot[$v['id']] ?? 0;
+                db('room')->where('id', $v['id'])->setField('hot', $hot);
+                $redis->hSet(RedisService::ROOM_HOT_KEY, $v['id'], 0);
+                $imService = new ImService();
+                if (!$v['is_close'] && $v['status'] <> 1) {
+                    try {
+                        $imService->roomSendNotice($v['id'], ['type' => ImService::ROOM_HOT_REFRESH, 'hot' => $hot > 0 ? $hot : 0]);
+                    } catch (\Throwable $e) {
+                        error_log_out($e);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            error_log_out($e);
+            Log::error('报错咯');
+        }
+    }
+
 }
