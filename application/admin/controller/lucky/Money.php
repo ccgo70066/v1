@@ -98,8 +98,9 @@ class Money extends Backend
             }
             $result = $this->model->allowField(true)->save($params);
             Db::commit();
-            mq_publish(LuckyMoneyMQ::instance(), ['id' => $this->model->getLastInsID(), 'type' => 'push'], strtotime($params['open_time']) - time());
-            mq_publish(LuckyMoneyMQ::instance(), ['id' => $this->model->getLastInsID(), 'type' => 'timeout'], strtotime($params['end_time']) - time());
+            $lastInsID = $this->model->id;
+            mq_publish(LuckyMoneyMQ::instance(), ['id' => $lastInsID, 'type' => 'push'], strtotime($params['open_time']) - time());
+            mq_publish(LuckyMoneyMQ::instance(), ['id' => $lastInsID, 'type' => 'timeout'], strtotime($params['end_time']) - time());
         } catch (ValidateException|PDOException|Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
@@ -107,6 +108,8 @@ class Money extends Backend
         if ($result === false) {
             $this->error(__('No rows were inserted'));
         }
+        $this->error();
+
         $this->success();
     }
 
