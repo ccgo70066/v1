@@ -15,8 +15,6 @@ class LuckyMoneyMQ extends BaseHandler
     // 消费回调
     public function handler(array $message): bool
     {
-        tt($message);
-        return true;
         Db::startTrans();
         try {
             if ($message['type'] == 'push')
