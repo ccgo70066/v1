@@ -53,7 +53,7 @@ class Cron extends Command
      * 热力值小时刷新,同步到MYSql
      * (0 * * * *)
      */
-    public function hot_update()
+    public function hot()
     {
         RoomService::instance()->hot_in_mysql();
         echo 'success';
