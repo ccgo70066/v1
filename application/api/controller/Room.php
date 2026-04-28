@@ -1156,6 +1156,7 @@ class Room extends Base
         $id = input('id');
         $room_id = input('room_id') ?: 0;
         $money = LuckyMoneyService::instance()->open($id, $user_id, $room_id);
+        if ($money == 0) $this->success('', null);
         $this->success('', $money);
     }
 }
