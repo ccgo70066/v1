@@ -126,7 +126,7 @@ class Home extends Base
         }
 
         $where = [];
-        $keyword && $where['name'] = ['like', "%{$keyword}%"];
+        $keyword && $where['id|beautiful_id|name'] = ['like', "%{$keyword}%"];
 
         $list['room'] = (new RoomService())->roomList($where, $limit = 30);
 
