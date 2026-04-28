@@ -11,7 +11,7 @@ use think\Log;
 abstract class BaseHandler
 {
     private $connection;    //连接
-    public static $consumes_count = 2;
+    public static $consumes_count = 1;
     private string $queue_name;    //队列名
     private $channel;
     private string $exchange_name; //交换机名
