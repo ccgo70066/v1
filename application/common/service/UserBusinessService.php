@@ -430,7 +430,7 @@ class UserBusinessService extends BaseService
     {
         $level = db('level')->column('scope,name', 'grade');
         $user = db('user_business')->where('id', $user_id)->field('level,level_scope')->find();
-        $noble = db('user_noble')->where('id', $user_id)->where('end_time', '>', datetime())->find();
+        $noble = db('user_noble')->where('user_id', $user_id)->where('end_time', '>', datetime())->find();
         if ($noble) {
             $speedup = db('noble')->where('id', $noble['noble_id'])->value('speedup');
             $amount *= $speedup;
