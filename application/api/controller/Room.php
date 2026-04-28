@@ -633,7 +633,7 @@ class Room extends Base
         $nickname = db('user')->where('id', $to_user_id)->value('nickname');
         $room = db('room')->where('id', $room_id)->field('im_operator,owner_id,beautiful_id')->find();
         if ($room['owner_id'] == $to_user_id) $this->error(__('No permissions'));
-        if (user_noble_switch($to_user_id, 5)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
+        if (user_noble_switch($to_user_id, 8)) $this->error(__('Operation failed, unable to kick the premium member out of the room'));
         send_im_msg_by_system($room['owner_id'], sprintf('%s将*%s*踢出厅', $this->auth->getUserinfo()['nickname'], $nickname));
         $this->service->add_room_log($room_id, $this->auth->id, "将*{$nickname}*踢出了厅", '', $to_user_id);
         $this->service->quit_room($to_user_id, $room_id, 0, 1);

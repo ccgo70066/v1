@@ -272,14 +272,21 @@ function send_im_msg_by_system_with_lang($user_id, $text, ...$var)
 }
 
 
+/**
+ * @param $user_id
+ * @param $switch_type 5=专属,6=彩色昵称,7=热力进场,8=防踢,9=隐身
+ * @return int
+ * @throws
+ */
 function user_noble_switch($user_id, $switch_type)
 {
     $rs = db('user_noble')->where('user_id', $user_id)->where('end_time', '>', datetime())->find();
     if (!$rs) return 0;
     $noble = db('noble')->where('id', $rs['noble_id'])->where("find_in_set($switch_type, `privilege_ids`)")->find();
     if ($noble) {
-        if ($switch_type == 5) return 1;
         if ($switch_type == 9) return $rs['room_hide'] == 1 ? 1 : 0;
+        if ($switch_type == 6) return $rs['name_color'] == 1 ? 1 : 0;
+        if (in_array($switch_type, [5, 7, 8])) return 1;
     }
     return 0;
 }
