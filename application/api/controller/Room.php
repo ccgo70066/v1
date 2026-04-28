@@ -398,15 +398,8 @@ class Room extends Base
             ];
         }
 
-        $data['game_flag'] = false; // 参与游戏等级限制、参与游戏收到IM红包限制
+        $data['game_flag'] = true; // 参与游戏等级限制、参与游戏收到IM红包限制
         $data['green_pact'] = '安全提示：24小时线上巡查，任何传播违法、违规、低俗、暴力等不良资讯的行为将会导致账号被封停； 切勿轻信投资、理财； 切勿相信私聊的非官方储值广告，均属于诈骗行为！ 如有疑问请通过平台客服沟通确认！';
-        $level = db('user_business')->where('id', $user_id)->value('level');
-        if ($level >= get_site_config('game_limit_level')) {
-            $data['game_flag'] = true;
-        } elseif (get_site_config('game_limit_im_redpackage') == 1) {
-            $find = db('red_packet_log')->where('to_user_id', $user_id)->find();
-            $find && $data['game_flag'] = true;
-        }
         $message = [
             'type'         => ImService::ROOM_ONLINE_USER_REFRESH,
             'online_count' => $redis->zCard(RedisService::ROOM_USER_KEY_PRE . $room_id)
