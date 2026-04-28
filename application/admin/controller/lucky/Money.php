@@ -108,8 +108,6 @@ class Money extends Backend
         if ($result === false) {
             $this->error(__('No rows were inserted'));
         }
-        $this->error();
-
         $this->success();
     }
 
