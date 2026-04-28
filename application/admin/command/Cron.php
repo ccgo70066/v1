@@ -55,6 +55,8 @@ class Cron extends Command
      */
     public function hot()
     {
+        traceInDB('热力值小时刷新,同步到MYSql');
+        traceInDB(datetime());
         RoomService::instance()->hot_in_mysql();
         echo 'success';
     }
