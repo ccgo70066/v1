@@ -32,7 +32,7 @@ define(['jquery', 'bootstrap', 'backend', 'table', 'form'], function ($, undefin
                         // {field: 'id', title: __('Id')},
                         {field: 'user_id', title: __('User_id')},
                         {field: 'user.nickname', title: __('用户昵称'),operate: false},
-                        {field: 'business.role', title: __('用户身份') ,operate: '=', searchList: {1:'用户',3:'家族成员',4:'族长'}, formatter: Table.api.formatter.label},
+                        {field: 'business.role', title: __('用户身份') ,operate: '=', searchList: {1:'用户',2:'厅主',3:'主播',4:'运营'}, formatter: Table.api.formatter.label},
                         {field: 'content', title: __('Content'),cellStyle: function () {return {css: {"min-width": "150px","max-width": "250px","text-overflow": "ellipsis", "white-space": "initial","word-wrap":"break-word","word-break":"break-all"}};},operate: 'like'},
                         {field: 'images', title: __('图片/语音/视频'),operate: false,formatter:function (value, row, index){
                                 if (row.images) {
