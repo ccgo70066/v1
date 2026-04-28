@@ -125,6 +125,7 @@ class User extends Base
                 'version'  => $this->version,
                 'imei'     => input('imei'),
                 'model'    => input('model'),
+                'ip'       => $this->request->ip(),
             ];
             $result = $this->auth->reg($mobile . Random::alnum(), '', '', $mobile, $extend);
         }

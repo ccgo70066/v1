@@ -183,7 +183,6 @@ class Auth
             $this->setError('Mobile already exist');
             return false;
         }
-        $ip = request()->isCli() ? '127.0.0.1' : request()->ip();
         $time = time();
         $data = [
             'username' => $username,
