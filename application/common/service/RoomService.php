@@ -411,7 +411,7 @@ class RoomService extends BaseService
         if (cache($key) != 1) {
             $redis = redis();
             $hot = $redis->hIncrBy(RedisService::ROOM_HOT_KEY, $room_id, 1000);
-            $hot = $hot > 0 ? $hot : 0;
+            $hot = max($hot, 0);
             $im = new ImService();
             $im->roomSendNotice($room_id, ['type' => ImService::ROOM_HOT_REFRESH, 'hot' => $hot]);
             cache($key, 1, strtotime('tomorrow') - time(), 'vip_hot');
